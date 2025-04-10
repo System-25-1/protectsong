@@ -1,0 +1,17 @@
+# Android Studio
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+
+# Log/Debug
+*.log
+
+# Sign key (절대 올리면 안 됨!)
+*.jks
+*.keystore
