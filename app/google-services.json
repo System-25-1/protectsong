@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "465621966948",
+    "project_id": "protectsong-41277",
+    "storage_bucket": "protectsong-41277.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:465621966948:android:cb0b74c004eb6bd1b7bf71",
+        "android_client_info": {
+          "package_name": "com.example.protectsong"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "465621966948-qoqfj6p3hnt6dgltfsjdnnut60ks5ftq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMv22LwLAvgOLBlrJ-pqGwkK_Wsgndabc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "465621966948-qoqfj6p3hnt6dgltfsjdnnut60ks5ftq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
