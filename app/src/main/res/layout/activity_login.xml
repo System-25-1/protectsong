@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#082478"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- 🔙 뒤로가기 -->
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_back"
+        android:background="@drawable/circle_white_bg"
+        android:padding="8dp"
+        android:textStyle="bold"/>
+
+    <!-- 타이틀 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="로그인"
+        android:layout_gravity="center"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="환영합니다!"
+        android:layout_gravity="center"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:layout_marginTop="12dp" />
+
+    <!-- 학번 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="학번"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_marginTop="24dp" />
+    <EditText
+        android:id="@+id/studentIdEdit"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/rounded_input_bg"
+        android:paddingHorizontal="12dp" />
+
+    <!-- 비밀번호 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="비밀번호"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp" />
+    <EditText
+        android:id="@+id/passwordEdit"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/rounded_input_bg"
+        android:paddingHorizontal="12dp"
+        android:inputType="textPassword" />
+
+    <!-- 로그인 유지 / 비밀번호 찾기
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="4dp"
+        android:gravity="space_between">
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="로그인유지"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="비밀번호 찾기"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:layout_gravity="end"
+            android:layout_marginStart="auto" />
+    </LinearLayout>
+    -->
+
+
+    <!-- 로그인 버튼 -->
+    <Button
+        android:id="@+id/loginSubmitButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="로그인"
+        android:textStyle="bold"
+        android:textColor="#082478"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/rounded_button_white" />
+
+    <!-- SNS 문구 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="sns 계정으로 로그인"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:layout_marginTop="24dp" />
+
+    <!-- SNS 버튼
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_google" />
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_facebook"
+            android:layout_marginStart="24dp" />
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_kakao"
+            android:layout_marginStart="24dp" />
+    </LinearLayout>
+    -->
+</LinearLayout>
