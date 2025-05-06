@@ -1,5 +1,6 @@
 package com.example.protectsong
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -35,11 +36,14 @@ class SplashActivity : AppCompatActivity() {
         // 로그인 버튼 클릭 처리
         binding.loginButton.setOnClickListener {
             // TODO: 로그인 화면 이동
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
         }
 
         // 회원가입 버튼 클릭 처리
         binding.signupButton.setOnClickListener {
-            // TODO: 회원가입 화면 이동
+            val intent = Intent(this, SignupActivity::class.java)
+            startActivity(intent)
         }
     }
 }
