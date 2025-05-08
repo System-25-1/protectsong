@@ -1,4 +1,5 @@
 <resources>
+
     <!-- 앱 이름 -->
     <string name="app_name">지키송</string>
 
@@ -36,3 +37,4 @@
         <item>기타</item>
     </string-array>
 </resources>
+
