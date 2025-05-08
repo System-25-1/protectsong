@@ -1,3 +1,38 @@
 <resources>
-    <string name="app_name">Protectsong</string>
+    <!-- 앱 이름 -->
+    <string name="app_name">지키송</string>
+
+    <!-- 공통 버튼 텍스트 -->
+    <string name="signup">회원가입</string>
+    <string name="login">로그인</string>
+    <string name="submit">저장</string>
+    <string name="back">뒤로가기</string>
+
+    <!-- 안내 문구 -->
+    <string name="user_info_title">사용자 정보 입력</string>
+    <string name="user_info_description">정확한 정보를 입력하셔야 신고 출동 및 처리에 도움이 됩니다.</string>
+    <string name="required_field_notice">(*) 항목은 필수입니다.</string>
+
+    <!-- 입력 필드 라벨 -->
+    <string name="phone">전화번호</string>
+    <string name="verify">인증하기</string>
+    <string name="verify_check">인증번호 확인</string>
+    <string name="name">이름</string>
+    <string name="birth">생년월일</string>
+    <string name="student_id">학번</string>
+    <string name="guardian_info">보호자 정보</string>
+    <string name="guardian_name">이름</string>
+    <string name="guardian_phone">전화번호</string>
+    <string name="relationship">관계</string>
+    <string name="select_photo">사진 선택</string>
+
+    <!-- 관계 스피너 옵션 -->
+    <string-array name="relationship_options">
+        <item>부</item>
+        <item>모</item>
+        <item>형</item>
+        <item>제</item>
+        <item>자매</item>
+        <item>기타</item>
+    </string-array>
 </resources>
