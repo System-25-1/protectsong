@@ -36,9 +36,17 @@ class MainActivity : AppCompatActivity() {
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
+
         // ✅ 헤더 내 정보 클릭 → EditProfileActivity로 이동
         val headerView = binding.navView.getHeaderView(0)
         val tvMyProfile = headerView.findViewById<TextView>(R.id.tvMyProfile)
+        val logoutButton = headerView.findViewById<TextView>(R.id.logout_button)
+
+        logoutButton.setOnClickListener {
+            val intent = Intent(this, SplashActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
         tvMyProfile.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)
             startActivity(intent)
@@ -56,7 +64,10 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_logout -> {
-                    Toast.makeText(this, "로그아웃 클릭됨", Toast.LENGTH_SHORT).show()
+                    // 🔁 SplashActivity로 이동 + 백스택 초기화
+                    val intent = Intent(this, SplashActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
                     true
                 }
                 else -> false
