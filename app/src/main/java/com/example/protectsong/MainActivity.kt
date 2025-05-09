@@ -4,11 +4,11 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.protectsong.databinding.ActivityMainBinding
-import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,10 +22,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 툴바를 액션바로 설정
+        // 툴바 설정
         setSupportActionBar(binding.toolbar)
 
-        // DrawerToggle 설정
+        // 네비게이션 드로어 토글
         toggle = ActionBarDrawerToggle(
             this,
             binding.drawerLayout,
@@ -36,7 +36,15 @@ class MainActivity : AppCompatActivity() {
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        // NavigationView 메뉴 클릭
+        // ✅ 헤더 내 정보 클릭 → EditProfileActivity로 이동
+        val headerView = binding.navView.getHeaderView(0)
+        val tvMyProfile = headerView.findViewById<TextView>(R.id.tvMyProfile)
+        tvMyProfile.setOnClickListener {
+            val intent = Intent(this, EditProfileActivity::class.java)
+            startActivity(intent)
+        }
+
+        // ✅ 네비게이션 메뉴 클릭
         binding.navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_mypage -> {
@@ -55,17 +63,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 🔊 MediaPlayer 준비
+        // 🔊 호루라기 소리 준비
         whistlePlayer = MediaPlayer.create(this, R.raw.whistle_sound)
 
         // 🔘 호루라기 버튼 클릭
         binding.btnWhistle.setOnClickListener {
             isWhistleOn = !isWhistleOn
 
-            // 텍스트 토글
+            // 텍스트 바꾸기
             binding.tvWhistle.text = if (isWhistleOn) "on" else "off"
 
-            // 배경 토글
+            // 배경 바꾸기
             val backgroundRes = if (isWhistleOn) {
                 R.drawable.bg_rectangle_button_pressed
             } else {
@@ -73,7 +81,7 @@ class MainActivity : AppCompatActivity() {
             }
             binding.btnWhistle.setBackgroundResource(backgroundRes)
 
-            // 사운드 토글
+            // 소리 재생
             if (isWhistleOn) {
                 whistlePlayer.start()
             } else {
@@ -84,7 +92,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 전화 신고 버튼
+        // ☎ 전화 신고 버튼 클릭 → 다이얼
         binding.ivCall.setOnClickListener {
             val intent = Intent(Intent.ACTION_DIAL)
             intent.data = Uri.parse("tel:010-8975-0220")
