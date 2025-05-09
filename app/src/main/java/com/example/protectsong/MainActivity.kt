@@ -1,6 +1,7 @@
 package com.example.protectsong
 
 import android.content.Intent
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
@@ -13,6 +14,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var toggle: ActionBarDrawerToggle
+    private var isWhistleOn = false
+    private lateinit var whistlePlayer: MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,5 +54,46 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        // 🔊 MediaPlayer 준비
+        whistlePlayer = MediaPlayer.create(this, R.raw.whistle_sound)
+
+        // 🔘 호루라기 버튼 클릭
+        binding.btnWhistle.setOnClickListener {
+            isWhistleOn = !isWhistleOn
+
+            // 텍스트 토글
+            binding.tvWhistle.text = if (isWhistleOn) "on" else "off"
+
+            // 배경 토글
+            val backgroundRes = if (isWhistleOn) {
+                R.drawable.bg_rectangle_button_pressed
+            } else {
+                R.drawable.bg_rectangle_button
+            }
+            binding.btnWhistle.setBackgroundResource(backgroundRes)
+
+            // 사운드 토글
+            if (isWhistleOn) {
+                whistlePlayer.start()
+            } else {
+                if (whistlePlayer.isPlaying) {
+                    whistlePlayer.pause()
+                    whistlePlayer.seekTo(0)
+                }
+            }
+        }
+
+        // 전화 신고 버튼
+        binding.ivCall.setOnClickListener {
+            val intent = Intent(Intent.ACTION_DIAL)
+            intent.data = Uri.parse("tel:010-8975-0220")
+            startActivity(intent)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        whistlePlayer.release()
     }
 }
