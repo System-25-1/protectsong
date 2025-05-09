@@ -3,48 +3,39 @@ package com.example.protectsong
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.drawerlayout.widget.DrawerLayout
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.protectsong.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityMainBinding
     private var isWhistleOn = false
-
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var toggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        // 🟦 툴바 및 DrawerLayout 설정
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
+        // ViewBinding 초기화
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        drawerLayout = findViewById(R.id.drawer_layout)
-        val navView = findViewById<NavigationView>(R.id.nav_view)
-
-        val titleText = findViewById<TextView>(R.id.toolbarTitle)
-        titleText.text = "지키송"
-
-        toggle = ActionBarDrawerToggle(
-            this, drawerLayout, toolbar,
+        // 🟦 툴바 및 Drawer 설정
+        setSupportActionBar(binding.toolbar)
+        val toggle = ActionBarDrawerToggle(
+            this, binding.drawerLayout, binding.toolbar,
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         )
-        drawerLayout.addDrawerListener(toggle)
+        binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        // 🔸 NavigationView 메뉴 클릭 처리
-        navView.setNavigationItemSelectedListener { item ->
+        // 툴바 타이틀 중앙 설정
+        binding.toolbarTitle.text = "지키송"
+
+        // NavigationView 메뉴 클릭 처리
+        binding.navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_mypage -> {
                     Toast.makeText(this, "마이페이지 클릭됨", Toast.LENGTH_SHORT).show()
@@ -62,30 +53,27 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 🟦 기존 버튼들 설정
-        val btnEmergency = findViewById<ImageButton>(R.id.btnEmergency)
-        val btnWhistle = findViewById<ImageButton>(R.id.btnWhistle)
-        val tvWhistle = findViewById<TextView>(R.id.tvWhistle)
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
-        val ivCall = findViewById<ImageView>(R.id.ivCall)
-
-        btnEmergency.setOnClickListener {
+        // 긴급 신고 버튼
+        binding.btnEmergency.setOnClickListener {
             Toast.makeText(this, "긴급 신고 버튼이 눌렸습니다!", Toast.LENGTH_SHORT).show()
         }
 
-        btnWhistle.setOnClickListener {
+        // 호루라기 버튼
+        binding.btnWhistle.setOnClickListener {
             isWhistleOn = !isWhistleOn
-            btnWhistle.isSelected = isWhistleOn
-            tvWhistle.text = if (isWhistleOn) "on" else "off"
+            binding.btnWhistle.isSelected = isWhistleOn
+            binding.tvWhistle.text = if (isWhistleOn) "on" else "off"
         }
 
-        ivCall.setOnClickListener {
+        // 전화 신고 버튼
+        binding.ivCall.setOnClickListener {
             val intent = Intent(Intent.ACTION_DIAL)
             intent.data = Uri.parse("tel:010-8975-0220")
             startActivity(intent)
         }
 
-        bottomNav.setOnItemSelectedListener { item ->
+        // 하단 바 메뉴 클릭
+        binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_chat -> {
                     Toast.makeText(this, "Chat 탭 선택됨", Toast.LENGTH_SHORT).show()
