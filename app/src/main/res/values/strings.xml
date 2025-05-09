@@ -27,6 +27,11 @@
     <string name="relationship">관계</string>
     <string name="select_photo">사진 선택</string>
 
+    <!-- 내비게이션 뷰 -->
+    <string name="navigation_drawer_open">내비게이션 열기</string>
+    <string name="navigation_drawer_close">내비게이션 닫기</string>
+
+
     <!-- 관계 스피너 옵션 -->
     <string-array name="relationship_options">
         <item>부</item>
