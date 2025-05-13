@@ -36,8 +36,7 @@
     <string-array name="relationship_options">
         <item>부</item>
         <item>모</item>
-        <item>형</item>
-        <item>제</item>
+        <item>형제</item>
         <item>자매</item>
         <item>기타</item>
     </string-array>

@@ -204,10 +204,14 @@
                     android:paddingHorizontal="8dp" />
 
                 <Spinner
+                    android:id="@+id/spinnerRelation"
                     android:layout_width="100dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="8dp"
-                    android:background="@drawable/rounded_input_bg" />
+                    android:background="@drawable/rounded_input_bg"
+                    android:spinnerMode="dropdown"
+                    android:popupBackground="@drawable/bg_rectangle_border"/>
+
             </LinearLayout>
 
             <EditText
@@ -233,5 +237,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardUserInfo" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
