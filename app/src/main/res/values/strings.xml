@@ -34,8 +34,7 @@
 
     <!-- 관계 스피너 옵션 -->
     <string-array name="relationship_options">
-        <item>부</item>
-        <item>모</item>
+        <item>부모</item>
         <item>형제</item>
         <item>자매</item>
         <item>기타</item>

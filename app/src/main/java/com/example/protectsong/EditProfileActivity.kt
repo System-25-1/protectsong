@@ -1,10 +1,11 @@
 package com.example.protectsong
 
+import android.content.Context
 import android.os.Bundle
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.protectsong.databinding.ActivityEditProfileBinding
-import android.widget.ArrayAdapter
-
 
 class EditProfileActivity : AppCompatActivity() {
 
@@ -29,9 +30,23 @@ class EditProfileActivity : AppCompatActivity() {
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         binding.spinnerRelation.adapter = adapter
 
-        // 수정 버튼 클릭
+        // ✅ 수정 버튼 클릭
         binding.btnUpdate.setOnClickListener {
-            // TODO: 수정 처리 로직
+            val guardianName = binding.editGuardianName.text.toString()
+            val guardianPhone = binding.editGuardianPhone.text.toString()
+            val guardianRelation = binding.spinnerRelation.selectedItem.toString()
+
+            // 📦 SharedPreferences에 저장
+            val prefs = getSharedPreferences("guardian_info", Context.MODE_PRIVATE)
+            prefs.edit().apply {
+                putString("guardian_name", guardianName)
+                putString("guardian_phone", guardianPhone)
+                putString("guardian_relation", guardianRelation)
+                apply()
+            }
+
+            // ✅ 완료 메시지 표시
+            Toast.makeText(this, "수정되었습니다", Toast.LENGTH_SHORT).show()
         }
     }
 }
