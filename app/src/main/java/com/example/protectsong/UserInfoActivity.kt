@@ -15,7 +15,7 @@ class UserInfoActivity : AppCompatActivity() {
         binding = ActivityUserInfoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //  여기서 Spinner 어댑터 연결
+        //  Spinner 어댑터 연결
         val adapter = ArrayAdapter.createFromResource(
             this,
             R.array.relationship_options,

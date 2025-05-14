@@ -74,6 +74,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        binding.btnSmsReport.setOnClickListener {
+            val intent = Intent(this, SmsReportActivity::class.java)
+            startActivity(intent)
+        }
+
+
         // 🔊 호루라기 소리 준비
         whistlePlayer = MediaPlayer.create(this, R.raw.whistle_sound)
 
