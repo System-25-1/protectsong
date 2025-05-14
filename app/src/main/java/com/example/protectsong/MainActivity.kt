@@ -126,6 +126,27 @@ class MainActivity : AppCompatActivity() {
             intent.data = Uri.parse("tel:010-8975-0220")
             startActivity(intent)
         }
+
+
+    // 하단 네비게이션 바
+        binding.bottomNavigation.selectedItemId = R.id.nav_home
+
+        binding.bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_chat -> {
+                    startActivity(Intent(this, ChatActivity::class.java))
+                    true
+                }
+                R.id.nav_home -> {
+                    true
+                }
+                R.id.nav_post -> {
+                    Toast.makeText(this, "Post 클릭됨", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -133,3 +154,4 @@ class MainActivity : AppCompatActivity() {
         whistlePlayer.release()
     }
 }
+
