@@ -39,6 +39,7 @@
         <item>자매</item>
         <item>기타</item>
     </string-array>
+
 <!-- 문자 신고 스피너-->
     <string-array name="report_types">
         <item>민원</item>
@@ -66,5 +67,9 @@
         <item>새힘관</item>
         <item>다목적관</item>
     </string-array>
+
+
+
+
 </resources>
 
