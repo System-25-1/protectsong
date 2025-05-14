@@ -22,10 +22,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 툴바 설정
+        // ✅ 툴바 설정
         setSupportActionBar(binding.toolbar)
 
-        // 네비게이션 드로어 토글 설정
+        // ✅ 드로어 토글 설정
         toggle = ActionBarDrawerToggle(
             this,
             binding.drawerLayout,
@@ -36,33 +36,23 @@ class MainActivity : AppCompatActivity() {
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        // ✅ 네비게이션 헤더 내 버튼들 초기화
+        // ✅ 드로어 헤더 버튼 초기화
         val headerView = binding.navView.getHeaderView(0)
         val tvMyProfile = headerView.findViewById<TextView>(R.id.tvMyProfile)
         val logoutButton = headerView.findViewById<TextView>(R.id.logout_button)
-        val btnSettings = headerView.findViewById<TextView>(R.id.btn_settings) // 🔥 헤더 설정 버튼
 
-        // 🔁 로그아웃
         logoutButton.setOnClickListener {
             val intent = Intent(this, SplashActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
 
-        // 🔁 내 정보 이동
         tvMyProfile.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)
             startActivity(intent)
         }
 
-        // ✅ 헤더의 설정 버튼 클릭 시 SettingsActivity 이동
-        btnSettings.setOnClickListener {
-            val intent = Intent(this, SettingsActivity::class.java)
-            startActivity(intent)
-            binding.drawerLayout.closeDrawer(binding.navView)
-        }
-
-        // ✅ 네비게이션 메뉴 항목 클릭 처리
+        // ✅ 드로어 메뉴 선택
         binding.navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_mypage -> {
@@ -71,9 +61,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.nav_settings -> {
-                    val intent = Intent(this, SettingsActivity::class.java)
-                    startActivity(intent)
-                    binding.drawerLayout.closeDrawer(binding.navView)
+                    Toast.makeText(this, "설정 클릭됨", Toast.LENGTH_SHORT).show()
                     true
                 }
 
@@ -88,16 +76,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // ✅ 문자 신고 버튼
         binding.btnSmsReport.setOnClickListener {
             val intent = Intent(this, SmsReportActivity::class.java)
             startActivity(intent)
         }
 
-
-        // 🔊 호루라기 소리 준비
+        // ✅ 호루라기 기능
         whistlePlayer = MediaPlayer.create(this, R.raw.whistle_sound)
 
-        // 🔘 호루라기 버튼 클릭
         binding.btnWhistle.setOnClickListener {
             isWhistleOn = !isWhistleOn
 
@@ -120,7 +107,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // ☎ 전화 신고 버튼 클릭 → 다이얼 화면
+        // ✅ 전화 신고 버튼
         binding.ivCall.setOnClickListener {
             val intent = Intent(Intent.ACTION_DIAL)
             intent.data = Uri.parse("tel:010-8975-0220")
@@ -128,12 +115,17 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+
     // 하단 네비게이션 바
+
+        // ✅ 하단 네비게이션 바
+
         binding.bottomNavigation.selectedItemId = R.id.nav_home
 
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_chat -> {
+
                     startActivity(Intent(this, ChatActivity::class.java))
                     true
                 }
@@ -141,7 +133,9 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_post -> {
-                    Toast.makeText(this, "Post 클릭됨", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, PostListActivity::class.java)
+                    startActivity(intent)
+
                     true
                 }
                 else -> false
