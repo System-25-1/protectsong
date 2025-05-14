@@ -32,11 +32,11 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".UserInfoActivity" />
         <activity android:name=".EditProfileActivity" />
-<<<<<<< HEAD
         <activity android:name=".SmsReportActivity" />
-=======
         <activity android:name=".SettingsActivity" />
->>>>>>> feature/eunseo
+        <activity android:name=".PostListActivity" />
+
+
 
 
     </application>
