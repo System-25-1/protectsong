@@ -40,14 +40,9 @@
         <activity android:name=".EditProfileActivity" />
         <activity android:name=".SmsReportActivity" />
         <activity android:name=".SettingsActivity" />
-<<<<<<< HEAD
         <activity android:name=".ChatActivity" />
-=======
         <activity android:name=".PostListActivity" />
 
-
-
->>>>>>> feature/eunseo
 
     </application>
 
