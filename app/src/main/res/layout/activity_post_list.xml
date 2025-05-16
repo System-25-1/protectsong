@@ -46,6 +46,7 @@
             android:background="#002366" />
     </LinearLayout>
 
+
     <!-- 제목 -->
     <TextView
         android:id="@+id/tvPostTitle"
