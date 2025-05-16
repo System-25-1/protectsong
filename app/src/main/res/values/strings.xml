@@ -68,6 +68,7 @@
         <item>다목적관</item>
     </string-array>
 
+    <string name="version_text">V %1$s</string>
 
 
 

@@ -2,39 +2,51 @@
 <androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="40dp"
     android:fitsSystemWindows="true">
 
-    <!-- 📌 메인 콘텐츠 -->
+    <!-- ✅ 메인 콘텐츠 -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#FFFFFF">
 
-        <!-- ✅ 툴바 -->
+        <!-- 🟦 툴바 -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:background="#002366"
-            android:title="지키송"
-            android:titleTextColor="@android:color/white"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- 🟦 신고 버튼 -->
+        <!-- 🟦 중앙 타이틀 텍스트 -->
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="지키송"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="@id/toolbar"
+            app:layout_constraintBottom_toBottomOf="@id/toolbar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+
+        <!-- 🟨 신고 버튼들 -->
         <LinearLayout
             android:id="@+id/report_buttons"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="40dp"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -49,12 +61,12 @@
 
                 <ImageButton
                     android:id="@+id/btnSmsReport"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:background="@drawable/bg_circle_button"
-                    android:contentDescription="문자 신고"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:background="@drawable/bg_left_curve_button"
+                    android:src="@android:drawable/ic_dialog_email"
                     android:scaleType="centerInside"
-                    android:src="@android:drawable/ic_dialog_email" />
+                    android:contentDescription="문자 신고" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -74,14 +86,14 @@
 
                 <ImageButton
                     android:id="@+id/btnEmergency"
-                    android:layout_width="88dp"
-                    android:layout_height="88dp"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
                     android:background="@drawable/bg_circle_button"
                     android:backgroundTint="#8B0000"
-                    android:contentDescription="긴급 신고"
-                    android:scaleType="centerInside"
                     android:src="@android:drawable/ic_dialog_alert"
-                    app:tint="@android:color/white" />
+                    app:tint="@android:color/white"
+                    android:scaleType="centerInside"
+                    android:contentDescription="긴급 신고" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -102,12 +114,12 @@
 
                 <ImageButton
                     android:id="@+id/ivCall"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:background="@drawable/bg_circle_button"
-                    android:contentDescription="전화 신고"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:background="@drawable/bg_right_curve_button"
+                    android:src="@android:drawable/ic_menu_call"
                     android:scaleType="centerInside"
-                    android:src="@android:drawable/ic_menu_call" />
+                    android:contentDescription="전화 신고" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -121,15 +133,17 @@
         <!-- 🌟 별 이미지 -->
         <ImageView
             android:id="@+id/star_bg"
-            android:layout_width="180dp"
-            android:layout_height="180dp"
-            android:layout_marginTop="24dp"
-            android:alpha="0.5"
-            android:scaleType="centerInside"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:alpha="0.15"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
             android:src="@drawable/sookmyung"
-            app:layout_constraintTop_toBottomOf="@id/report_buttons"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_margin="64dp" />
 
         <!-- 🔈 호루라기 버튼 -->
         <LinearLayout
@@ -139,7 +153,7 @@
             android:orientation="vertical"
             android:gravity="center"
             android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/star_bg"
+            app:layout_constraintTop_toBottomOf="@id/report_buttons"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
@@ -148,10 +162,10 @@
                 android:layout_width="358dp"
                 android:layout_height="55dp"
                 android:background="@drawable/bg_rectangle_button"
-                android:contentDescription="호루라기"
-                android:scaleType="centerInside"
                 android:src="@android:drawable/ic_lock_silent_mode_off"
-                android:tint="#000000" />
+                android:tint="#000000"
+                android:scaleType="centerInside"
+                android:contentDescription="호루라기" />
 
             <TextView
                 android:id="@+id/tvWhistle"
@@ -167,12 +181,12 @@
             android:id="@+id/notice_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="200dp"
             android:background="#002366"
-            android:gravity="center"
-            android:padding="8dp"
             android:text="공지"
             android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:padding="8dp"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/whistle_section"
@@ -186,10 +200,10 @@
             android:layout_height="120dp"
             android:layout_margin="16dp"
             android:background="#EEEEEE"
-            android:gravity="top"
-            android:padding="8dp"
             android:text="공지 내용이 여기에 표시됩니다."
             android:textSize="14sp"
+            android:gravity="top"
+            android:padding="8dp"
             app:layout_constraintTop_toBottomOf="@id/notice_title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -203,9 +217,7 @@
             app:menu="@menu/bottom_nav_menu"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/notice_body" />
-
+            app:layout_constraintEnd_toEndOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- 📂 내비게이션 메뉴 -->
@@ -214,8 +226,5 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@android:color/white"
-        app:headerLayout="@layout/nav_header"
-        />
-
+        app:headerLayout="@layout/nav_header" />
 </androidx.drawerlayout.widget.DrawerLayout>
