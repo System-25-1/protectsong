@@ -10,6 +10,9 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.protectsong.databinding.ActivityMainBinding
 import androidx.core.content.ContextCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,6 +45,8 @@ class MainActivity : AppCompatActivity() {
 
         // ✅ 드로어 헤더 버튼 초기화
         val headerView = binding.navView.getHeaderView(0)
+        val tvUserName = headerView.findViewById<TextView>(R.id.tvUserName)
+        val tvStudentId = headerView.findViewById<TextView>(R.id.tvStudentId)
         val tvMyProfile = headerView.findViewById<TextView>(R.id.tvMyProfile)
         val logoutButton = headerView.findViewById<TextView>(R.id.logout_button)
         val tvSettings = headerView.findViewById<TextView>(R.id.tvSettings)
@@ -49,12 +54,30 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
 
+        // ✅ Firebase에서 사용자 정보 불러오기
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        if (uid != null) {
+            FirebaseFirestore.getInstance().collection("users").document(uid)
+                .get()
+                .addOnSuccessListener { document ->
+                    val name = document.getString("name") ?: "이름없음"
+                    val studentId = document.getString("studentId") ?: "학번없음"
+                    tvUserName.text = name
+                    tvStudentId.text = studentId
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "사용자 정보를 불러오지 못했습니다", Toast.LENGTH_SHORT).show()
+                }
+        }
+
+        // ✅ 로그아웃
         logoutButton.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
             val intent = Intent(this, SplashActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
-
+        // ✅ 프로필 수정 이동
         tvMyProfile.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)
             startActivity(intent)

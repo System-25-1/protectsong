@@ -89,6 +89,7 @@
         <!-- 신고 내용 입력 -->
 
         <!-- 파일 첨부 -->
+
         <EditText
             android:id="@+id/edit_content"
             android:layout_width="match_parent"

@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-
+    alias(libs.plugins.kotlin.kapt)
     id("com.google.gms.google-services")
 }
 
@@ -77,12 +77,26 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation ("androidx.appcompat:appcompat:1.3.0")
+    implementation ("androidx.appcompat:appcompat:1 .3.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation ("com.google.firebase:firebase-firestore:24.0.0")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+//파이어베이스 로그인
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+// Firebase Realtime Database
+    implementation("com.google.firebase:firebase-database-ktx")
+// Firebase Storage
+    implementation("com.google.firebase:firebase-storage-ktx")
+    // 🔹 Glide (이미지 로딩)
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    kapt ("com.github.bumptech.glide:compiler:4.16.0")
+
+
+
+
 
 }
