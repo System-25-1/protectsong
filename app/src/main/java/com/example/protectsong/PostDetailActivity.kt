@@ -1,6 +1,7 @@
 package com.example.protectsong
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.protectsong.databinding.ActivityPostDetailBinding
 
@@ -22,6 +23,11 @@ class PostDetailActivity : AppCompatActivity() {
         binding.tvTitle.text = title
         binding.tvDate.text = date
         binding.tvBadge.text = if (isNotice) "공지" else ""
-        binding.tvBadge.visibility = if (isNotice) android.view.View.VISIBLE else android.view.View.GONE
+        binding.tvBadge.visibility = if (isNotice) View.VISIBLE else View.GONE
+    }
+
+    // ✅ XML의 android:onClick="finish"와 연결되는 함수
+    fun finish(view: View) {
+        finish() // 현재 액티비티 종료
     }
 }

@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.protectsong.databinding.ActivityMainBinding
+import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity() {
         // ✅ 툴바 설정
         setSupportActionBar(binding.toolbar)
 
+
         // ✅ 드로어 토글 설정
         toggle = ActionBarDrawerToggle(
             this,
@@ -35,11 +37,17 @@ class MainActivity : AppCompatActivity() {
         )
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
+// 햄버거 아이콘 흰색으로 설정
+        toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, android.R.color.white)
 
         // ✅ 드로어 헤더 버튼 초기화
         val headerView = binding.navView.getHeaderView(0)
         val tvMyProfile = headerView.findViewById<TextView>(R.id.tvMyProfile)
         val logoutButton = headerView.findViewById<TextView>(R.id.logout_button)
+        val tvSettings = headerView.findViewById<TextView>(R.id.tvSettings)
+        tvSettings.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
 
         logoutButton.setOnClickListener {
             val intent = Intent(this, SplashActivity::class.java)
@@ -61,7 +69,9 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.nav_settings -> {
-                    Toast.makeText(this, "설정 클릭됨", Toast.LENGTH_SHORT).show()
+                    // ✅ 설정화면으로 이동
+                    val intent = Intent(this, SettingsActivity::class.java)
+                    startActivity(intent)
                     true
                 }
 
@@ -114,30 +124,26 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
-
-    // 하단 네비게이션 바
-
         // ✅ 하단 네비게이션 바
-
         binding.bottomNavigation.selectedItemId = R.id.nav_home
 
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_chat -> {
-
                     startActivity(Intent(this, ChatActivity::class.java))
                     true
                 }
+
                 R.id.nav_home -> {
                     true
                 }
+
                 R.id.nav_post -> {
                     val intent = Intent(this, PostListActivity::class.java)
                     startActivity(intent)
-
                     true
                 }
+
                 else -> false
             }
         }
@@ -148,4 +154,3 @@ class MainActivity : AppCompatActivity() {
         whistlePlayer.release()
     }
 }
-
