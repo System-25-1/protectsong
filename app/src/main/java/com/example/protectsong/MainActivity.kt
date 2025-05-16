@@ -1,6 +1,8 @@
 package com.example.protectsong
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
@@ -8,11 +10,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.protectsong.databinding.ActivityMainBinding
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.protectsong.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toggle: ActionBarDrawerToggle
     private var isWhistleOn = false
     private lateinit var whistlePlayer: MediaPlayer
+    private val REQUEST_CALL_PERMISSION = 100
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +31,6 @@ class MainActivity : AppCompatActivity() {
 
         // ✅ 툴바 설정
         setSupportActionBar(binding.toolbar)
-
 
         // ✅ 드로어 토글 설정
         toggle = ActionBarDrawerToggle(
@@ -40,21 +42,23 @@ class MainActivity : AppCompatActivity() {
         )
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
-// 햄버거 아이콘 흰색으로 설정
+
+        // 햄버거 아이콘 흰색
         toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, android.R.color.white)
 
-        // ✅ 드로어 헤더 버튼 초기화
+        // ✅ 드로어 헤더 정보 설정
         val headerView = binding.navView.getHeaderView(0)
         val tvUserName = headerView.findViewById<TextView>(R.id.tvUserName)
         val tvStudentId = headerView.findViewById<TextView>(R.id.tvStudentId)
         val tvMyProfile = headerView.findViewById<TextView>(R.id.tvMyProfile)
         val logoutButton = headerView.findViewById<TextView>(R.id.logout_button)
         val tvSettings = headerView.findViewById<TextView>(R.id.tvSettings)
+
         tvSettings.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
 
-        // ✅ Firebase에서 사용자 정보 불러오기
+        // ✅ Firebase 사용자 정보 로드
         val uid = FirebaseAuth.getInstance().currentUser?.uid
         if (uid != null) {
             FirebaseFirestore.getInstance().collection("users").document(uid)
@@ -77,7 +81,8 @@ class MainActivity : AppCompatActivity() {
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
-        // ✅ 프로필 수정 이동
+
+        // ✅ 프로필 편집으로 이동
         tvMyProfile.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)
             startActivity(intent)
@@ -92,13 +97,12 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.nav_settings -> {
-                    // ✅ 설정화면으로 이동
-                    val intent = Intent(this, SettingsActivity::class.java)
-                    startActivity(intent)
+                    startActivity(Intent(this, SettingsActivity::class.java))
                     true
                 }
 
                 R.id.nav_logout -> {
+                    FirebaseAuth.getInstance().signOut()
                     val intent = Intent(this, SplashActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
@@ -115,7 +119,12 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // ✅ 호루라기 기능
+        // ✅ 긴급 신고 버튼 (전화 연결)
+        binding.btnEmergency.setOnClickListener {
+            makeEmergencyCall()
+        }
+
+        // ✅ 호루라기 버튼
         whistlePlayer = MediaPlayer.create(this, R.raw.whistle_sound)
 
         binding.btnWhistle.setOnClickListener {
@@ -149,7 +158,6 @@ class MainActivity : AppCompatActivity() {
 
         // ✅ 하단 네비게이션 바
         binding.bottomNavigation.selectedItemId = R.id.nav_home
-
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_chat -> {
@@ -157,9 +165,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
 
-                R.id.nav_home -> {
-                    true
-                }
+                R.id.nav_home -> true
 
                 R.id.nav_post -> {
                     val intent = Intent(this, PostListActivity::class.java)
@@ -168,6 +174,37 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 else -> false
+            }
+        }
+    }
+
+    private fun makeEmergencyCall() {
+        val phoneNumber = "tel:112"
+        val callIntent = Intent(Intent.ACTION_CALL, Uri.parse(phoneNumber))
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CALL_PHONE),
+                REQUEST_CALL_PERMISSION
+            )
+        } else {
+            startActivity(callIntent)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CALL_PERMISSION) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                makeEmergencyCall()
+            } else {
+                Toast.makeText(this, "전화 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
             }
         }
     }
