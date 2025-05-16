@@ -69,9 +69,10 @@ class ChatActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_post -> {
-                    Toast.makeText(this, "Post 클릭됨", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, PostListActivity::class.java))
                     true
                 }
+
                 else -> false
             }
         }
