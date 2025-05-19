@@ -10,13 +10,15 @@ import com.google.firebase.Timestamp
 class PostListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPostListBinding
+    private lateinit var postAdapter: PostAdapter
+    private val allPosts = mutableListOf<Post>()  // 전체 게시글 저장
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPostListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 더미 데이터 (전역 Post.kt에 맞춰 작성)
+        // 🔹 더미 데이터
         val dummyPosts = listOf(
             Post(
                 id = "1",
@@ -55,16 +57,35 @@ class PostListActivity : AppCompatActivity() {
             )
         )
 
-        // 리사이클러뷰 설정
-        binding.recyclerViewPosts.layoutManager = LinearLayoutManager(this)
-        val postAdapter = PostAdapter(dummyPosts) { post ->
+        // 🔹 전체 목록 저장
+        allPosts.addAll(dummyPosts)
+
+        // 🔹 어댑터 설정
+        postAdapter = PostAdapter(allPosts) { post ->
             val intent = Intent(this, PostDetailActivity::class.java)
             intent.putExtra("postId", post.id)
             startActivity(intent)
         }
-        binding.recyclerViewPosts.adapter = postAdapter
 
-        // 하단 바 초기화
+        binding.recyclerViewPosts.apply {
+            layoutManager = LinearLayoutManager(this@PostListActivity)
+            adapter = postAdapter
+        }
+
+        // 🔍 검색 버튼 클릭
+        binding.btnSearch.setOnClickListener {
+            val keyword = binding.etSearch.text.toString().trim()
+            if (keyword.isEmpty()) {
+                postAdapter.updateData(allPosts)
+            } else {
+                val filtered = allPosts.filter {
+                    it.title.contains(keyword, ignoreCase = true)
+                }
+                postAdapter.updateData(filtered)
+            }
+        }
+
+        // 🔹 하단 바 설정
         binding.bottomNavigation.selectedItemId = R.id.nav_post
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {

@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class PostAdapter(
-    private val posts: List<Post>,
+    private var posts: List<Post>,
     private val onItemClick: (Post) -> Unit
 ) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
 
@@ -17,22 +17,25 @@ class PostAdapter(
         private val tvDate: TextView = itemView.findViewById(R.id.tvDate)
 
         fun bind(post: Post) {
-            // 제목, 날짜 설정
             tvTitle.text = post.title
             tvDate.text = post.date
 
-            // 공지 뱃지 표시
             if (post.isNotice) {
                 tvBadge.visibility = View.VISIBLE
             } else {
                 tvBadge.visibility = View.GONE
             }
 
-            // 클릭 리스너
             itemView.setOnClickListener {
                 onItemClick(post)
             }
         }
+    }
+
+    // 🔧 검색 결과 반영 함수
+    fun updateData(newPosts: List<Post>) {
+        posts = newPosts
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {

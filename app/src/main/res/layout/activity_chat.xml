@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+
     <!-- 날짜 표시 -->
     <TextView
         android:id="@+id/chatStartDate"

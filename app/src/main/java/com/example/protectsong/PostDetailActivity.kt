@@ -62,6 +62,10 @@ class PostDetailActivity : AppCompatActivity() {
                     }
                 }
             }
+        binding.btnClose.setOnClickListener {
+            finish()
+        }
+
     }
 
     private fun userIsAdmin(): Boolean {
