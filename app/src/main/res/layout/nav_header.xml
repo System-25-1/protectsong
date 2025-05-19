@@ -77,12 +77,14 @@
         android:layout_marginTop="12dp">
 
         <TextView
+            android:id="@+id/tvMyReport"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="나의 신고 조회"
             android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
             android:padding="12dp"
             android:textColor="#FFFFFF" />
+
 
         <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#AAAAAA" />
 

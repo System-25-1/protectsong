@@ -53,9 +53,13 @@ class MainActivity : AppCompatActivity() {
         val tvMyProfile = headerView.findViewById<TextView>(R.id.tvMyProfile)
         val logoutButton = headerView.findViewById<TextView>(R.id.logout_button)
         val tvSettings = headerView.findViewById<TextView>(R.id.tvSettings)
+        val tvMyReport = headerView.findViewById<TextView>(R.id.tvMyReport)
 
         tvSettings.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
+        }
+        tvMyReport.setOnClickListener {
+            startActivity(Intent(this, MyReportActivity::class.java))
         }
 
         // ✅ Firebase 사용자 정보 로드
@@ -108,6 +112,12 @@ class MainActivity : AppCompatActivity() {
                     startActivity(intent)
                     true
                 }
+                R.id.nav_my_report -> {
+                    val intent = Intent(this, MyReportActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
 
                 else -> false
             }

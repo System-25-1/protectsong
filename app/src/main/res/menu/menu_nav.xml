@@ -16,5 +16,11 @@
         android:icon="@android:drawable/ic_lock_power_off"
         android:title="로그아웃" />
 
+    <item
+        android:id="@+id/nav_my_report"
+        android:icon="@drawable/baseline_arrow_forward_ios_24"
+        android:title="나의 신고 조회" />
+
+
 
 </menu>
