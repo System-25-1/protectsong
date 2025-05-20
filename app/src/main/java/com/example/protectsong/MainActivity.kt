@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toggle: ActionBarDrawerToggle
     private var isWhistleOn = false
     private lateinit var whistlePlayer: MediaPlayer
+    private val ADMIN_UID = "MecPxatzCTMeHztzELY4ps4KVeh2"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -147,8 +148,19 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_chat -> {
-
-                    startActivity(Intent(this, ChatActivity::class.java))
+                    val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnItemSelectedListener true
+                    FirebaseFirestore.getInstance().collection("users").document(uid)
+                        .get()
+                        .addOnSuccessListener { doc ->
+                            val role = doc.getString("role")
+                            if (role == "admin") {
+                                startActivity(Intent(this, ChatListActivity::class.java)) // 관리자: 채팅목록
+                            } else {
+                                val intent = Intent(this, ChatActivity::class.java)       // 학생: 관리자와 채팅
+                                intent.putExtra("chatWithUserId", ADMIN_UID)
+                                startActivity(intent)
+                            }
+                        }
                     true
                 }
                 R.id.nav_home -> {

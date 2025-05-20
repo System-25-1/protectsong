@@ -120,6 +120,7 @@
             android:paddingStart="12dp">
 
             <ImageButton
+                android:id="@+id/imageAttachButton"
                 android:layout_width="80dp"
                 android:layout_height="70dp"
                 android:background="@null"
@@ -128,6 +129,7 @@
                 android:src="@drawable/ic_image" />
 
             <ImageButton
+                android:id="@+id/videoAttachButton"
                 android:layout_width="80dp"
                 android:layout_height="70dp"
                 android:layout_marginStart="50dp"
@@ -149,6 +151,7 @@
             android:textStyle="bold" />
 
         <LinearLayout
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -157,6 +160,7 @@
             android:paddingStart="12dp">
 
             <ImageButton
+                android:id="@+id/cameraButton"
                 android:layout_width="80dp"
                 android:layout_height="70dp"
                 android:background="@null"
@@ -165,6 +169,7 @@
                 android:src="@drawable/ic_camera" />
 
             <ImageButton
+                android:id="@+id/camcorderButton"
                 android:layout_width="80dp"
                 android:layout_height="70dp"
                 android:layout_marginStart="50dp"
@@ -174,8 +179,6 @@
                 android:src="@drawable/ic_camcorder" />
 
         </LinearLayout>
-
-
 
         <!-- 신고하기 버튼 -->
         <Button

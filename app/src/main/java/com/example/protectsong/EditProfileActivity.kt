@@ -27,10 +27,10 @@ class EditProfileActivity : AppCompatActivity() {
 
         firestore = FirebaseFirestore.getInstance()
 
-        // 🔙 뒤로가기
+        // 뒤로가기
         binding.backText.setOnClickListener { finish() }
 
-        // 🔽 보호자 관계 스피너 설정
+        // 보호자 관계 스피너 설정
         val adapter = ArrayAdapter.createFromResource(
             this,
             R.array.relationship_options,
@@ -51,7 +51,7 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
-    // 🖼️ 갤러리 이미지 선택 런처
+    // 갤러리 이미지 선택 런처
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
             selectedImageUri = it
@@ -66,7 +66,7 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
-    // 🔍 Firestore에서 사용자 정보 불러오기
+    // Firestore에서 사용자 정보 불러오기
     private fun loadUserInfo() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val docRef = firestore.collection("users").document(uid)
@@ -100,7 +100,7 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
-    // 💾 보호자 정보 Firestore + SharedPreferences에 저장
+    // 보호자 정보 Firestore + SharedPreferences에 저장
     private fun saveGuardianInfo() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
@@ -141,7 +141,7 @@ class EditProfileActivity : AppCompatActivity() {
             }
     }
 
-    // ☁️ 프로필 사진 Firebase Storage 업로드
+    // ☁프로필 사진 Firebase Storage 업로드
     private fun uploadProfileImageToFirebase(uri: Uri) {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val storageRef = FirebaseStorage.getInstance().getReference("profile_images/$uid.jpg")
