@@ -1,10 +1,15 @@
+<<<<<<< HEAD
 package com.example.protectsong
+=======
+package com.example.protectsong.adapter
+>>>>>>> feature/eunseo
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+<<<<<<< HEAD
 
 class ReportAdapter(
     private val reports: List<Report>,
@@ -25,6 +30,19 @@ class ReportAdapter(
                 onItemClick(report)
             }
         }
+=======
+import com.example.protectsong.R
+import com.example.protectsong.model.Report
+
+class ReportAdapter : RecyclerView.Adapter<ReportAdapter.ReportViewHolder>() {
+
+    private val reports = mutableListOf<Report>()
+
+    fun submitList(newList: List<Report>) {
+        reports.clear()
+        reports.addAll(newList)
+        notifyDataSetChanged()
+>>>>>>> feature/eunseo
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportViewHolder {
@@ -37,5 +55,21 @@ class ReportAdapter(
         holder.bind(reports[position])
     }
 
+<<<<<<< HEAD
     override fun getItemCount() = reports.size
+=======
+    override fun getItemCount(): Int = reports.size
+
+    inner class ReportViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val tvDate: TextView = itemView.findViewById(R.id.tvDate)
+        private val tvNumber: TextView = itemView.findViewById(R.id.tvNumber)
+        private val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)
+
+        fun bind(report: Report) {
+            tvDate.text = "신고일자: ${report.date}"
+            tvNumber.text = "신고번호: ${report.number}"
+            tvStatus.text = "처리상태: ${report.status}"
+        }
+    }
+>>>>>>> feature/eunseo
 }

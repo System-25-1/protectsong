@@ -19,6 +19,9 @@ class UserInfoActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private var verificationId: String? = null
 
+    // 관리자 UID 복사한 값 (Firebase 콘솔 > Authentication에서 복사)
+    private val adminUid = "MecPxatzCTMeHztzELY4ps4KVeh2"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUserInfoBinding.inflate(layoutInflater)
@@ -28,7 +31,39 @@ class UserInfoActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        // Spinner 어댑터 연결
+        val currentUser = auth.currentUser
+        val isAdmin = currentUser?.uid == adminUid
+
+        // ✅ 관리자 계정이면 사용자 정보 입력 생략하고 바로 이동
+        if (isAdmin) {
+            val adminInfo = mapOf(
+
+                "name" to "관리자",
+                "phone" to "",
+                "birth" to "",
+                "studentId" to "admin",
+                "guardian" to mapOf(
+                    "name" to "",
+                    "phone" to "",
+                    "relation" to ""
+                )
+            )
+
+            firestore.collection("users").document(adminUid)
+                .set(adminInfo)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "관리자 자동 등록 완료", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, MainActivity::class.java)) // ✅ MainActivity로 이동
+                    finish()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "관리자 등록 실패: ${it.message}", Toast.LENGTH_SHORT).show()
+                }
+
+            return
+        }
+
+        // 🧍‍♀️ 일반 사용자 흐름
         val adapter = ArrayAdapter.createFromResource(
             this,
             R.array.relationship_options,
@@ -37,15 +72,12 @@ class UserInfoActivity : AppCompatActivity() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.relationshipSpinner.adapter = adapter
 
-        // 기본으로 저장 버튼 비활성화 (인증 후 활성화)
         binding.saveButton.isEnabled = false
 
-        // 뒤로가기
         binding.backButton.setOnClickListener {
             finish()
         }
 
-        // 인증 요청 버튼
         binding.verifyPhoneButton.setOnClickListener {
             val phoneNumber = binding.phoneEdit.text.toString()
 
@@ -55,7 +87,7 @@ class UserInfoActivity : AppCompatActivity() {
             }
 
             val options = PhoneAuthOptions.newBuilder(auth)
-                .setPhoneNumber("+82${phoneNumber.drop(1)}") // 010 → +8210
+                .setPhoneNumber("+82${phoneNumber.drop(1)}")
                 .setTimeout(60L, TimeUnit.SECONDS)
                 .setActivity(this)
                 .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -80,10 +112,8 @@ class UserInfoActivity : AppCompatActivity() {
             PhoneAuthProvider.verifyPhoneNumber(options)
         }
 
-        // 인증번호 확인 버튼
         binding.checkCodeButton.setOnClickListener {
             val code = binding.verificationCodeEdit.text.toString()
-
 
             if (verificationId == null || code.isEmpty()) {
                 Toast.makeText(this, "인증번호를 입력하세요", Toast.LENGTH_SHORT).show()
@@ -94,7 +124,6 @@ class UserInfoActivity : AppCompatActivity() {
             signInWithPhoneAuthCredential(credential)
         }
 
-        //저장 버튼 클릭 시 Firestore 저장
         binding.saveButton.setOnClickListener {
             val uid = intent.getStringExtra("uid") ?: return@setOnClickListener
 
