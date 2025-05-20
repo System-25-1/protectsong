@@ -82,13 +82,7 @@ class MainActivity : AppCompatActivity() {
                 .get()
                 .addOnSuccessListener { document ->
                     val role = document.getString("role")
-                    if (role == "admin") {
-                        // ✅ 관리자이면 관리자 전용 신고 화면으로 자동 이동
-                        startActivity(Intent(this, AdminReportListActivity::class.java))
-                        finish()
-                    } else {
-                        // 일반 사용자 → 현재 화면 유지
-                    }
+
                 }
         }
 
