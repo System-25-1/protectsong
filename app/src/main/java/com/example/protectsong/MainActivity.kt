@@ -77,6 +77,21 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "사용자 정보를 불러오지 못했습니다", Toast.LENGTH_SHORT).show()
                 }
         }
+        if (uid != null) {
+            FirebaseFirestore.getInstance().collection("users").document(uid)
+                .get()
+                .addOnSuccessListener { document ->
+                    val role = document.getString("role")
+                    if (role == "admin") {
+                        // ✅ 관리자이면 관리자 전용 신고 화면으로 자동 이동
+                        startActivity(Intent(this, AdminReportListActivity::class.java))
+                        finish()
+                    } else {
+                        // 일반 사용자 → 현재 화면 유지
+                    }
+                }
+        }
+
 
         // ✅ 로그아웃
         logoutButton.setOnClickListener {

@@ -46,6 +46,18 @@
             android:background="#002366" />
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btnWritePost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="글쓰기"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#002366"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="end"
+        android:visibility="gone"
+        />
 
     <!-- 제목 -->
     <TextView

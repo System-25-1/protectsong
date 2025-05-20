@@ -45,6 +45,7 @@
         <activity android:name=".PostListActivity" />
         <activity android:name=".MyReportActivity" />
         <activity android:name=".PostDetailActivity" />
+        <activity android:name=".AdminReportListActivity" />
 
 
     </application>

@@ -50,13 +50,31 @@ class LoginActivity : AppCompatActivity() {
                         }
 
                         // 이메일 + 비밀번호로 로그인 시도
+
                         auth.signInWithEmailAndPassword(email, password)
                             .addOnSuccessListener {
                                 Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
-                                val intent = Intent(this, MainActivity::class.java)
-                                startActivity(intent)
-                                finish()
+
+                                val uid = auth.currentUser?.uid ?: return@addOnSuccessListener
+                                firestore.collection("users").document(uid)
+                                    .get()
+                                    .addOnSuccessListener { doc ->
+                                        val role = doc.getString("role")
+                                        if (role == "admin") {
+                                            val intent = Intent(this, AdminReportListActivity::class.java)
+                                            startActivity(intent)
+                                            finish()
+                                        } else {
+                                            val intent = Intent(this, MainActivity::class.java)
+                                            startActivity(intent)
+                                            finish()
+                                        }
+                                    }
+                                    .addOnFailureListener {
+                                        Toast.makeText(this, "권한 확인 실패", Toast.LENGTH_SHORT).show()
+                                    }
                             }
+
                             .addOnFailureListener {
                                 Toast.makeText(this, "비밀번호가 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
                             }
