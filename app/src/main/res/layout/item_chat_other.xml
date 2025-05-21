@@ -6,15 +6,31 @@
     android:gravity="start"
     android:padding="8dp">
 
-    <!-- 동영상 썸네일 -->
-    <ImageView
-        android:id="@+id/videoThumbnail"
+    <!-- 동영상 썸네일 + ▶ 오버레이 아이콘 -->
+    <FrameLayout
+        android:id="@+id/videoContainer"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:visibility="gone"
         android:layout_marginBottom="4dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_video_placeholder" />
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/videoThumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_video_placeholder" />
+
+        <ImageView
+            android:id="@+id/videoPlayIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_play_circle_overlay"
+            android:background="@drawable/bg_play_circle"
+            android:padding="8dp"
+            android:visibility="visible" />
+    </FrameLayout>
 
     <!-- 이미지 메시지 -->
     <ImageView

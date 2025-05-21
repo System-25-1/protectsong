@@ -78,19 +78,23 @@ class ChatAdapter(
             when (mediaType) {
                 "image" -> {
                     binding.imageView.visibility = View.VISIBLE
-                    binding.videoThumbnail.visibility = View.GONE
+                    binding.videoContainer.visibility = View.GONE
                     binding.textMessage.visibility = View.GONE
+
                     Glide.with(binding.imageView.context)
                         .load(mediaUrl)
                         .into(binding.imageView)
                 }
                 "video" -> {
-                    binding.videoThumbnail.visibility = View.VISIBLE
+                    binding.videoContainer.visibility = View.VISIBLE
                     binding.imageView.visibility = View.GONE
                     binding.textMessage.visibility = View.GONE
+
                     Glide.with(binding.videoThumbnail.context)
                         .load(mediaUrl)
+                        .thumbnail(0.1f)
                         .into(binding.videoThumbnail)
+
                     binding.videoThumbnail.setOnClickListener {
                         val intent = Intent(binding.root.context, VideoPlayerActivity::class.java)
                         intent.putExtra("videoUrl", mediaUrl)
@@ -101,7 +105,7 @@ class ChatAdapter(
                     binding.textMessage.text = text
                     binding.textMessage.visibility = View.VISIBLE
                     binding.imageView.visibility = View.GONE
-                    binding.videoThumbnail.visibility = View.GONE
+                    binding.videoContainer.visibility = View.GONE
                 }
             }
         }
@@ -115,19 +119,23 @@ class ChatAdapter(
             when (mediaType) {
                 "image" -> {
                     binding.imageView.visibility = View.VISIBLE
-                    binding.videoThumbnail.visibility = View.GONE
+                    binding.videoContainer.visibility = View.GONE
                     binding.textMessage.visibility = View.GONE
+
                     Glide.with(binding.imageView.context)
                         .load(mediaUrl)
                         .into(binding.imageView)
                 }
                 "video" -> {
-                    binding.videoThumbnail.visibility = View.VISIBLE
+                    binding.videoContainer.visibility = View.VISIBLE
                     binding.imageView.visibility = View.GONE
                     binding.textMessage.visibility = View.GONE
+
                     Glide.with(binding.videoThumbnail.context)
                         .load(mediaUrl)
+                        .thumbnail(0.1f)
                         .into(binding.videoThumbnail)
+
                     binding.videoThumbnail.setOnClickListener {
                         val intent = Intent(binding.root.context, VideoPlayerActivity::class.java)
                         intent.putExtra("videoUrl", mediaUrl)
@@ -138,7 +146,7 @@ class ChatAdapter(
                     binding.textMessage.text = text
                     binding.textMessage.visibility = View.VISIBLE
                     binding.imageView.visibility = View.GONE
-                    binding.videoThumbnail.visibility = View.GONE
+                    binding.videoContainer.visibility = View.GONE
                 }
             }
         }
