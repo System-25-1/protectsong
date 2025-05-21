@@ -57,6 +57,8 @@
         <activity android:name=".PostListActivity" />
         <activity android:name=".MyReportActivity" />
         <activity android:name=".PostDetailActivity" />
+        <activity android:name=".ChatListActivity" />
+        <activity android:name=".VideoPlayerActivity" />
 
         <activity android:name=".AdminReportListActivity" />
         <activity android:name=".AdminPostWriteActivity" />
