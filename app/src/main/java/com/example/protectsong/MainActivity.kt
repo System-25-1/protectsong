@@ -23,11 +23,7 @@ class MainActivity : AppCompatActivity() {
     private var isWhistleOn = false
     private lateinit var whistlePlayer: MediaPlayer
     private val ADMIN_UID = "MecPxatzCTMeHztzELY4ps4KVeh2"
-
     private val REQUEST_CALL_PERMISSION = 100
-
-    private val ADMIN_UID = "MecPxatzCTMeHztzELY4ps4KVeh2"
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,18 +133,18 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // ✅ 문자 신고 버튼
+        // 문자 신고 버튼
         binding.btnSmsReport.setOnClickListener {
             val intent = Intent(this, SmsReportActivity::class.java)
             startActivity(intent)
         }
 
-        // ✅ 긴급 신고 버튼 (전화 연결)
+        // 긴급 신고 버튼 (전화 연결)
         binding.btnEmergency.setOnClickListener {
             makeEmergencyCall()
         }
 
-        // ✅ 호루라기 버튼
+        // 호루라기 버튼
         whistlePlayer = MediaPlayer.create(this, R.raw.whistle_sound)
 
         binding.btnWhistle.setOnClickListener {
@@ -182,6 +178,7 @@ class MainActivity : AppCompatActivity() {
 
         // ✅ 하단 네비게이션 바
         binding.bottomNavigation.selectedItemId = R.id.nav_home
+
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_chat -> {
@@ -198,17 +195,17 @@ class MainActivity : AppCompatActivity() {
                                 startActivity(intent)
                             }
                         }
-
+                    true
+                }
                 R.id.nav_home -> {
                     true
                 }
-
                 R.id.nav_post -> {
                     val intent = Intent(this, PostListActivity::class.java)
                     startActivity(intent)
+
                     true
                 }
-
                 else -> false
             }
         }

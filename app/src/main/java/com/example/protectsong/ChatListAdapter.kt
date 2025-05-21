@@ -15,17 +15,6 @@ class ChatListAdapter(
 
     inner class ViewHolder(val binding: ItemChatListBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(data: ChatListItem) {
-<<<<<<< HEAD
-            binding.textStudentId.text = "${data.name} (${data.studentId})"
-            binding.textLastMessage.text = data.message.text
-
-            // ✅ 날짜 비교: 오늘이면 시간(HH:mm), 아니면 날짜(yyyy.MM.dd)
-            val messageDate = data.message.time.toDate()
-            val now = Date()
-
-            val dateFormat = if (SimpleDateFormat("yyyyMMdd").format(messageDate) ==
-                SimpleDateFormat("yyyyMMdd").format(now)) {
-=======
             // 이름 + 학번
             binding.textStudentId.text = "${data.name} (${data.studentId})"
 
@@ -49,24 +38,15 @@ class ChatListAdapter(
                 SimpleDateFormat("yyyyMMdd").format(messageDate) ==
                 SimpleDateFormat("yyyyMMdd").format(now)
             ) {
->>>>>>> feature/jaeseo
                 SimpleDateFormat("HH:mm", Locale.getDefault())
             } else {
                 SimpleDateFormat("yyyy.MM.dd", Locale.getDefault())
             }
-<<<<<<< HEAD
-
-            binding.textTime.text = dateFormat.format(messageDate)
-
-            binding.root.setOnClickListener {
-                onItemClick(data.studentUid)  // ✅ 항상 학생 UID 넘김
-=======
             binding.textTime.text = dateFormat.format(messageDate)
 
             // 클릭 리스너
             binding.root.setOnClickListener {
                 onItemClick(data.studentUid)
->>>>>>> feature/jaeseo
             }
         }
     }

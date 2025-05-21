@@ -27,8 +27,6 @@ class ChatListActivity : AppCompatActivity() {
         binding = ActivityChatListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(findViewById(R.id.customToolbar))
-        supportActionBar?.setDisplayShowTitleEnabled(true)
 
         Log.d("🔥Auth", "현재 로그인한 UID: ${auth.currentUser?.uid}")
 

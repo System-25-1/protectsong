@@ -11,10 +11,6 @@ import com.example.protectsong.databinding.ItemChatMeBinding
 import com.example.protectsong.databinding.ItemChatOtherBinding
 import com.example.protectsong.databinding.ItemDateHeaderBinding
 import com.example.protectsong.model.ChatDisplayItem
-<<<<<<< HEAD
-import com.example.protectsong.model.ChatMessage
-=======
->>>>>>> feature/jaeseo
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -40,27 +36,10 @@ class ChatAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-<<<<<<< HEAD
-
-        return when (viewType) {
-            VIEW_TYPE_DATE -> {
-                val binding = ItemDateHeaderBinding.inflate(inflater, parent, false)
-                DateViewHolder(binding)
-            }
-            VIEW_TYPE_ME -> {
-                val binding = ItemChatMeBinding.inflate(inflater, parent, false)
-                MeViewHolder(binding)
-            }
-            VIEW_TYPE_OTHER -> {
-                val binding = ItemChatOtherBinding.inflate(inflater, parent, false)
-                OtherViewHolder(binding)
-            }
-=======
         return when (viewType) {
             VIEW_TYPE_DATE -> DateViewHolder(ItemDateHeaderBinding.inflate(inflater, parent, false))
             VIEW_TYPE_ME -> MeViewHolder(ItemChatMeBinding.inflate(inflater, parent, false))
             VIEW_TYPE_OTHER -> OtherViewHolder(ItemChatOtherBinding.inflate(inflater, parent, false))
->>>>>>> feature/jaeseo
             else -> throw IllegalArgumentException("Invalid viewType")
         }
     }
@@ -71,24 +50,12 @@ class ChatAdapter(
                 (holder as DateViewHolder).bind(item.dateText)
             }
             is ChatDisplayItem.MessageItem -> {
-<<<<<<< HEAD
-                val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-                val timeText = timeFormat.format(item.message.time.toDate())
-
-                if (holder is MeViewHolder) {
-                    holder.binding.textMessage.text = item.message.text
-                    holder.binding.textTime.text = timeText
-                } else if (holder is OtherViewHolder) {
-                    holder.binding.textMessage.text = item.message.text
-                    holder.binding.textTime.text = timeText
-=======
                 val msg = item.message
                 val timeText = SimpleDateFormat("HH:mm", Locale.getDefault()).format(msg.time.toDate())
 
                 when (holder) {
                     is MeViewHolder -> holder.bind(msg.text, msg.mediaUrl, msg.mediaType, timeText)
                     is OtherViewHolder -> holder.bind(msg.text, msg.mediaUrl, msg.mediaType, timeText)
->>>>>>> feature/jaeseo
                 }
             }
         }
@@ -96,10 +63,6 @@ class ChatAdapter(
 
     override fun getItemCount(): Int = items.size
 
-<<<<<<< HEAD
-    // 뷰홀더들
-=======
->>>>>>> feature/jaeseo
     inner class DateViewHolder(private val binding: ItemDateHeaderBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(date: String) {
@@ -108,12 +71,6 @@ class ChatAdapter(
     }
 
     inner class MeViewHolder(val binding: ItemChatMeBinding) :
-<<<<<<< HEAD
-        RecyclerView.ViewHolder(binding.root)
-
-    inner class OtherViewHolder(val binding: ItemChatOtherBinding) :
-        RecyclerView.ViewHolder(binding.root)
-=======
         RecyclerView.ViewHolder(binding.root) {
         fun bind(text: String, mediaUrl: String?, mediaType: String?, time: String) {
             binding.textTime.text = time
@@ -186,5 +143,4 @@ class ChatAdapter(
             }
         }
     }
->>>>>>> feature/jaeseo
 }
