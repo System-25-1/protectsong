@@ -60,15 +60,11 @@ class LoginActivity : AppCompatActivity() {
                                     .get()
                                     .addOnSuccessListener { doc ->
                                         val role = doc.getString("role")
-                                        if (role == "admin") {
-                                            val intent = Intent(this, AdminReportListActivity::class.java)
-                                            startActivity(intent)
-                                            finish()
-                                        } else {
-                                            val intent = Intent(this, MainActivity::class.java)
-                                            startActivity(intent)
-                                            finish()
-                                        }
+// ✅ 변경 후 (권장 방식)
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        startActivity(intent)
+                                        finish()
+
                                     }
                                     .addOnFailureListener {
                                         Toast.makeText(this, "권한 확인 실패", Toast.LENGTH_SHORT).show()

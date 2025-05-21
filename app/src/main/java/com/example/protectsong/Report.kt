@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-package com.example.protectsong
+package com.example.protectsong.model
 
 data class Report(
     val id: String = "",
@@ -7,16 +6,8 @@ data class Report(
     val content: String = "",
     val type: String = "",
     val timestamp: String = "",
-    val uid: String = ""
-=======
-package com.example.protectsong.model
-
-data class Report(
-    val id: String = "",
-    val userId: String = "",
-    val date: String = "",
-    val number: String = "",
-    val content: String = "",
-    val status: String = "접수됨"
->>>>>>> feature/eunseo
+    val uid: String = "",          // 또는 userId 로 변경 (Firestore 필드 기준)
+    val date: String = "",         // 🔍 날짜 검색 시 사용된다면 추가
+    val number: String = "",       // 🔍 신고번호 검색 시 사용된다면 추가
+    val status: String = ""        // 🔔 처리상태 표시 시 필요
 )

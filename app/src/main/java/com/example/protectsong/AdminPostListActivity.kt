@@ -6,7 +6,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.protectsong.databinding.ActivityAdminPostListBinding
-import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 class AdminPostListActivity : AppCompatActivity() {
 
@@ -14,64 +15,48 @@ class AdminPostListActivity : AppCompatActivity() {
     private lateinit var postAdapter: PostAdapter
     private val postList = mutableListOf<Post>()
 
+    private val db = FirebaseFirestore.getInstance()
+
+    // ✅ 글쓰기 결과 처리
+    private val writePostLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            loadPostsFromFirestore()
+        }
+    }
+
+    // ✅ 게시글 상세 보기 결과 처리 (수정/삭제)
+    private val detailLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val deleted = result.data?.getBooleanExtra("postDeleted", false) ?: false
+            val updated = result.data?.getBooleanExtra("postUpdated", false) ?: false
+            if (deleted || updated) {
+                loadPostsFromFirestore()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAdminPostListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ✅ 글쓰기 Activity 실행 후 결과 처리
-        val writePostLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val newPost = result.data?.getSerializableExtra("newPost") as? Post
-                newPost?.let {
-                    postList.add(0, it) // 새 게시글을 리스트 맨 위에 추가
-                    postAdapter.notifyItemInserted(0)
-                    binding.recyclerViewPosts.scrollToPosition(0)
-                }
-            }
-        }
-
-        // ✅ 글쓰기 버튼 클릭 시
+        // ✅ 글쓰기 버튼
         binding.btnWritePost.setOnClickListener {
-            val intent = Intent(this, PostWriteActivity::class.java)
+            val intent = Intent(this, AdminPostWriteActivity::class.java)
             writePostLauncher.launch(intent)
         }
-
-        // ✅ 초기 더미 게시글 추가
-        postList.addAll(
-            listOf(
-                Post(
-                    id = "1",
-                    title = "명신관 610호 천장 낙하 주의",
-                    content = "주의 바랍니다.",
-                    category = "공지",
-                    timestamp = Timestamp.now()
-                ),
-                Post(
-                    id = "2",
-                    title = "외부인 출입 금지 조항",
-                    content = "외부인 출입 금지 관련 안내",
-                    category = "공지",
-                    timestamp = Timestamp.now()
-                ),
-                Post(
-                    id = "3",
-                    title = "앱 오류 사항 문의 방법",
-                    content = "관리자에게 문의해주세요.",
-                    category = "공지",
-                    timestamp = Timestamp.now()
-                )
-            )
-        )
 
         // ✅ RecyclerView + 어댑터 연결
         postAdapter = PostAdapter(postList) { post ->
             val intent = Intent(this, PostDetailActivity::class.java)
             intent.putExtra("postId", post.id)
-            startActivity(intent)
+            detailLauncher.launch(intent)
         }
         binding.recyclerViewPosts.layoutManager = LinearLayoutManager(this)
         binding.recyclerViewPosts.adapter = postAdapter
+
+        // ✅ Firestore에서 초기 데이터 로딩
+        loadPostsFromFirestore()
 
         // ✅ 하단 네비게이션
         binding.bottomNavigation.selectedItemId = R.id.nav_post
@@ -89,5 +74,23 @@ class AdminPostListActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+
+    // ✅ Firestore에서 게시글 목록 불러오기
+    private fun loadPostsFromFirestore() {
+        db.collection("posts")
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { result ->
+                postList.clear()
+                for (document in result) {
+                    val post = document.toObject(Post::class.java)
+                    postList.add(post)
+                }
+                postAdapter.notifyDataSetChanged()
+            }
+            .addOnFailureListener {
+                // 에러 처리 필요 시 토스트 추가
+            }
     }
 }
