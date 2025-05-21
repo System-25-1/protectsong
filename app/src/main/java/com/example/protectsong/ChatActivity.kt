@@ -1,7 +1,9 @@
 package com.example.protectsong
 
+import android.Manifest
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -10,9 +12,10 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
 import com.example.protectsong.adapter.ChatAdapter
 import com.example.protectsong.databinding.ActivityChatBinding
 import com.example.protectsong.model.ChatDisplayItem
@@ -41,9 +44,7 @@ class ChatActivity : AppCompatActivity() {
     private val targetUserId: String by lazy {
         if (currentUserId == adminUid) {
             intent.getStringExtra("chatWithUserId") ?: ""
-        } else {
-            adminUid
-        }
+        } else adminUid
     }
     private val chatDocumentId: String by lazy {
         if (currentUserId == adminUid) targetUserId else currentUserId
@@ -55,12 +56,21 @@ class ChatActivity : AppCompatActivity() {
     private val CAPTURE_VIDEO = 4
     private lateinit var capturedUri: Uri
 
+    private val REQUIRED_PERMISSIONS = arrayOf(
+        Manifest.permission.CAMERA,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
+    private val REQUEST_PERMISSIONS = 1001
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ✅ 뒤로 버튼 클릭 시 역할에 따라 이동
+        if (!hasPermissions()) {
+            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_PERMISSIONS)
+        }
+
         findViewById<TextView>(R.id.backText).setOnClickListener {
             val intent = if (currentUserId == adminUid) {
                 Intent(this, ChatListActivity::class.java)
@@ -109,6 +119,12 @@ class ChatActivity : AppCompatActivity() {
         }
 
         listenForMessages()
+    }
+
+    private fun hasPermissions(): Boolean {
+        return REQUIRED_PERMISSIONS.all {
+            ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+        }
     }
 
     private fun sendTextMessage(text: String) {
@@ -187,7 +203,7 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun captureImage() {
-        val imageFile = File.createTempFile("img_", ".jpg", cacheDir)
+        val imageFile = File.createTempFile("img_", ".jpg", getExternalFilesDir("Pictures"))
         capturedUri = FileProvider.getUriForFile(this, "${packageName}.provider", imageFile)
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
             putExtra(MediaStore.EXTRA_OUTPUT, capturedUri)
@@ -196,7 +212,7 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun captureVideo() {
-        val videoFile = File.createTempFile("vid_", ".mp4", cacheDir)
+        val videoFile = File.createTempFile("vid_", ".mp4", getExternalFilesDir("Movies"))
         capturedUri = FileProvider.getUriForFile(this, "${packageName}.provider", videoFile)
         val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE).apply {
             putExtra(MediaStore.EXTRA_OUTPUT, capturedUri)
