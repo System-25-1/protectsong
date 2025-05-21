@@ -191,30 +191,18 @@ class MainActivity : AppCompatActivity() {
                         .addOnSuccessListener { doc ->
                             val role = doc.getString("role")
                             if (role == "admin") {
-<<<<<<< HEAD
-                                startActivity(Intent(this, ChatListActivity::class.java)) // 관리자
-                            } else {
-                                val intent = Intent(this, ChatActivity::class.java) // 학생
-=======
                                 startActivity(Intent(this, ChatListActivity::class.java)) // 관리자: 채팅목록
                             } else {
                                 val intent = Intent(this, ChatActivity::class.java)       // 학생: 관리자와 채팅
->>>>>>> feature/jaeseo
                                 intent.putExtra("chatWithUserId", ADMIN_UID)
                                 startActivity(intent)
                             }
                         }
-                    true
-                }
-<<<<<<< HEAD
 
-                R.id.nav_home -> true
-
-=======
                 R.id.nav_home -> {
                     true
                 }
->>>>>>> feature/jaeseo
+
                 R.id.nav_post -> {
                     val intent = Intent(this, PostListActivity::class.java)
                     startActivity(intent)
