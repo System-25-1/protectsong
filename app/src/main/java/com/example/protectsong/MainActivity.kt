@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
 
         // ✅ 툴바 설정
         setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
         // ✅ 드로어 토글 설정
         toggle = ActionBarDrawerToggle(
