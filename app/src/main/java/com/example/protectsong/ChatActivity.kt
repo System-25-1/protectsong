@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
@@ -59,6 +60,17 @@ class ChatActivity : AppCompatActivity() {
         binding = ActivityChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // ✅ 뒤로 버튼 클릭 시 역할에 따라 이동
+        findViewById<TextView>(R.id.backText).setOnClickListener {
+            val intent = if (currentUserId == adminUid) {
+                Intent(this, ChatListActivity::class.java)
+            } else {
+                Intent(this, MainActivity::class.java)
+            }
+            startActivity(intent)
+            finish()
+        }
+
         adapter = ChatAdapter(emptyList(), currentUserId)
         binding.recyclerViewChat.adapter = adapter
         binding.recyclerViewChat.layoutManager = LinearLayoutManager(this)
@@ -68,7 +80,6 @@ class ChatActivity : AppCompatActivity() {
             if (text.isNotEmpty()) sendTextMessage(text)
         }
 
-        // 첨부 버튼 toggle
         var isExpanded = false
         binding.btnToggleAttachment.setOnClickListener {
             isExpanded = !isExpanded

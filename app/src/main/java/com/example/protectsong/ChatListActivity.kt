@@ -3,6 +3,7 @@ package com.example.protectsong
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.protectsong.adapter.ChatListAdapter
@@ -39,7 +40,31 @@ class ChatListActivity : AppCompatActivity() {
         binding.recyclerViewChatList.adapter = adapter
         binding.recyclerViewChatList.layoutManager = LinearLayoutManager(this)
 
+        // ✅ 뒤로 버튼 → MainActivity로 이동
+        findViewById<TextView>(R.id.backText).setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
+
+
         loadChatList()
+
+        binding.bottomNavigation.selectedItemId = R.id.nav_chat
+        binding.bottomNavigation.setOnItemSelectedListener {
+            when (it.itemId) {
+                R.id.nav_home -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    true
+                }
+                R.id.nav_post -> {
+                    startActivity(Intent(this, PostListActivity::class.java))
+                    true
+                }
+                else -> true
+            }
+        }
+
+
     }
 
     private fun loadChatList() {
