@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -107,7 +106,13 @@ class ChatActivity : AppCompatActivity() {
         binding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.nav_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
+                    val intent = if (currentUserId == adminUid) {
+                        Intent(this, AdminMainActivity::class.java)
+                    } else {
+                        Intent(this, MainActivity::class.java)
+                    }
+                    startActivity(intent)
+                    finish()
                     true
                 }
                 R.id.nav_post -> {

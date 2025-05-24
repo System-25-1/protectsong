@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
     id("com.google.gms.google-services")
-}
+    id("org.jetbrains.kotlin.plugin.parcelize")}
 
 android {
     namespace = "com.example.protectsong"

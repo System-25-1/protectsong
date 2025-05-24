@@ -91,7 +91,8 @@ class SmsReportActivity : AppCompatActivity() {
                 "building" to binding.spinnerBuilding.selectedItem.toString(),
                 "content" to binding.editContent.text.toString(),
                 "timestamp" to Date(),
-                "files" to uploadedFileUrls
+                "files" to uploadedFileUrls,
+                "status" to "접수됨"
             )
 
             FirebaseFirestore.getInstance().collection("smsReports")

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@drawable/rounded_gray_border"
+    android:layout_marginBottom="8dp">
+
+    <TextView
+        android:id="@+id/tvCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="분류"
+        android:textStyle="bold"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/tvBuilding"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="건물명"
+        android:textColor="#333333" />
+
+    <TextView
+        android:id="@+id/tvContent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="신고 내용 미리보기"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textColor="#666666" />
+</LinearLayout>

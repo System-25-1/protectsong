@@ -65,7 +65,8 @@
 
         <activity android:name=".ChatListActivity" />
 
-
+        <activity android:name=".AdminMainActivity" />
+        <activity android:name=".AdminReportDetailActivity" />
 
     </application>
 

@@ -50,7 +50,6 @@ class LoginActivity : AppCompatActivity() {
                         }
 
                         // 이메일 + 비밀번호로 로그인 시도
-
                         auth.signInWithEmailAndPassword(email, password)
                             .addOnSuccessListener {
                                 Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
@@ -60,17 +59,19 @@ class LoginActivity : AppCompatActivity() {
                                     .get()
                                     .addOnSuccessListener { doc ->
                                         val role = doc.getString("role")
-// ✅ 변경 후 (권장 방식)
-                                        val intent = Intent(this, MainActivity::class.java)
-                                        startActivity(intent)
+                                        if (role == "admin") {
+                                            val intent = Intent(this, AdminMainActivity::class.java)
+                                            startActivity(intent)
+                                        } else {
+                                            val intent = Intent(this, MainActivity::class.java)
+                                            startActivity(intent)
+                                        }
                                         finish()
-
                                     }
                                     .addOnFailureListener {
                                         Toast.makeText(this, "권한 확인 실패", Toast.LENGTH_SHORT).show()
                                     }
                             }
-
                             .addOnFailureListener {
                                 Toast.makeText(this, "비밀번호가 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
                             }
