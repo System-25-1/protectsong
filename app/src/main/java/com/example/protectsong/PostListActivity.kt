@@ -3,12 +3,15 @@ package com.example.protectsong
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.protectsong.databinding.ActivityPostListBinding
+import com.example.protectsong.model.Post
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 class PostListActivity : AppCompatActivity() {
 
@@ -24,7 +27,7 @@ class PostListActivity : AppCompatActivity() {
         // 🔹 글쓰기 버튼 기본 숨김
         binding.btnWritePost.visibility = View.GONE
 
-        // 🔹 관리자만 글쓰기 버튼 보이게
+        // 🔹 로그인한 유저가 관리자면 글쓰기 버튼 보이게
         val uid = FirebaseAuth.getInstance().currentUser?.uid
         FirebaseFirestore.getInstance().collection("users").document(uid ?: return)
             .get()
@@ -37,10 +40,21 @@ class PostListActivity : AppCompatActivity() {
                 }
             }
 
+        // 🔹 RecyclerView 및 어댑터 설정
+        postAdapter = PostAdapter(allPosts) { post ->
+            val intent = Intent(this, PostDetailActivity::class.java)
+            intent.putExtra("postId", post.id)
+            startActivity(intent)
+        }
 
-        // 🔹 Firestore에서 게시글 불러오기
+        binding.recyclerViewPosts.apply {
+            layoutManager = LinearLayoutManager(this@PostListActivity)
+            adapter = postAdapter
+        }
+
+        // 🔹 Firestore에서 최신순으로 게시글 불러오기
         FirebaseFirestore.getInstance().collection("posts")
-            .orderBy("timestamp")
+            .orderBy("timestamp", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { result ->
                 allPosts.clear()
@@ -57,18 +71,6 @@ class PostListActivity : AppCompatActivity() {
                 postAdapter.updateData(allPosts)
             }
 
-        // 🔹 어댑터 설정
-        postAdapter = PostAdapter(allPosts) { post ->
-            val intent = Intent(this, PostDetailActivity::class.java)
-            intent.putExtra("postId", post.id)
-            startActivity(intent)
-        }
-
-        binding.recyclerViewPosts.apply {
-            layoutManager = LinearLayoutManager(this@PostListActivity)
-            adapter = postAdapter
-        }
-
         // 🔍 검색 버튼 클릭
         binding.btnSearch.setOnClickListener {
             val keyword = binding.etSearch.text.toString().trim()
@@ -76,13 +78,18 @@ class PostListActivity : AppCompatActivity() {
                 postAdapter.updateData(allPosts)
             } else {
                 val filtered = allPosts.filter {
-                    it.title.contains(keyword, ignoreCase = true)
+                    it.title.contains(keyword, ignoreCase = true) ||
+                            it.content.contains(keyword, ignoreCase = true)
                 }
                 postAdapter.updateData(filtered)
+
+                if (filtered.isEmpty()) {
+                    Toast.makeText(this, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
-        // 🔹 하단 바 설정
+        // 🔹 하단 네비게이션
         binding.bottomNavigation.selectedItemId = R.id.nav_post
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
