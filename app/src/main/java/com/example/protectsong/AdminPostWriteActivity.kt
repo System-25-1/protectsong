@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.protectsong.databinding.ActivityAdminPostWriteBinding
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
-import java.util.*
 
 class AdminPostWriteActivity : AppCompatActivity() {
 
@@ -26,11 +25,11 @@ class AdminPostWriteActivity : AppCompatActivity() {
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
         binding.spinnerCategory.adapter = adapter
 
-        // ✅ 수정 모드인지 확인
+        // ✅ 수정 모드 여부 확인
         editMode = intent.getBooleanExtra("editMode", false)
 
         if (editMode) {
-            // 수정 대상 데이터 설정
+            // ✅ 기존 글 정보 불러오기
             postId = intent.getStringExtra("postId")
             val title = intent.getStringExtra("title") ?: ""
             val content = intent.getStringExtra("content") ?: ""
@@ -42,7 +41,7 @@ class AdminPostWriteActivity : AppCompatActivity() {
             if (index >= 0) binding.spinnerCategory.setSelection(index)
         }
 
-        // ✅ 등록 버튼 클릭
+        // ✅ 등록 버튼 클릭 처리
         binding.btnSubmit.setOnClickListener {
             val title = binding.etTitle.text.toString().trim()
             val content = binding.etContent.text.toString().trim()
@@ -54,7 +53,7 @@ class AdminPostWriteActivity : AppCompatActivity() {
             }
 
             if (editMode) {
-                // ✏ 기존 문서 수정
+                // ✏ 기존 게시글 수정
                 val data = mapOf(
                     "title" to title,
                     "content" to content,
@@ -65,11 +64,13 @@ class AdminPostWriteActivity : AppCompatActivity() {
                     .update(data)
                     .addOnSuccessListener {
                         Toast.makeText(this, "수정 완료", Toast.LENGTH_SHORT).show()
+                        setResult(RESULT_OK)  // ✅ 수정 결과 전달
                         finish()
                     }
                     .addOnFailureListener {
                         Toast.makeText(this, "수정 실패: ${it.message}", Toast.LENGTH_SHORT).show()
                     }
+
             } else {
                 // ➕ 새 글 등록
                 val newId = db.collection("posts").document().id
@@ -85,6 +86,7 @@ class AdminPostWriteActivity : AppCompatActivity() {
                     .set(post)
                     .addOnSuccessListener {
                         Toast.makeText(this, "게시글 등록 완료", Toast.LENGTH_SHORT).show()
+                        setResult(RESULT_OK)  // ✅ 등록 결과 전달
                         finish()
                     }
                     .addOnFailureListener {

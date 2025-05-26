@@ -2,13 +2,13 @@ package com.example.protectsong
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.protectsong.databinding.ActivityPostListBinding
-import com.example.protectsong.Post
-import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 
@@ -19,6 +19,13 @@ class PostListActivity : AppCompatActivity() {
     private val postList = mutableListOf<Post>()
     private val db = FirebaseFirestore.getInstance()
 
+    // ✅ 글쓰기 결과 처리 (글 작성 후 새로고침)
+    private val writePostLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            loadPostsFromFirestore()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPostListBinding.inflate(layoutInflater)
@@ -28,6 +35,31 @@ class PostListActivity : AppCompatActivity() {
         initBottomNavigation()
         loadPostsFromFirestore()
         setupSearch()
+
+        // ✅ 글쓰기 버튼 기본 숨김
+        binding.btnWritePost.visibility = View.GONE
+
+        // ✅ 관리자면 버튼 보이기
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        if (uid != null) {
+            FirebaseFirestore.getInstance().collection("users").document(uid)
+                .get()
+                .addOnSuccessListener { document ->
+                    val role = document.getString("role")
+                    if (role == "admin") {
+                        binding.btnWritePost.visibility = View.VISIBLE
+                    }
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "사용자 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
+                }
+        }
+
+        // ✅ 글쓰기 버튼 클릭 시 글쓰기 화면으로 이동 (결과 처리 포함)
+        binding.btnWritePost.setOnClickListener {
+            val intent = Intent(this, AdminPostWriteActivity::class.java)
+            writePostLauncher.launch(intent)
+        }
     }
 
     private fun initRecyclerView() {
@@ -53,7 +85,23 @@ class PostListActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
+                    val uid = FirebaseAuth.getInstance().currentUser?.uid
+                    if (uid != null) {
+                        FirebaseFirestore.getInstance().collection("users")
+                            .document(uid)
+                            .get()
+                            .addOnSuccessListener { document ->
+                                val role = document.getString("role")
+                                if (role == "admin") {
+                                    startActivity(Intent(this, AdminMainActivity::class.java))
+                                } else {
+                                    startActivity(Intent(this, MainActivity::class.java))
+                                }
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(this, "사용자 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
+                            }
+                    }
                     true
                 }
                 R.id.nav_post -> true
