@@ -1,5 +1,6 @@
 package com.example.protectsong
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,12 +35,35 @@ class AdminPagedReportAdapter(
         private val tvCategory: TextView = itemView.findViewById(R.id.tvCategory)
         private val tvBuilding: TextView = itemView.findViewById(R.id.tvBuilding)
         private val tvContent: TextView = itemView.findViewById(R.id.tvContent)
+        private val tvStatusBadge: TextView = itemView.findViewById(R.id.tvStatusBadge)
 
         fun bind(report: SmsReport) {
             tvCategory.text = report.type
             tvBuilding.text = report.building
             tvContent.text = report.content
 
+            // ✅ 상태 뱃지 설정
+            tvStatusBadge.text = report.status
+            when (report.status) {
+                "접수됨" -> {
+                    tvStatusBadge.setBackgroundResource(R.drawable.bg_status_received)
+                    tvStatusBadge.setTextColor(Color.BLACK)
+                }
+                "처리중" -> {
+                    tvStatusBadge.setBackgroundResource(R.drawable.bg_status_processing)
+                    tvStatusBadge.setTextColor(Color.BLACK)
+                }
+                "처리완료" -> {
+                    tvStatusBadge.setBackgroundResource(R.drawable.bg_status_done)
+                    tvStatusBadge.setTextColor(Color.BLACK)
+                }
+                else -> {
+                    tvStatusBadge.setBackgroundColor(Color.LTGRAY)
+                    tvStatusBadge.setTextColor(Color.DKGRAY)
+                }
+            }
+
+            // ✅ 아이템 클릭 처리
             itemView.setOnClickListener {
                 onItemClick(report)
             }
