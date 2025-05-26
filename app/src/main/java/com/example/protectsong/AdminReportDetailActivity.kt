@@ -2,10 +2,11 @@ package com.example.protectsong
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.example.protectsong.databinding.ActivityAdminSmsDetailBinding
 import com.example.protectsong.model.SmsReport
 import com.google.firebase.firestore.FirebaseFirestore
@@ -21,27 +22,38 @@ class AdminReportDetailActivity : AppCompatActivity() {
         binding = ActivityAdminSmsDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 🔙 커스텀 툴바 '뒤로' 텍스트 클릭 시 -> AdminMainActivity로 이동
+        // 툴바 뒤로가기
         binding.toolbar.backText.setOnClickListener {
             startActivity(Intent(this, AdminMainActivity::class.java))
             finish()
         }
 
-        // 🔄 인텐트에서 report 데이터 받기
+        // 인텐트 데이터 받기
         report = intent.getParcelableExtra("report") ?: return finish()
 
-        // 📄 데이터 표시
+        // 데이터 표시
         binding.tvCategory.text = report.type
         binding.tvBuilding.text = report.building
-        binding.tvContent.text = report.content
+        binding.tvContent.setText(report.content)
 
-        // 🌀 상태 Spinner 세팅
+        // 첨부 이미지 처리
+        if (report.files.isNotEmpty()) {
+            val imageUrl = report.files[0]
+            binding.imageSection.visibility = View.VISIBLE
+            Glide.with(this)
+                .load(imageUrl)
+                .into(binding.imageAttachment)
+        } else {
+            binding.imageSection.visibility = View.GONE
+        }
+
+        // 상태 Spinner 설정
         val statusList = listOf("접수됨", "처리중", "처리완료")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, statusList)
         binding.spinnerStatus.adapter = adapter
         binding.spinnerStatus.setSelection(statusList.indexOf(report.status))
 
-        // 💾 저장 버튼 클릭 시 Firestore 업데이트
+        // 저장 버튼 이벤트
         binding.btnSave.setOnClickListener {
             val newStatus = binding.spinnerStatus.selectedItem.toString()
             db.collection("smsReports")
@@ -56,7 +68,7 @@ class AdminReportDetailActivity : AppCompatActivity() {
                 }
         }
 
-        // ⬇️ BottomNavigationView 이벤트 처리
+        // 하단 네비게이션
         binding.bottomNavigation.selectedItemId = R.id.nav_home
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -64,7 +76,7 @@ class AdminReportDetailActivity : AppCompatActivity() {
                     startActivity(Intent(this, ChatListActivity::class.java))
                     true
                 }
-                R.id.nav_home -> true // 현재 화면 유지
+                R.id.nav_home -> true
                 R.id.nav_post -> {
                     startActivity(Intent(this, PostListActivity::class.java))
                     true

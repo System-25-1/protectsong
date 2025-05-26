@@ -12,5 +12,6 @@ data class SmsReport(
     val content: String = "",
     val status: String = "접수됨",
     val files: List<String> = emptyList(),
+    val imageUrl: String = "",  // ← 이미지 URL 필드 추가
     val timestamp: Long = 0L // ✅ timestamp를 Long(ms)로 저장
 ) : Parcelable

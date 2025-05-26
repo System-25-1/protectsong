@@ -1,6 +1,8 @@
 package com.example.protectsong
 
+
 import com.google.firebase.Timestamp
+import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -10,7 +12,7 @@ data class Post(
     val content: String = "",
     val category: String = "",
     val timestamp: Timestamp? = null
-)  : java.io.Serializable {
+) : Serializable {
     val date: String
         get() = timestamp?.toDate()?.let {
             SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).format(it)
