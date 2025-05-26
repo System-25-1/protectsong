@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class PostAdapter(
-    private var posts: List<Post>,
+    private val posts: MutableList<Post>,
     private val onItemClick: (Post) -> Unit
 ) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
 
@@ -19,23 +19,12 @@ class PostAdapter(
         fun bind(post: Post) {
             tvTitle.text = post.title
             tvDate.text = post.date
-
-            if (post.isNotice) {
-                tvBadge.visibility = View.VISIBLE
-            } else {
-                tvBadge.visibility = View.GONE
-            }
+            tvBadge.visibility = if (post.isNotice) View.VISIBLE else View.GONE
 
             itemView.setOnClickListener {
                 onItemClick(post)
             }
         }
-    }
-
-    // 🔧 검색 결과 반영 함수
-    fun updateData(newPosts: List<Post>) {
-        posts = newPosts
-        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
@@ -48,4 +37,10 @@ class PostAdapter(
     }
 
     override fun getItemCount(): Int = posts.size
+
+    fun updateData(newPosts: List<Post>) {
+        posts.clear()
+        posts.addAll(newPosts)
+        notifyDataSetChanged()  // ✅ 강제 갱신
+    }
 }
