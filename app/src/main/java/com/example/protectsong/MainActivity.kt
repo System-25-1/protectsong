@@ -15,6 +15,8 @@ import androidx.core.content.ContextCompat
 import com.example.protectsong.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import android.widget.LinearLayout
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -211,6 +213,45 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    private fun loadNotices() {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("posts")
+            .whereEqualTo("category", "공지")
+            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .limit(3)
+            .get()
+            .addOnSuccessListener { documents ->
+                val container = findViewById<LinearLayout>(R.id.notice_container)
+
+                // 제목(TextView)을 제외한 나머지 공지 항목 제거
+                if (container.childCount > 1) {
+                    container.removeViews(1, container.childCount - 1)
+                }
+
+                for (doc in documents) {
+                    val postId = doc.id
+                    val title = doc.getString("title") ?: "제목 없음"
+
+                    val textView = TextView(this).apply {
+                        text = "• $title"
+                        textSize = 14f
+                        setPadding(16, 16, 16, 16)
+                        setTextColor(android.graphics.Color.BLACK)
+                        setBackgroundColor(android.graphics.Color.parseColor("#EEEEEE"))
+                        setOnClickListener {
+                            val intent = Intent(this@MainActivity, PostDetailActivity::class.java)
+                            intent.putExtra("postId", postId)
+                            startActivity(intent)
+                        }
+                    }
+
+                    container.addView(textView)
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "공지 불러오기 실패", Toast.LENGTH_SHORT).show()
+            }
+    }
 
     private fun makeEmergencyCall() {
         val phoneNumber = "tel:112"
@@ -247,4 +288,9 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         whistlePlayer.release()
     }
+    override fun onResume() {
+        super.onResume()
+        loadNotices()  // 🔹 공지 목록 불러오기
+    }
+
 }

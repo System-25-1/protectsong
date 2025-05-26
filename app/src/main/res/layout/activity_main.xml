@@ -176,37 +176,31 @@
                 android:layout_marginTop="4dp"/>
         </LinearLayout>
 
-        <!-- 📢 공지 제목 -->
-        <TextView
-            android:id="@+id/notice_title"
+        <!-- 🔄 공지 목록 영역 -->
+        <LinearLayout
+            android:id="@+id/notice_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="200dp"
-            android:background="#002366"
-            android:text="공지"
-            android:textColor="#FFFFFF"
-            android:gravity="center"
-            android:padding="8dp"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:orientation="vertical"
+            android:layout_margin="16dp"
             app:layout_constraintTop_toBottomOf="@id/whistle_section"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- 📄 공지 내용 -->
-        <TextView
-            android:id="@+id/notice_body"
-            android:layout_width="0dp"
-            android:layout_height="120dp"
-            android:layout_margin="16dp"
-            android:background="#EEEEEE"
-            android:text="공지 내용이 여기에 표시됩니다."
-            android:textSize="14sp"
-            android:gravity="top"
-            android:padding="8dp"
-            app:layout_constraintTop_toBottomOf="@id/notice_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <!-- 🔹 제목 -->
+            <TextView
+                android:id="@+id/notice_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#002366"
+                android:text="공지"
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:padding="8dp"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
 
         <!-- ⬇️ 하단 바 -->
         <com.google.android.material.bottomnavigation.BottomNavigationView
