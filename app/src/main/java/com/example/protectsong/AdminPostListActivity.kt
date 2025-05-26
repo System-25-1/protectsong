@@ -76,21 +76,32 @@ class AdminPostListActivity : AppCompatActivity() {
         }
     }
 
-    // ✅ Firestore에서 게시글 목록 불러오기
+    // ✅ Firestore에서 게시글 목록 불러오기 (공지글은 상단 고정)
     private fun loadPostsFromFirestore() {
         db.collection("posts")
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { result ->
-                postList.clear()
+                val notices = mutableListOf<Post>()
+                val others = mutableListOf<Post>()
+
                 for (document in result) {
                     val post = document.toObject(Post::class.java)
-                    postList.add(post)
+                    if (post.isNotice) {
+                        notices.add(post)
+                    } else {
+                        others.add(post)
+                    }
                 }
+
+                // 🔹 공지글은 위, 일반글은 아래로 정렬
+                postList.clear()
+                postList.addAll(notices)
+                postList.addAll(others)
                 postAdapter.notifyDataSetChanged()
             }
             .addOnFailureListener {
-                // 에러 처리 필요 시 토스트 추가
+                // 필요 시 에러 메시지 추가 가능
             }
     }
 }
