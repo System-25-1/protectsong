@@ -17,6 +17,31 @@ class PostWriteActivity : AppCompatActivity() {
         binding = ActivityAdminPostWriteBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // ✅ 하단 네비게이션 클릭 리스너 설정
+        binding.bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_chat -> {
+                    startActivity(Intent(this, ChatListActivity::class.java))  // 관리자 채팅 목록 화면
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.nav_home -> {
+                    startActivity(Intent(this, AdminMainActivity::class.java))  // 관리자 메인 화면
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.nav_post -> {
+                    // 현재 화면 → 아무 동작 없음
+                    true
+                }
+                else -> false
+            }
+        }
+
+        // ✅ 현재 탭을 Post로 설정해서 강조
+        binding.bottomNavigation.selectedItemId = R.id.nav_post
+
+        // ✅ 글 등록 버튼 클릭 리스너
         binding.btnSubmit.setOnClickListener {
             val title = binding.etTitle.text.toString().trim()
             val content = binding.etContent.text.toString().trim()
@@ -27,7 +52,7 @@ class PostWriteActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // 임시 Post 객체 생성
+            // 새 Post 객체 생성
             val post = Post(
                 id = UUID.randomUUID().toString(),
                 title = title,
@@ -36,29 +61,13 @@ class PostWriteActivity : AppCompatActivity() {
                 timestamp = Timestamp.now()
             )
 
-            // 임시 저장 (Intent로 객체 넘기기)
+            // 임시 저장 (Activity 간 데이터 전달용)
             val intent = Intent()
             intent.putExtra("newPost", post)
             setResult(RESULT_OK, intent)
 
             Toast.makeText(this, "등록 완료 (로컬)", Toast.LENGTH_SHORT).show()
             finish()
-        }
-
-        // 하단 네비게이션 그대로 유지
-        binding.bottomNavigation.selectedItemId = R.id.nav_post
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_chat -> {
-                    startActivity(Intent(this, ChatActivity::class.java))
-                    true
-                }
-                R.id.nav_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    true
-                }
-                else -> false
-            }
         }
     }
 }
