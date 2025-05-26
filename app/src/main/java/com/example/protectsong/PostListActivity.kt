@@ -19,10 +19,21 @@ class PostListActivity : AppCompatActivity() {
     private val postList = mutableListOf<Post>()
     private val db = FirebaseFirestore.getInstance()
 
-    // ✅ 글쓰기 결과 처리 (글 작성 후 새로고침)
+    // ✅ 글쓰기 결과 처리 (작성 성공 시 새로고침)
     private val writePostLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             loadPostsFromFirestore()
+        }
+    }
+
+    // ✅ 게시글 상세 결과 처리 (삭제 또는 수정 시 새로고침)
+    private val detailLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val deleted = result.data?.getBooleanExtra("postDeleted", false) ?: false
+            val updated = result.data?.getBooleanExtra("postUpdated", false) ?: false
+            if (deleted || updated) {
+                loadPostsFromFirestore()
+            }
         }
     }
 
@@ -39,7 +50,7 @@ class PostListActivity : AppCompatActivity() {
         // ✅ 글쓰기 버튼 기본 숨김
         binding.btnWritePost.visibility = View.GONE
 
-        // ✅ 관리자면 버튼 보이기
+        // ✅ 관리자일 경우 글쓰기 버튼 표시
         val uid = FirebaseAuth.getInstance().currentUser?.uid
         if (uid != null) {
             FirebaseFirestore.getInstance().collection("users").document(uid)
@@ -55,7 +66,7 @@ class PostListActivity : AppCompatActivity() {
                 }
         }
 
-        // ✅ 글쓰기 버튼 클릭 시 글쓰기 화면으로 이동 (결과 처리 포함)
+        // ✅ 글쓰기 버튼 클릭 시
         binding.btnWritePost.setOnClickListener {
             val intent = Intent(this, AdminPostWriteActivity::class.java)
             writePostLauncher.launch(intent)
@@ -66,7 +77,7 @@ class PostListActivity : AppCompatActivity() {
         postAdapter = PostAdapter(postList) { post ->
             val intent = Intent(this, PostDetailActivity::class.java)
             intent.putExtra("postId", post.id)
-            startActivity(intent)
+            detailLauncher.launch(intent)  // ✅ 수정/삭제 결과를 감지
         }
 
         binding.recyclerViewPosts.apply {
