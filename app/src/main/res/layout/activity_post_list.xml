@@ -14,6 +14,7 @@
         android:layout_height="48dp"
         android:background="#002366"
         android:gravity="center"
+        android:layout_marginTop="40dp"
         android:text="지키송"
         android:textColor="#FFFFFF"
         android:textSize="18sp"

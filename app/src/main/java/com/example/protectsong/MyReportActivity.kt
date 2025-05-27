@@ -9,6 +9,7 @@ import com.example.protectsong.model.Report
 import com.example.protectsong.adapter.ReportAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 class MyReportActivity : AppCompatActivity() {
 
@@ -29,37 +30,38 @@ class MyReportActivity : AppCompatActivity() {
         binding.recyclerViewReports.layoutManager = LinearLayoutManager(this)
         binding.recyclerViewReports.adapter = adapter
 
-        // 🔙 뒤로가기
         binding.backText.setOnClickListener {
             finish()
         }
 
-        // 🔍 검색 버튼 클릭
-        binding.btnSearch.setOnClickListener {
-            val date = binding.etDate.text.toString().trim()
-            val number = binding.etReportNumber.text.toString().trim()
-            val uid = auth.currentUser?.uid
-
-            if (uid == null || date.isBlank() || number.isBlank()) {
-                Toast.makeText(this, "모든 정보를 입력해주세요.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            firestore.collection("reports")
-                .whereEqualTo("userId", uid)
-                .whereEqualTo("date", date)
-                .whereEqualTo("number", number)
-                .get()
-                .addOnSuccessListener { documents ->
-                    val reports = documents.mapNotNull { it.toObject(Report::class.java).copy(id = it.id) }
-                    adapter.submitList(reports)
-                    if (reports.isEmpty()) {
-                        Toast.makeText(this, "조회된 신고가 없습니다.", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                .addOnFailureListener {
-                    Toast.makeText(this, "오류 발생: ${it.message}", Toast.LENGTH_SHORT).show()
-                }
+        val uid = auth.currentUser?.uid
+        if (uid == null) {
+            Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        // 🔽 최신순 정렬된 문자 신고 조회
+        firestore.collection("smsReports")
+            .whereEqualTo("userId", uid)
+            .orderBy("date", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { documents ->
+                val reports = documents.mapNotNull { doc ->
+                    Report(
+                        id = doc.id,
+                        date = doc.getTimestamp("date")?.toDate(),
+                        content = doc.getString("content") ?: "",
+                        building = doc.getString("building") ?: "",
+                        status = doc.getString("status") ?: "접수됨"
+                    )
+                }
+                adapter.submitList(reports)
+                if (reports.isEmpty()) {
+                    Toast.makeText(this, "신고 내역이 없습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "오류 발생: ${it.message}", Toast.LENGTH_SHORT).show()
+            }
     }
 }
