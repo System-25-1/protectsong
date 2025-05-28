@@ -14,7 +14,7 @@
         android:layout_height="56dp"
         android:background="#002366">
 
-        <!-- 왼쪽 '뒤로' -->
+        <!-- 뒤로가기 -->
         <TextView
             android:id="@+id/backText"
             android:layout_width="wrap_content"
@@ -28,7 +28,7 @@
             android:textSize="14sp"
             android:fontFamily="@font/pyeojin_gothic_regular" />
 
-        <!-- 가운데 타이틀 -->
+        <!-- 타이틀 -->
         <TextView
             android:id="@+id/titleText"
             android:layout_width="wrap_content"
@@ -44,13 +44,43 @@
             android:fontFamily="@font/pyeojin_gothic_regular" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- ✅ 본문 내용 -->
+    <!-- ✅ 본문 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical"
         android:padding="16dp">
+
+        <!-- 📅 시작일 + 종료일 한 줄에 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:layout_marginBottom="8dp">
+
+            <EditText
+                android:id="@+id/etDateStart"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:hint="시작일 선택"
+                android:focusable="false"
+                android:clickable="true"
+                android:inputType="none"
+                android:layout_marginEnd="8dp" />
+
+            <EditText
+                android:id="@+id/etDateEnd"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:hint="종료일 선택"
+                android:focusable="false"
+                android:clickable="true"
+                android:inputType="none" />
+        </LinearLayout>
 
         <!-- 🔍 민원 내용 검색 -->
         <EditText
@@ -66,15 +96,9 @@
             android:text="검색"
             android:background="#002366"
             android:textColor="#FFFFFF"
-            android:padding="12dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="※ 최근 1년 이내의 신고내역을 조회할 수 있습니다."
-            android:textSize="12sp"
-            android:textColor="#666666"
+            android:padding="12dp"
             android:layout_marginTop="8dp" />
+
 
         <!-- 📄 신고 내역 리스트 -->
         <androidx.recyclerview.widget.RecyclerView
@@ -83,5 +107,14 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_marginTop="8dp" />
+        <LinearLayout
+            android:id="@+id/layoutPagination"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:layout_marginBottom="8dp"/>
+
     </LinearLayout>
 </LinearLayout>
