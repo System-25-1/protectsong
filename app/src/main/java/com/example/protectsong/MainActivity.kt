@@ -33,6 +33,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // 🔽 접근성 권한이 꺼져 있다면 요청
+        if (!isAccessibilityServiceEnabled()) {
+            val intent = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            startActivity(intent)
+            Toast.makeText(this, "‘지키송 휘슬 서비스’를 활성화해주세요", Toast.LENGTH_LONG).show()
+        }
+
         // ✅ 툴바 설정
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -270,9 +277,22 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         whistlePlayer.release()
     }
+
+
     override fun onResume() {
         super.onResume()
         loadNotices()  // 🔹 공지 목록 불러오기
+    }
+
+    private fun isAccessibilityServiceEnabled(): Boolean {
+        val am = getSystemService(ACCESSIBILITY_SERVICE) as android.view.accessibility.AccessibilityManager
+        val enabledServices = android.provider.Settings.Secure.getString(
+            contentResolver,
+            android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+        ) ?: return false
+
+        val packageName = applicationContext.packageName
+        return enabledServices.split(":").any { it.contains(packageName) }
     }
 
 }

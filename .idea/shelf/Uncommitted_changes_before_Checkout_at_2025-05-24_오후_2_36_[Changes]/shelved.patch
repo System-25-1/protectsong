@@ -1,0 +1,2059 @@
+Index: .gradle/8.7/dependencies-accessors/d376a0ba33c2e173e0431742a10265b719bdfef5/sources/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock.java
+===================================================================
+diff --git a/.gradle/8.7/dependencies-accessors/d376a0ba33c2e173e0431742a10265b719bdfef5/sources/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock.java b/.gradle/8.7/dependencies-accessors/d376a0ba33c2e173e0431742a10265b719bdfef5/sources/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock.java
+deleted file mode 100644
+--- a/.gradle/8.7/dependencies-accessors/d376a0ba33c2e173e0431742a10265b719bdfef5/sources/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock.java	(revision 09e32960b277f855aff5ed9bf3628084a881474b)
++++ /dev/null	(revision 09e32960b277f855aff5ed9bf3628084a881474b)
+@@ -1,631 +0,0 @@
+-package org.gradle.accessors.dm;
+-
+-import org.gradle.api.NonNullApi;
+-import org.gradle.api.artifacts.MinimalExternalModuleDependency;
+-import org.gradle.plugin.use.PluginDependency;
+-import org.gradle.api.artifacts.ExternalModuleDependencyBundle;
+-import org.gradle.api.artifacts.MutableVersionConstraint;
+-import org.gradle.api.provider.Provider;
+-import org.gradle.api.model.ObjectFactory;
+-import org.gradle.api.provider.ProviderFactory;
+-import org.gradle.api.internal.catalog.AbstractExternalDependencyFactory;
+-import org.gradle.api.internal.catalog.DefaultVersionCatalog;
+-import java.util.Map;
+-import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
+-import org.gradle.api.internal.artifacts.dsl.CapabilityNotationParser;
+-import javax.inject.Inject;
+-
+-/**
+- * A catalog of dependencies accessible via the {@code libs} extension.
+- */
+-@NonNullApi
+-public class LibrariesForLibsInPluginsBlock extends AbstractExternalDependencyFactory {
+-
+-    private final AbstractExternalDependencyFactory owner = this;
+-    private final AndroidxLibraryAccessors laccForAndroidxLibraryAccessors = new AndroidxLibraryAccessors(owner);
+-    private final VersionAccessors vaccForVersionAccessors = new VersionAccessors(providers, config);
+-    private final BundleAccessors baccForBundleAccessors = new BundleAccessors(objects, providers, config, attributesFactory, capabilityNotationParser);
+-    private final PluginAccessors paccForPluginAccessors = new PluginAccessors(providers, config);
+-
+-    @Inject
+-    public LibrariesForLibsInPluginsBlock(DefaultVersionCatalog config, ProviderFactory providers, ObjectFactory objects, ImmutableAttributesFactory attributesFactory, CapabilityNotationParser capabilityNotationParser) {
+-        super(config, providers, objects, attributesFactory, capabilityNotationParser);
+-    }
+-
+-    /**
+-     * Dependency provider for <b>junit</b> with <b>junit:junit</b> coordinates and
+-     * with version reference <b>junit</b>
+-     * <p>
+-     * This dependency was declared in catalog libs.versions.toml
+-     *
+-     * @deprecated Will be removed in Gradle 9.0.
+-     */
+-    @Deprecated
+-    public Provider<MinimalExternalModuleDependency> getJunit() {
+-        org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-        return create("junit");
+-    }
+-
+-    /**
+-     * Group of libraries at <b>androidx</b>
+-     *
+-     * @deprecated Will be removed in Gradle 9.0.
+-     */
+-    @Deprecated
+-    public AndroidxLibraryAccessors getAndroidx() {
+-        org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-        return laccForAndroidxLibraryAccessors;
+-    }
+-
+-    /**
+-     * Group of versions at <b>versions</b>
+-     */
+-    public VersionAccessors getVersions() {
+-        return vaccForVersionAccessors;
+-    }
+-
+-    /**
+-     * Group of bundles at <b>bundles</b>
+-     *
+-     * @deprecated Will be removed in Gradle 9.0.
+-     */
+-    @Deprecated
+-    public BundleAccessors getBundles() {
+-        org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-        return baccForBundleAccessors;
+-    }
+-
+-    /**
+-     * Group of plugins at <b>plugins</b>
+-     */
+-    public PluginAccessors getPlugins() {
+-        return paccForPluginAccessors;
+-    }
+-
+-    /**
+-     * @deprecated Will be removed in Gradle 9.0.
+-     */
+-    @Deprecated
+-    public static class AndroidxLibraryAccessors extends SubDependencyFactory {
+-        private final AndroidxActivityLibraryAccessors laccForAndroidxActivityLibraryAccessors = new AndroidxActivityLibraryAccessors(owner);
+-        private final AndroidxComposeLibraryAccessors laccForAndroidxComposeLibraryAccessors = new AndroidxComposeLibraryAccessors(owner);
+-        private final AndroidxCoreLibraryAccessors laccForAndroidxCoreLibraryAccessors = new AndroidxCoreLibraryAccessors(owner);
+-        private final AndroidxEspressoLibraryAccessors laccForAndroidxEspressoLibraryAccessors = new AndroidxEspressoLibraryAccessors(owner);
+-        private final AndroidxLifecycleLibraryAccessors laccForAndroidxLifecycleLibraryAccessors = new AndroidxLifecycleLibraryAccessors(owner);
+-        private final AndroidxUiLibraryAccessors laccForAndroidxUiLibraryAccessors = new AndroidxUiLibraryAccessors(owner);
+-
+-        public AndroidxLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>junit</b> with <b>androidx.test.ext:junit</b> coordinates and
+-         * with version reference <b>junitVersion</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public Provider<MinimalExternalModuleDependency> getJunit() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return create("androidx.junit");
+-        }
+-
+-        /**
+-         * Dependency provider for <b>material3</b> with <b>androidx.compose.material3:material3</b> coordinates and
+-         * with <b>no version specified</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public Provider<MinimalExternalModuleDependency> getMaterial3() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return create("androidx.material3");
+-        }
+-
+-        /**
+-         * Group of libraries at <b>androidx.activity</b>
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public AndroidxActivityLibraryAccessors getActivity() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return laccForAndroidxActivityLibraryAccessors;
+-        }
+-
+-        /**
+-         * Group of libraries at <b>androidx.compose</b>
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public AndroidxComposeLibraryAccessors getCompose() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return laccForAndroidxComposeLibraryAccessors;
+-        }
+-
+-        /**
+-         * Group of libraries at <b>androidx.core</b>
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public AndroidxCoreLibraryAccessors getCore() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return laccForAndroidxCoreLibraryAccessors;
+-        }
+-
+-        /**
+-         * Group of libraries at <b>androidx.espresso</b>
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public AndroidxEspressoLibraryAccessors getEspresso() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return laccForAndroidxEspressoLibraryAccessors;
+-        }
+-
+-        /**
+-         * Group of libraries at <b>androidx.lifecycle</b>
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public AndroidxLifecycleLibraryAccessors getLifecycle() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return laccForAndroidxLifecycleLibraryAccessors;
+-        }
+-
+-        /**
+-         * Group of libraries at <b>androidx.ui</b>
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public AndroidxUiLibraryAccessors getUi() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return laccForAndroidxUiLibraryAccessors;
+-        }
+-
+-    }
+-
+-    /**
+-     * @deprecated Will be removed in Gradle 9.0.
+-     */
+-    @Deprecated
+-    public static class AndroidxActivityLibraryAccessors extends SubDependencyFactory {
+-
+-        public AndroidxActivityLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>compose</b> with <b>androidx.activity:activity-compose</b> coordinates and
+-         * with version reference <b>activityCompose</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public Provider<MinimalExternalModuleDependency> getCompose() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return create("androidx.activity.compose");
+-        }
+-
+-    }
+-
+-    /**
+-     * @deprecated Will be removed in Gradle 9.0.
+-     */
+-    @Deprecated
+-    public static class AndroidxComposeLibraryAccessors extends SubDependencyFactory {
+-
+-        public AndroidxComposeLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>bom</b> with <b>androidx.compose:compose-bom</b> coordinates and
+-         * with version reference <b>composeBom</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public Provider<MinimalExternalModuleDependency> getBom() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return create("androidx.compose.bom");
+-        }
+-
+-    }
+-
+-    /**
+-     * @deprecated Will be removed in Gradle 9.0.
+-     */
+-    @Deprecated
+-    public static class AndroidxCoreLibraryAccessors extends SubDependencyFactory {
+-
+-        public AndroidxCoreLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>ktx</b> with <b>androidx.core:core-ktx</b> coordinates and
+-         * with version reference <b>coreKtx</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public Provider<MinimalExternalModuleDependency> getKtx() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return create("androidx.core.ktx");
+-        }
+-
+-    }
+-
+-    /**
+-     * @deprecated Will be removed in Gradle 9.0.
+-     */
+-    @Deprecated
+-    public static class AndroidxEspressoLibraryAccessors extends SubDependencyFactory {
+-
+-        public AndroidxEspressoLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>core</b> with <b>androidx.test.espresso:espresso-core</b> coordinates and
+-         * with version reference <b>espressoCore</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public Provider<MinimalExternalModuleDependency> getCore() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return create("androidx.espresso.core");
+-        }
+-
+-    }
+-
+-    /**
+-     * @deprecated Will be removed in Gradle 9.0.
+-     */
+-    @Deprecated
+-    public static class AndroidxLifecycleLibraryAccessors extends SubDependencyFactory {
+-        private final AndroidxLifecycleRuntimeLibraryAccessors laccForAndroidxLifecycleRuntimeLibraryAccessors = new AndroidxLifecycleRuntimeLibraryAccessors(owner);
+-
+-        public AndroidxLifecycleLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Group of libraries at <b>androidx.lifecycle.runtime</b>
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public AndroidxLifecycleRuntimeLibraryAccessors getRuntime() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return laccForAndroidxLifecycleRuntimeLibraryAccessors;
+-        }
+-
+-    }
+-
+-    /**
+-     * @deprecated Will be removed in Gradle 9.0.
+-     */
+-    @Deprecated
+-    public static class AndroidxLifecycleRuntimeLibraryAccessors extends SubDependencyFactory {
+-
+-        public AndroidxLifecycleRuntimeLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>ktx</b> with <b>androidx.lifecycle:lifecycle-runtime-ktx</b> coordinates and
+-         * with version reference <b>lifecycleRuntimeKtx</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public Provider<MinimalExternalModuleDependency> getKtx() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return create("androidx.lifecycle.runtime.ktx");
+-        }
+-
+-    }
+-
+-    /**
+-     * @deprecated Will be removed in Gradle 9.0.
+-     */
+-    @Deprecated
+-    public static class AndroidxUiLibraryAccessors extends SubDependencyFactory implements DependencyNotationSupplier {
+-        private final AndroidxUiTestLibraryAccessors laccForAndroidxUiTestLibraryAccessors = new AndroidxUiTestLibraryAccessors(owner);
+-        private final AndroidxUiToolingLibraryAccessors laccForAndroidxUiToolingLibraryAccessors = new AndroidxUiToolingLibraryAccessors(owner);
+-
+-        public AndroidxUiLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>ui</b> with <b>androidx.compose.ui:ui</b> coordinates and
+-         * with <b>no version specified</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public Provider<MinimalExternalModuleDependency> asProvider() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return create("androidx.ui");
+-        }
+-
+-        /**
+-         * Dependency provider for <b>graphics</b> with <b>androidx.compose.ui:ui-graphics</b> coordinates and
+-         * with <b>no version specified</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public Provider<MinimalExternalModuleDependency> getGraphics() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return create("androidx.ui.graphics");
+-        }
+-
+-        /**
+-         * Group of libraries at <b>androidx.ui.test</b>
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public AndroidxUiTestLibraryAccessors getTest() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return laccForAndroidxUiTestLibraryAccessors;
+-        }
+-
+-        /**
+-         * Group of libraries at <b>androidx.ui.tooling</b>
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public AndroidxUiToolingLibraryAccessors getTooling() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return laccForAndroidxUiToolingLibraryAccessors;
+-        }
+-
+-    }
+-
+-    /**
+-     * @deprecated Will be removed in Gradle 9.0.
+-     */
+-    @Deprecated
+-    public static class AndroidxUiTestLibraryAccessors extends SubDependencyFactory {
+-
+-        public AndroidxUiTestLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>junit4</b> with <b>androidx.compose.ui:ui-test-junit4</b> coordinates and
+-         * with <b>no version specified</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public Provider<MinimalExternalModuleDependency> getJunit4() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return create("androidx.ui.test.junit4");
+-        }
+-
+-        /**
+-         * Dependency provider for <b>manifest</b> with <b>androidx.compose.ui:ui-test-manifest</b> coordinates and
+-         * with <b>no version specified</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public Provider<MinimalExternalModuleDependency> getManifest() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return create("androidx.ui.test.manifest");
+-        }
+-
+-    }
+-
+-    /**
+-     * @deprecated Will be removed in Gradle 9.0.
+-     */
+-    @Deprecated
+-    public static class AndroidxUiToolingLibraryAccessors extends SubDependencyFactory implements DependencyNotationSupplier {
+-
+-        public AndroidxUiToolingLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>tooling</b> with <b>androidx.compose.ui:ui-tooling</b> coordinates and
+-         * with <b>no version specified</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public Provider<MinimalExternalModuleDependency> asProvider() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return create("androidx.ui.tooling");
+-        }
+-
+-        /**
+-         * Dependency provider for <b>preview</b> with <b>androidx.compose.ui:ui-tooling-preview</b> coordinates and
+-         * with <b>no version specified</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         *
+-         * @deprecated Will be removed in Gradle 9.0.
+-         */
+-        @Deprecated
+-        public Provider<MinimalExternalModuleDependency> getPreview() {
+-            org.gradle.internal.deprecation.DeprecationLogger.deprecateBehaviour("Accessing libraries or bundles from version catalogs in the plugins block.").withAdvice("Only use versions or plugins from catalogs in the plugins block.").willBeRemovedInGradle9().withUpgradeGuideSection(8, "kotlin_dsl_deprecated_catalogs_plugins_block").nagUser();
+-            return create("androidx.ui.tooling.preview");
+-        }
+-
+-    }
+-
+-    public static class VersionAccessors extends VersionFactory  {
+-
+-        public VersionAccessors(ProviderFactory providers, DefaultVersionCatalog config) { super(providers, config); }
+-
+-        /**
+-         * Version alias <b>activityCompose</b> with value <b>1.10.1</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getActivityCompose() { return getVersion("activityCompose"); }
+-
+-        /**
+-         * Version alias <b>agp</b> with value <b>8.6.0</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getAgp() { return getVersion("agp"); }
+-
+-        /**
+-         * Version alias <b>composeBom</b> with value <b>2024.04.01</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getComposeBom() { return getVersion("composeBom"); }
+-
+-        /**
+-         * Version alias <b>coreKtx</b> with value <b>1.16.0</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getCoreKtx() { return getVersion("coreKtx"); }
+-
+-        /**
+-         * Version alias <b>espressoCore</b> with value <b>3.6.1</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getEspressoCore() { return getVersion("espressoCore"); }
+-
+-        /**
+-         * Version alias <b>junit</b> with value <b>4.13.2</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getJunit() { return getVersion("junit"); }
+-
+-        /**
+-         * Version alias <b>junitVersion</b> with value <b>1.2.1</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getJunitVersion() { return getVersion("junitVersion"); }
+-
+-        /**
+-         * Version alias <b>kotlin</b> with value <b>2.1.0</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getKotlin() { return getVersion("kotlin"); }
+-
+-        /**
+-         * Version alias <b>lifecycleRuntimeKtx</b> with value <b>2.8.7</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getLifecycleRuntimeKtx() { return getVersion("lifecycleRuntimeKtx"); }
+-
+-    }
+-
+-    /**
+-     * @deprecated Will be removed in Gradle 9.0.
+-     */
+-    @Deprecated
+-    public static class BundleAccessors extends BundleFactory {
+-
+-        public BundleAccessors(ObjectFactory objects, ProviderFactory providers, DefaultVersionCatalog config, ImmutableAttributesFactory attributesFactory, CapabilityNotationParser capabilityNotationParser) { super(objects, providers, config, attributesFactory, capabilityNotationParser); }
+-
+-    }
+-
+-    public static class PluginAccessors extends PluginFactory {
+-        private final AndroidPluginAccessors paccForAndroidPluginAccessors = new AndroidPluginAccessors(providers, config);
+-        private final KotlinPluginAccessors paccForKotlinPluginAccessors = new KotlinPluginAccessors(providers, config);
+-
+-        public PluginAccessors(ProviderFactory providers, DefaultVersionCatalog config) { super(providers, config); }
+-
+-        /**
+-         * Group of plugins at <b>plugins.android</b>
+-         */
+-        public AndroidPluginAccessors getAndroid() {
+-            return paccForAndroidPluginAccessors;
+-        }
+-
+-        /**
+-         * Group of plugins at <b>plugins.kotlin</b>
+-         */
+-        public KotlinPluginAccessors getKotlin() {
+-            return paccForKotlinPluginAccessors;
+-        }
+-
+-    }
+-
+-    public static class AndroidPluginAccessors extends PluginFactory {
+-
+-        public AndroidPluginAccessors(ProviderFactory providers, DefaultVersionCatalog config) { super(providers, config); }
+-
+-        /**
+-         * Plugin provider for <b>android.application</b> with plugin id <b>com.android.application</b> and
+-         * with version reference <b>agp</b>
+-         * <p>
+-         * This plugin was declared in catalog libs.versions.toml
+-         */
+-        public Provider<PluginDependency> getApplication() { return createPlugin("android.application"); }
+-
+-    }
+-
+-    public static class KotlinPluginAccessors extends PluginFactory {
+-
+-        public KotlinPluginAccessors(ProviderFactory providers, DefaultVersionCatalog config) { super(providers, config); }
+-
+-        /**
+-         * Plugin provider for <b>kotlin.android</b> with plugin id <b>org.jetbrains.kotlin.android</b> and
+-         * with version reference <b>kotlin</b>
+-         * <p>
+-         * This plugin was declared in catalog libs.versions.toml
+-         */
+-        public Provider<PluginDependency> getAndroid() { return createPlugin("kotlin.android"); }
+-
+-    }
+-
+-}
+Index: .idea/caches/deviceStreaming.xml
+===================================================================
+diff --git a/.idea/caches/deviceStreaming.xml b/.idea/caches/deviceStreaming.xml
+deleted file mode 100644
+--- a/.idea/caches/deviceStreaming.xml	(revision 09e32960b277f855aff5ed9bf3628084a881474b)
++++ /dev/null	(revision 09e32960b277f855aff5ed9bf3628084a881474b)
+@@ -1,630 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="DeviceStreaming">
+-    <option name="deviceSelectionList">
+-      <list>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="27" />
+-          <option name="brand" value="DOCOMO" />
+-          <option name="codename" value="F01L" />
+-          <option name="id" value="F01L" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="FUJITSU" />
+-          <option name="name" value="F-01L" />
+-          <option name="screenDensity" value="360" />
+-          <option name="screenX" value="720" />
+-          <option name="screenY" value="1280" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="OnePlus" />
+-          <option name="codename" value="OP5552L1" />
+-          <option name="id" value="OP5552L1" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="OnePlus" />
+-          <option name="name" value="CPH2415" />
+-          <option name="screenDensity" value="480" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2412" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="OPPO" />
+-          <option name="codename" value="OP573DL1" />
+-          <option name="id" value="OP573DL1" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="OPPO" />
+-          <option name="name" value="CPH2557" />
+-          <option name="screenDensity" value="480" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="28" />
+-          <option name="brand" value="DOCOMO" />
+-          <option name="codename" value="SH-01L" />
+-          <option name="id" value="SH-01L" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="SHARP" />
+-          <option name="name" value="AQUOS sense2 SH-01L" />
+-          <option name="screenDensity" value="480" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2160" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="a15" />
+-          <option name="id" value="a15" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="A15" />
+-          <option name="screenDensity" value="450" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2340" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="a15x" />
+-          <option name="id" value="a15x" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="A15 5G" />
+-          <option name="screenDensity" value="450" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2340" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="a16x" />
+-          <option name="id" value="a16x" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="A16 5G" />
+-          <option name="screenDensity" value="450" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2340" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="a35x" />
+-          <option name="id" value="a35x" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="A35" />
+-          <option name="screenDensity" value="450" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2340" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="31" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="a51" />
+-          <option name="id" value="a51" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy A51" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="akita" />
+-          <option name="id" value="akita" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 8a" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="motorola" />
+-          <option name="codename" value="arcfox" />
+-          <option name="id" value="arcfox" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Motorola" />
+-          <option name="name" value="razr plus 2024" />
+-          <option name="screenDensity" value="360" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="1272" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="motorola" />
+-          <option name="codename" value="austin" />
+-          <option name="id" value="austin" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Motorola" />
+-          <option name="name" value="moto g 5G (2022)" />
+-          <option name="screenDensity" value="280" />
+-          <option name="screenX" value="720" />
+-          <option name="screenY" value="1600" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="b0q" />
+-          <option name="id" value="b0q" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy S22 Ultra" />
+-          <option name="screenDensity" value="600" />
+-          <option name="screenX" value="1440" />
+-          <option name="screenY" value="3088" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="32" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="bluejay" />
+-          <option name="id" value="bluejay" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 6a" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="caiman" />
+-          <option name="id" value="caiman" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 9 Pro" />
+-          <option name="screenDensity" value="360" />
+-          <option name="screenX" value="960" />
+-          <option name="screenY" value="2142" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="comet" />
+-          <option name="default" value="true" />
+-          <option name="id" value="comet" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 9 Pro Fold" />
+-          <option name="screenDensity" value="390" />
+-          <option name="screenX" value="2076" />
+-          <option name="screenY" value="2152" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="29" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="crownqlteue" />
+-          <option name="id" value="crownqlteue" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy Note9" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="2220" />
+-          <option name="screenY" value="1080" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="dm2q" />
+-          <option name="id" value="dm2q" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="S23 Plus" />
+-          <option name="screenDensity" value="450" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2340" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="dm3q" />
+-          <option name="id" value="dm3q" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy S23 Ultra" />
+-          <option name="screenDensity" value="600" />
+-          <option name="screenX" value="1440" />
+-          <option name="screenY" value="3088" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="e1q" />
+-          <option name="default" value="true" />
+-          <option name="id" value="e1q" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy S24" />
+-          <option name="screenDensity" value="480" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2340" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="e3q" />
+-          <option name="id" value="e3q" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy S24 Ultra" />
+-          <option name="screenDensity" value="450" />
+-          <option name="screenX" value="1440" />
+-          <option name="screenY" value="3120" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="eos" />
+-          <option name="id" value="eos" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Eos" />
+-          <option name="screenDensity" value="320" />
+-          <option name="screenX" value="384" />
+-          <option name="screenY" value="384" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="felix" />
+-          <option name="id" value="felix" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel Fold" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="2208" />
+-          <option name="screenY" value="1840" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="felix" />
+-          <option name="id" value="felix" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel Fold" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="2208" />
+-          <option name="screenY" value="1840" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="felix_camera" />
+-          <option name="id" value="felix_camera" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel Fold (Camera-enabled)" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="2208" />
+-          <option name="screenY" value="1840" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="motorola" />
+-          <option name="codename" value="fogona" />
+-          <option name="id" value="fogona" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Motorola" />
+-          <option name="name" value="moto g play - 2024" />
+-          <option name="screenDensity" value="280" />
+-          <option name="screenX" value="720" />
+-          <option name="screenY" value="1600" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="g0q" />
+-          <option name="id" value="g0q" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="SM-S906U1" />
+-          <option name="screenDensity" value="450" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2340" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="gta9pwifi" />
+-          <option name="id" value="gta9pwifi" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="SM-X210" />
+-          <option name="screenDensity" value="240" />
+-          <option name="screenX" value="1200" />
+-          <option name="screenY" value="1920" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="gts7xllite" />
+-          <option name="id" value="gts7xllite" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="SM-T738U" />
+-          <option name="screenDensity" value="340" />
+-          <option name="screenX" value="1600" />
+-          <option name="screenY" value="2560" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="gts8uwifi" />
+-          <option name="formFactor" value="Tablet" />
+-          <option name="id" value="gts8uwifi" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy Tab S8 Ultra" />
+-          <option name="screenDensity" value="320" />
+-          <option name="screenX" value="1848" />
+-          <option name="screenY" value="2960" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="gts8wifi" />
+-          <option name="formFactor" value="Tablet" />
+-          <option name="id" value="gts8wifi" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy Tab S8" />
+-          <option name="screenDensity" value="274" />
+-          <option name="screenX" value="1600" />
+-          <option name="screenY" value="2560" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="gts9fe" />
+-          <option name="id" value="gts9fe" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy Tab S9 FE 5G" />
+-          <option name="screenDensity" value="280" />
+-          <option name="screenX" value="1440" />
+-          <option name="screenY" value="2304" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="husky" />
+-          <option name="id" value="husky" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 8 Pro" />
+-          <option name="screenDensity" value="390" />
+-          <option name="screenX" value="1008" />
+-          <option name="screenY" value="2244" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="30" />
+-          <option name="brand" value="motorola" />
+-          <option name="codename" value="java" />
+-          <option name="id" value="java" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Motorola" />
+-          <option name="name" value="G20" />
+-          <option name="screenDensity" value="280" />
+-          <option name="screenX" value="720" />
+-          <option name="screenY" value="1600" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="komodo" />
+-          <option name="id" value="komodo" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 9 Pro XL" />
+-          <option name="screenDensity" value="360" />
+-          <option name="screenX" value="1008" />
+-          <option name="screenY" value="2244" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="35" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="komodo" />
+-          <option name="id" value="komodo" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 9 Pro XL" />
+-          <option name="screenDensity" value="360" />
+-          <option name="screenX" value="1008" />
+-          <option name="screenY" value="2244" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="lynx" />
+-          <option name="id" value="lynx" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 7a" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="motorola" />
+-          <option name="codename" value="maui" />
+-          <option name="id" value="maui" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Motorola" />
+-          <option name="name" value="moto g play - 2023" />
+-          <option name="screenDensity" value="280" />
+-          <option name="screenX" value="720" />
+-          <option name="screenY" value="1600" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="o1q" />
+-          <option name="id" value="o1q" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy S21" />
+-          <option name="screenDensity" value="421" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="31" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="oriole" />
+-          <option name="id" value="oriole" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 6" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="panther" />
+-          <option name="id" value="panther" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 7" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="q5q" />
+-          <option name="id" value="q5q" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy Z Fold5" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1812" />
+-          <option name="screenY" value="2176" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="q6q" />
+-          <option name="id" value="q6q" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy Z Fold6" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1856" />
+-          <option name="screenY" value="2160" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="30" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="r11" />
+-          <option name="formFactor" value="Wear OS" />
+-          <option name="id" value="r11" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel Watch" />
+-          <option name="screenDensity" value="320" />
+-          <option name="screenX" value="384" />
+-          <option name="screenY" value="384" />
+-          <option name="type" value="WEAR_OS" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="r11q" />
+-          <option name="id" value="r11q" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="SM-S711U" />
+-          <option name="screenDensity" value="450" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2340" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="30" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="redfin" />
+-          <option name="id" value="redfin" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 5" />
+-          <option name="screenDensity" value="440" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2340" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="shiba" />
+-          <option name="id" value="shiba" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 8" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="t2q" />
+-          <option name="id" value="t2q" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy S21 Plus" />
+-          <option name="screenDensity" value="394" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="tangorpro" />
+-          <option name="formFactor" value="Tablet" />
+-          <option name="id" value="tangorpro" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel Tablet" />
+-          <option name="screenDensity" value="320" />
+-          <option name="screenX" value="1600" />
+-          <option name="screenY" value="2560" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="tokay" />
+-          <option name="default" value="true" />
+-          <option name="id" value="tokay" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 9" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2424" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="35" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="tokay" />
+-          <option name="default" value="true" />
+-          <option name="id" value="tokay" />
+-          <option name="labId" value="google" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 9" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2424" />
+-        </PersistentDeviceSelectionData>
+-      </list>
+-    </option>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: .idea/modules/app/AndroidStudioProjects.Protectsong.app.unitTest.iml
+===================================================================
+diff --git a/.idea/modules/app/AndroidStudioProjects.Protectsong.app.unitTest.iml b/.idea/modules/app/AndroidStudioProjects.Protectsong.app.unitTest.iml
+deleted file mode 100644
+--- a/.idea/modules/app/AndroidStudioProjects.Protectsong.app.unitTest.iml	(revision 09e32960b277f855aff5ed9bf3628084a881474b)
++++ /dev/null	(revision 09e32960b277f855aff5ed9bf3628084a881474b)
+@@ -1,205 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<module external.linked.project.id=":app:unitTest" external.linked.project.path="$MODULE_DIR$/../../../app" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.type="sourceSet" type="JAVA_MODULE" version="4">
+-  <component name="FacetManager">
+-    <facet external-system-id="GRADLE" type="android" name="Android">
+-      <configuration>
+-        <option name="SELECTED_BUILD_VARIANT" value="debug" />
+-        <option name="ALLOW_USER_CONFIGURATION" value="false" />
+-        <option name="MANIFEST_FILE_RELATIVE_PATH" value="/src/main/AndroidManifest.xml" />
+-        <option name="RES_FOLDER_RELATIVE_PATH" value="/src/main/res" />
+-        <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/src/main/assets" />
+-      </configuration>
+-    </facet>
+-    <facet external-system-id="GRADLE" type="kotlin-language" name="Kotlin">
+-      <configuration version="5" platform="JVM 1.8" allPlatforms="JVM [1.8]" useProjectSettings="false">
+-        <additionalVisibleModuleNames>:app:main</additionalVisibleModuleNames>
+-        <compilerSettings />
+-        <compilerArguments>
+-          <flagArguments>
+-            <flagArg name="allowNoSourceFiles" arg="true" />
+-            <flagArg name="noReflect" arg="true" />
+-            <flagArg name="noStdlib" arg="true" />
+-          </flagArguments>
+-          <stringArguments>
+-            <stringArg name="destination" arg="$MODULE_DIR$/../../../app/build/tmp/kotlin-classes/debugUnitTest" />
+-            <stringArg name="jvmTarget" arg="1.8" />
+-            <stringArg name="moduleName" arg="app_debugUnitTest" />
+-            <stringArg name="apiVersion" arg="2.1" />
+-            <stringArg name="languageVersion" arg="2.1" />
+-          </stringArguments>
+-          <arrayArguments>
+-            <arrayArg name="pluginClasspaths" />
+-            <arrayArg name="pluginOptions" />
+-          </arrayArguments>
+-        </compilerArguments>
+-      </configuration>
+-    </facet>
+-  </component>
+-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+-    <output-test url="file://$MODULE_DIR$/../../../app/build/intermediates/javac/debugUnitTest/compileDebugUnitTestJavaWithJavac/classes" />
+-    <exclude-output />
+-    <content url="file://$MODULE_DIR$/../../../app/build/generated/ap_generated_sources/debugUnitTest/out" />
+-    <content url="file://$MODULE_DIR$/../../../app/build/generated/source/kapt/debugUnitTest">
+-      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/source/kapt/debugUnitTest" isTestSource="true" generated="true" />
+-    </content>
+-    <content url="file://$MODULE_DIR$/../../../app/build/generated/source/kaptKotlin/debugUnitTest">
+-      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/source/kaptKotlin/debugUnitTest" isTestSource="true" generated="true" />
+-    </content>
+-    <content url="file://$MODULE_DIR$/../../../app/src/test">
+-      <sourceFolder url="file://$MODULE_DIR$/../../../app/src/test/java" isTestSource="true" />
+-    </content>
+-    <content url="file://$MODULE_DIR$/../../../app/src/testDebug" />
+-    <orderEntry type="jdk" jdkName="Android API 35, extension level 13 Platform" jdkType="Android SDK" />
+-    <orderEntry type="sourceFolder" forTests="false" />
+-    <orderEntry type="module" module-name="Protectsong.app.main" scope="TEST" />
+-    <orderEntry type="module-library" exported="" scope="TEST">
+-      <library name="Gradle: kaptGeneratedClasses">
+-        <CLASSES>
+-          <root url="file://$MODULE_DIR$/../../../app/build/tmp/kapt3/classes/debugUnitTest" />
+-        </CLASSES>
+-        <JAVADOC />
+-        <SOURCES />
+-      </library>
+-    </orderEntry>
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.databinding:viewbinding:8.6.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.databinding:databinding-runtime:8.6.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.lifecycle:lifecycle-runtime-android:2.8.7@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.databinding:databinding-adapters:8.6.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.databinding:databinding-ktx:8.6.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.7@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.lifecycle:lifecycle-livedata:2.8.7@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.arch.core:core-runtime:2.2.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.lifecycle:lifecycle-livedata-core:2.8.7@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.lifecycle:lifecycle-livedata-core-ktx:2.8.7@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.lifecycle:lifecycle-process:2.8.7@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.startup:startup-runtime:1.1.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.lifecycle:lifecycle-service:2.8.7@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.lifecycle:lifecycle-viewmodel-android:2.8.7@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.ui:ui-tooling-android:1.6.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.runtime:runtime-android:1.7.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.annotation:annotation-experimental:1.4.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.ui:ui-android:1.6.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.runtime:runtime-saveable-android:1.7.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.ui:ui-geometry-android:1.6.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.ui:ui-graphics-android:1.6.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.ui:ui-unit-android:1.6.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.ui:ui-text-android:1.6.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.ui:ui-util-android:1.6.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.ui:ui-tooling-data-android:1.6.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.ui:ui-tooling-preview-android:1.6.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.ui:ui-test-manifest:1.6.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.activity:activity:1.10.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.core:core-ktx:1.16.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.core:core:1.16.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.core:core-viewtree:1.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.versionedparcelable:versionedparcelable:1.1.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.7@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.savedstate:savedstate:1.2.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.activity:activity-compose:1.10.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.activity:activity-ktx:1.10.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.savedstate:savedstate-ktx:1.2.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.material3:material3-android:1.2.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.foundation:foundation-android:1.6.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.animation:animation-android:1.6.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.animation:animation-core-android:1.6.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.foundation:foundation-layout-android:1.6.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.material:material-icons-core-android:1.6.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.material:material-ripple-android:1.6.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.constraintlayout:constraintlayout:2.1.4@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.appcompat:appcompat:1.6.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.appcompat:appcompat-resources:1.6.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.vectordrawable:vectordrawable:1.1.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.vectordrawable:vectordrawable-animated:1.1.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.interpolator:interpolator:1.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.cursoradapter:cursoradapter:1.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.drawerlayout:drawerlayout:1.1.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.customview:customview:1.1.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.fragment:fragment:1.3.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.viewpager:viewpager:1.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.loader:loader:1.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-analytics:22.4.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.android.gms:play-services-measurement:22.4.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.legacy:legacy-support-core-utils:1.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.documentfile:documentfile:1.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.localbroadcastmanager:localbroadcastmanager:1.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.print:print:1.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.android.gms:play-services-ads-identifier:18.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.android.gms:play-services-basement:18.5.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.android.gms:play-services-measurement-base:22.4.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.android.gms:play-services-measurement-impl:22.4.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.privacysandbox.ads:ads-adservices:1.1.0-beta11@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.privacysandbox.ads:ads-adservices-java:1.1.0-beta11@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.android.gms:play-services-base:18.5.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.android.gms:play-services-tasks:18.2.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.android.gms:play-services-stats:17.0.2@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.android.gms:play-services-measurement-sdk-api:22.4.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.android.gms:play-services-measurement-api:22.4.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-common:21.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-components:18.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-common-ktx:21.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-installations:18.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-installations-interop:17.1.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-measurement-connector:19.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.android.gms:play-services-measurement-sdk:22.4.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-firestore:25.1.3@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:protolite-well-known-types:18.0.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-appcheck-interop:17.1.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-auth-interop:20.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-database-collection:18.0.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.android.material:material:1.11.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.cardview:cardview:1.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.coordinatorlayout:coordinatorlayout:1.1.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.dynamicanimation:dynamicanimation:1.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.recyclerview:recyclerview:1.1.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.transition:transition:1.2.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.viewpager2:viewpager2:1.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-auth-ktx:23.2.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-auth:23.2.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.browser:browser:1.4.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.credentials:credentials:1.2.0-rc01@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.credentials:credentials-play-services-auth:1.2.0-rc01@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.android.gms:play-services-auth-api-phone:18.0.2@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.android.play:integrity:1.3.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.android.play:core-common:2.0.3@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.android.recaptcha:recaptcha:18.6.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-firestore-ktx:25.1.3@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-database-ktx:21.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-database:21.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-storage-ktx:21.0.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-storage:21.0.1@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-appcheck:18.0.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.github.bumptech.glide:glide:4.16.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.github.bumptech.glide:gifdecoder:4.16.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.exifinterface:exifinterface:1.3.6@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.tracing:tracing:1.2.0@aar" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.annotation:annotation-jvm:1.8.1" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:2.1.0" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains:annotations:23.0.0" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.databinding:databinding-common:8.6.0" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.arch.core:core-common:2.2.0" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.lifecycle:lifecycle-common-jvm:2.8.7" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.20" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.collection:collection-jvm:1.4.2" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: org.jspecify:jspecify:1.0.0" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.guava:guava:32.1.3-android" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.guava:failureaccess:1.0.1" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.code.findbugs:jsr305:3.0.2" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: org.checkerframework:checker-qual:3.37.0" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.errorprone:error_prone_annotations:2.26.0" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.j2objc:j2objc-annotations:2.8" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.firebase:firebase-annotations:16.2.0" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: javax.inject:javax.inject:1" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: androidx.resourceinspection:resourceinspection-annotation:1.0.1" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.github.bumptech.glide:disklrucache:4.16.0" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: com.github.bumptech.glide:annotations:4.16.0" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.13.2" level="project" />
+-    <orderEntry type="library" scope="TEST" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
+-  </component>
+-  <component name="TestModuleProperties" production-module="Protectsong.app.main" />
+-</module>
+\ No newline at end of file
+Index: .idea/modules/app/Protectsong.app.iml
+===================================================================
+diff --git a/.idea/modules/app/Protectsong.app.iml b/.idea/modules/app/Protectsong.app.iml
+deleted file mode 100644
+--- a/.idea/modules/app/Protectsong.app.iml	(revision 09e32960b277f855aff5ed9bf3628084a881474b)
++++ /dev/null	(revision 09e32960b277f855aff5ed9bf3628084a881474b)
+@@ -1,29 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<module external.linked.project.id=":app" external.linked.project.path="$MODULE_DIR$/../../../app" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.group="Protectsong" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+-  <component name="FacetManager">
+-    <facet external-system-id="GRADLE" type="android-gradle" name="Android-Gradle">
+-      <configuration>
+-        <option name="LAST_SUCCESSFUL_SYNC_AGP_VERSION" />
+-        <option name="LAST_KNOWN_AGP_VERSION" value="8.6.0" />
+-      </configuration>
+-    </facet>
+-    <facet external-system-id="GRADLE" type="android" name="Android">
+-      <configuration>
+-        <option name="SELECTED_BUILD_VARIANT" value="debug" />
+-        <option name="ALLOW_USER_CONFIGURATION" value="false" />
+-        <option name="MANIFEST_FILE_RELATIVE_PATH" value="/src/main/AndroidManifest.xml" />
+-        <option name="RES_FOLDER_RELATIVE_PATH" value="/src/main/res" />
+-        <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/src/main/assets" />
+-      </configuration>
+-    </facet>
+-  </component>
+-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+-    <exclude-output />
+-    <content url="file://$MODULE_DIR$/../../../app">
+-      <excludeFolder url="file://$MODULE_DIR$/../../../app/.gradle" />
+-      <excludeFolder url="file://$MODULE_DIR$/../../../app/build" />
+-    </content>
+-    <orderEntry type="jdk" jdkName="Android API 35, extension level 13 Platform" jdkType="Android SDK" />
+-    <orderEntry type="sourceFolder" forTests="false" />
+-  </component>
+-</module>
+\ No newline at end of file
+Index: .gradle/8.7/dependencies-accessors/d376a0ba33c2e173e0431742a10265b719bdfef5/sources/org/gradle/accessors/dm/LibrariesForLibs.java
+===================================================================
+diff --git a/.gradle/8.7/dependencies-accessors/d376a0ba33c2e173e0431742a10265b719bdfef5/sources/org/gradle/accessors/dm/LibrariesForLibs.java b/.gradle/8.7/dependencies-accessors/d376a0ba33c2e173e0431742a10265b719bdfef5/sources/org/gradle/accessors/dm/LibrariesForLibs.java
+deleted file mode 100644
+--- a/.gradle/8.7/dependencies-accessors/d376a0ba33c2e173e0431742a10265b719bdfef5/sources/org/gradle/accessors/dm/LibrariesForLibs.java	(revision 09e32960b277f855aff5ed9bf3628084a881474b)
++++ /dev/null	(revision 09e32960b277f855aff5ed9bf3628084a881474b)
+@@ -1,487 +0,0 @@
+-package org.gradle.accessors.dm;
+-
+-import org.gradle.api.NonNullApi;
+-import org.gradle.api.artifacts.MinimalExternalModuleDependency;
+-import org.gradle.plugin.use.PluginDependency;
+-import org.gradle.api.artifacts.ExternalModuleDependencyBundle;
+-import org.gradle.api.artifacts.MutableVersionConstraint;
+-import org.gradle.api.provider.Provider;
+-import org.gradle.api.model.ObjectFactory;
+-import org.gradle.api.provider.ProviderFactory;
+-import org.gradle.api.internal.catalog.AbstractExternalDependencyFactory;
+-import org.gradle.api.internal.catalog.DefaultVersionCatalog;
+-import java.util.Map;
+-import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
+-import org.gradle.api.internal.artifacts.dsl.CapabilityNotationParser;
+-import javax.inject.Inject;
+-
+-/**
+- * A catalog of dependencies accessible via the {@code libs} extension.
+- */
+-@NonNullApi
+-public class LibrariesForLibs extends AbstractExternalDependencyFactory {
+-
+-    private final AbstractExternalDependencyFactory owner = this;
+-    private final AndroidxLibraryAccessors laccForAndroidxLibraryAccessors = new AndroidxLibraryAccessors(owner);
+-    private final VersionAccessors vaccForVersionAccessors = new VersionAccessors(providers, config);
+-    private final BundleAccessors baccForBundleAccessors = new BundleAccessors(objects, providers, config, attributesFactory, capabilityNotationParser);
+-    private final PluginAccessors paccForPluginAccessors = new PluginAccessors(providers, config);
+-
+-    @Inject
+-    public LibrariesForLibs(DefaultVersionCatalog config, ProviderFactory providers, ObjectFactory objects, ImmutableAttributesFactory attributesFactory, CapabilityNotationParser capabilityNotationParser) {
+-        super(config, providers, objects, attributesFactory, capabilityNotationParser);
+-    }
+-
+-    /**
+-     * Dependency provider for <b>junit</b> with <b>junit:junit</b> coordinates and
+-     * with version reference <b>junit</b>
+-     * <p>
+-     * This dependency was declared in catalog libs.versions.toml
+-     */
+-    public Provider<MinimalExternalModuleDependency> getJunit() {
+-        return create("junit");
+-    }
+-
+-    /**
+-     * Group of libraries at <b>androidx</b>
+-     */
+-    public AndroidxLibraryAccessors getAndroidx() {
+-        return laccForAndroidxLibraryAccessors;
+-    }
+-
+-    /**
+-     * Group of versions at <b>versions</b>
+-     */
+-    public VersionAccessors getVersions() {
+-        return vaccForVersionAccessors;
+-    }
+-
+-    /**
+-     * Group of bundles at <b>bundles</b>
+-     */
+-    public BundleAccessors getBundles() {
+-        return baccForBundleAccessors;
+-    }
+-
+-    /**
+-     * Group of plugins at <b>plugins</b>
+-     */
+-    public PluginAccessors getPlugins() {
+-        return paccForPluginAccessors;
+-    }
+-
+-    public static class AndroidxLibraryAccessors extends SubDependencyFactory {
+-        private final AndroidxActivityLibraryAccessors laccForAndroidxActivityLibraryAccessors = new AndroidxActivityLibraryAccessors(owner);
+-        private final AndroidxComposeLibraryAccessors laccForAndroidxComposeLibraryAccessors = new AndroidxComposeLibraryAccessors(owner);
+-        private final AndroidxCoreLibraryAccessors laccForAndroidxCoreLibraryAccessors = new AndroidxCoreLibraryAccessors(owner);
+-        private final AndroidxEspressoLibraryAccessors laccForAndroidxEspressoLibraryAccessors = new AndroidxEspressoLibraryAccessors(owner);
+-        private final AndroidxLifecycleLibraryAccessors laccForAndroidxLifecycleLibraryAccessors = new AndroidxLifecycleLibraryAccessors(owner);
+-        private final AndroidxUiLibraryAccessors laccForAndroidxUiLibraryAccessors = new AndroidxUiLibraryAccessors(owner);
+-
+-        public AndroidxLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>junit</b> with <b>androidx.test.ext:junit</b> coordinates and
+-         * with version reference <b>junitVersion</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         */
+-        public Provider<MinimalExternalModuleDependency> getJunit() {
+-            return create("androidx.junit");
+-        }
+-
+-        /**
+-         * Dependency provider for <b>material3</b> with <b>androidx.compose.material3:material3</b> coordinates and
+-         * with <b>no version specified</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         */
+-        public Provider<MinimalExternalModuleDependency> getMaterial3() {
+-            return create("androidx.material3");
+-        }
+-
+-        /**
+-         * Group of libraries at <b>androidx.activity</b>
+-         */
+-        public AndroidxActivityLibraryAccessors getActivity() {
+-            return laccForAndroidxActivityLibraryAccessors;
+-        }
+-
+-        /**
+-         * Group of libraries at <b>androidx.compose</b>
+-         */
+-        public AndroidxComposeLibraryAccessors getCompose() {
+-            return laccForAndroidxComposeLibraryAccessors;
+-        }
+-
+-        /**
+-         * Group of libraries at <b>androidx.core</b>
+-         */
+-        public AndroidxCoreLibraryAccessors getCore() {
+-            return laccForAndroidxCoreLibraryAccessors;
+-        }
+-
+-        /**
+-         * Group of libraries at <b>androidx.espresso</b>
+-         */
+-        public AndroidxEspressoLibraryAccessors getEspresso() {
+-            return laccForAndroidxEspressoLibraryAccessors;
+-        }
+-
+-        /**
+-         * Group of libraries at <b>androidx.lifecycle</b>
+-         */
+-        public AndroidxLifecycleLibraryAccessors getLifecycle() {
+-            return laccForAndroidxLifecycleLibraryAccessors;
+-        }
+-
+-        /**
+-         * Group of libraries at <b>androidx.ui</b>
+-         */
+-        public AndroidxUiLibraryAccessors getUi() {
+-            return laccForAndroidxUiLibraryAccessors;
+-        }
+-
+-    }
+-
+-    public static class AndroidxActivityLibraryAccessors extends SubDependencyFactory {
+-
+-        public AndroidxActivityLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>compose</b> with <b>androidx.activity:activity-compose</b> coordinates and
+-         * with version reference <b>activityCompose</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         */
+-        public Provider<MinimalExternalModuleDependency> getCompose() {
+-            return create("androidx.activity.compose");
+-        }
+-
+-    }
+-
+-    public static class AndroidxComposeLibraryAccessors extends SubDependencyFactory {
+-
+-        public AndroidxComposeLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>bom</b> with <b>androidx.compose:compose-bom</b> coordinates and
+-         * with version reference <b>composeBom</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         */
+-        public Provider<MinimalExternalModuleDependency> getBom() {
+-            return create("androidx.compose.bom");
+-        }
+-
+-    }
+-
+-    public static class AndroidxCoreLibraryAccessors extends SubDependencyFactory {
+-
+-        public AndroidxCoreLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>ktx</b> with <b>androidx.core:core-ktx</b> coordinates and
+-         * with version reference <b>coreKtx</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         */
+-        public Provider<MinimalExternalModuleDependency> getKtx() {
+-            return create("androidx.core.ktx");
+-        }
+-
+-    }
+-
+-    public static class AndroidxEspressoLibraryAccessors extends SubDependencyFactory {
+-
+-        public AndroidxEspressoLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>core</b> with <b>androidx.test.espresso:espresso-core</b> coordinates and
+-         * with version reference <b>espressoCore</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         */
+-        public Provider<MinimalExternalModuleDependency> getCore() {
+-            return create("androidx.espresso.core");
+-        }
+-
+-    }
+-
+-    public static class AndroidxLifecycleLibraryAccessors extends SubDependencyFactory {
+-        private final AndroidxLifecycleRuntimeLibraryAccessors laccForAndroidxLifecycleRuntimeLibraryAccessors = new AndroidxLifecycleRuntimeLibraryAccessors(owner);
+-
+-        public AndroidxLifecycleLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Group of libraries at <b>androidx.lifecycle.runtime</b>
+-         */
+-        public AndroidxLifecycleRuntimeLibraryAccessors getRuntime() {
+-            return laccForAndroidxLifecycleRuntimeLibraryAccessors;
+-        }
+-
+-    }
+-
+-    public static class AndroidxLifecycleRuntimeLibraryAccessors extends SubDependencyFactory {
+-
+-        public AndroidxLifecycleRuntimeLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>ktx</b> with <b>androidx.lifecycle:lifecycle-runtime-ktx</b> coordinates and
+-         * with version reference <b>lifecycleRuntimeKtx</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         */
+-        public Provider<MinimalExternalModuleDependency> getKtx() {
+-            return create("androidx.lifecycle.runtime.ktx");
+-        }
+-
+-    }
+-
+-    public static class AndroidxUiLibraryAccessors extends SubDependencyFactory implements DependencyNotationSupplier {
+-        private final AndroidxUiTestLibraryAccessors laccForAndroidxUiTestLibraryAccessors = new AndroidxUiTestLibraryAccessors(owner);
+-        private final AndroidxUiToolingLibraryAccessors laccForAndroidxUiToolingLibraryAccessors = new AndroidxUiToolingLibraryAccessors(owner);
+-
+-        public AndroidxUiLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>ui</b> with <b>androidx.compose.ui:ui</b> coordinates and
+-         * with <b>no version specified</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         */
+-        public Provider<MinimalExternalModuleDependency> asProvider() {
+-            return create("androidx.ui");
+-        }
+-
+-        /**
+-         * Dependency provider for <b>graphics</b> with <b>androidx.compose.ui:ui-graphics</b> coordinates and
+-         * with <b>no version specified</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         */
+-        public Provider<MinimalExternalModuleDependency> getGraphics() {
+-            return create("androidx.ui.graphics");
+-        }
+-
+-        /**
+-         * Group of libraries at <b>androidx.ui.test</b>
+-         */
+-        public AndroidxUiTestLibraryAccessors getTest() {
+-            return laccForAndroidxUiTestLibraryAccessors;
+-        }
+-
+-        /**
+-         * Group of libraries at <b>androidx.ui.tooling</b>
+-         */
+-        public AndroidxUiToolingLibraryAccessors getTooling() {
+-            return laccForAndroidxUiToolingLibraryAccessors;
+-        }
+-
+-    }
+-
+-    public static class AndroidxUiTestLibraryAccessors extends SubDependencyFactory {
+-
+-        public AndroidxUiTestLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>junit4</b> with <b>androidx.compose.ui:ui-test-junit4</b> coordinates and
+-         * with <b>no version specified</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         */
+-        public Provider<MinimalExternalModuleDependency> getJunit4() {
+-            return create("androidx.ui.test.junit4");
+-        }
+-
+-        /**
+-         * Dependency provider for <b>manifest</b> with <b>androidx.compose.ui:ui-test-manifest</b> coordinates and
+-         * with <b>no version specified</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         */
+-        public Provider<MinimalExternalModuleDependency> getManifest() {
+-            return create("androidx.ui.test.manifest");
+-        }
+-
+-    }
+-
+-    public static class AndroidxUiToolingLibraryAccessors extends SubDependencyFactory implements DependencyNotationSupplier {
+-
+-        public AndroidxUiToolingLibraryAccessors(AbstractExternalDependencyFactory owner) { super(owner); }
+-
+-        /**
+-         * Dependency provider for <b>tooling</b> with <b>androidx.compose.ui:ui-tooling</b> coordinates and
+-         * with <b>no version specified</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         */
+-        public Provider<MinimalExternalModuleDependency> asProvider() {
+-            return create("androidx.ui.tooling");
+-        }
+-
+-        /**
+-         * Dependency provider for <b>preview</b> with <b>androidx.compose.ui:ui-tooling-preview</b> coordinates and
+-         * with <b>no version specified</b>
+-         * <p>
+-         * This dependency was declared in catalog libs.versions.toml
+-         */
+-        public Provider<MinimalExternalModuleDependency> getPreview() {
+-            return create("androidx.ui.tooling.preview");
+-        }
+-
+-    }
+-
+-    public static class VersionAccessors extends VersionFactory  {
+-
+-        public VersionAccessors(ProviderFactory providers, DefaultVersionCatalog config) { super(providers, config); }
+-
+-        /**
+-         * Version alias <b>activityCompose</b> with value <b>1.10.1</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getActivityCompose() { return getVersion("activityCompose"); }
+-
+-        /**
+-         * Version alias <b>agp</b> with value <b>8.6.0</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getAgp() { return getVersion("agp"); }
+-
+-        /**
+-         * Version alias <b>composeBom</b> with value <b>2024.04.01</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getComposeBom() { return getVersion("composeBom"); }
+-
+-        /**
+-         * Version alias <b>coreKtx</b> with value <b>1.16.0</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getCoreKtx() { return getVersion("coreKtx"); }
+-
+-        /**
+-         * Version alias <b>espressoCore</b> with value <b>3.6.1</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getEspressoCore() { return getVersion("espressoCore"); }
+-
+-        /**
+-         * Version alias <b>junit</b> with value <b>4.13.2</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getJunit() { return getVersion("junit"); }
+-
+-        /**
+-         * Version alias <b>junitVersion</b> with value <b>1.2.1</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getJunitVersion() { return getVersion("junitVersion"); }
+-
+-        /**
+-         * Version alias <b>kotlin</b> with value <b>2.1.0</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getKotlin() { return getVersion("kotlin"); }
+-
+-        /**
+-         * Version alias <b>lifecycleRuntimeKtx</b> with value <b>2.8.7</b>
+-         * <p>
+-         * If the version is a rich version and cannot be represented as a
+-         * single version string, an empty string is returned.
+-         * <p>
+-         * This version was declared in catalog libs.versions.toml
+-         */
+-        public Provider<String> getLifecycleRuntimeKtx() { return getVersion("lifecycleRuntimeKtx"); }
+-
+-    }
+-
+-    public static class BundleAccessors extends BundleFactory {
+-
+-        public BundleAccessors(ObjectFactory objects, ProviderFactory providers, DefaultVersionCatalog config, ImmutableAttributesFactory attributesFactory, CapabilityNotationParser capabilityNotationParser) { super(objects, providers, config, attributesFactory, capabilityNotationParser); }
+-
+-    }
+-
+-    public static class PluginAccessors extends PluginFactory {
+-        private final AndroidPluginAccessors paccForAndroidPluginAccessors = new AndroidPluginAccessors(providers, config);
+-        private final KotlinPluginAccessors paccForKotlinPluginAccessors = new KotlinPluginAccessors(providers, config);
+-
+-        public PluginAccessors(ProviderFactory providers, DefaultVersionCatalog config) { super(providers, config); }
+-
+-        /**
+-         * Group of plugins at <b>plugins.android</b>
+-         */
+-        public AndroidPluginAccessors getAndroid() {
+-            return paccForAndroidPluginAccessors;
+-        }
+-
+-        /**
+-         * Group of plugins at <b>plugins.kotlin</b>
+-         */
+-        public KotlinPluginAccessors getKotlin() {
+-            return paccForKotlinPluginAccessors;
+-        }
+-
+-    }
+-
+-    public static class AndroidPluginAccessors extends PluginFactory {
+-
+-        public AndroidPluginAccessors(ProviderFactory providers, DefaultVersionCatalog config) { super(providers, config); }
+-
+-        /**
+-         * Plugin provider for <b>android.application</b> with plugin id <b>com.android.application</b> and
+-         * with version reference <b>agp</b>
+-         * <p>
+-         * This plugin was declared in catalog libs.versions.toml
+-         */
+-        public Provider<PluginDependency> getApplication() { return createPlugin("android.application"); }
+-
+-    }
+-
+-    public static class KotlinPluginAccessors extends PluginFactory {
+-
+-        public KotlinPluginAccessors(ProviderFactory providers, DefaultVersionCatalog config) { super(providers, config); }
+-
+-        /**
+-         * Plugin provider for <b>kotlin.android</b> with plugin id <b>org.jetbrains.kotlin.android</b> and
+-         * with version reference <b>kotlin</b>
+-         * <p>
+-         * This plugin was declared in catalog libs.versions.toml
+-         */
+-        public Provider<PluginDependency> getAndroid() { return createPlugin("kotlin.android"); }
+-
+-    }
+-
+-}
+Index: .idea/modules.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ProjectModuleManager\">\r\n    <modules>\r\n      <module fileurl=\"file://$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.Protectsong.app.androidTest.iml\" filepath=\"$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.Protectsong.app.androidTest.iml\" />\r\n      <module fileurl=\"file://$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.Protectsong.app.unitTest.iml\" filepath=\"$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.Protectsong.app.unitTest.iml\" />\r\n      <module fileurl=\"file://$PROJECT_DIR$/.idea/modules/Protectsong.iml\" filepath=\"$PROJECT_DIR$/.idea/modules/Protectsong.iml\" />\r\n      <module fileurl=\"file://$PROJECT_DIR$/.idea/modules/app/Protectsong.app.iml\" filepath=\"$PROJECT_DIR$/.idea/modules/app/Protectsong.app.iml\" />\r\n      <module fileurl=\"file://$PROJECT_DIR$/.idea/modules/app/Protectsong.app.androidTest.iml\" filepath=\"$PROJECT_DIR$/.idea/modules/app/Protectsong.app.androidTest.iml\" />\r\n      <module fileurl=\"file://$PROJECT_DIR$/.idea/modules/app/Protectsong.app.main.iml\" filepath=\"$PROJECT_DIR$/.idea/modules/app/Protectsong.app.main.iml\" />\r\n      <module fileurl=\"file://$PROJECT_DIR$/.idea/modules/app/Protectsong.app.unitTest.iml\" filepath=\"$PROJECT_DIR$/.idea/modules/app/Protectsong.app.unitTest.iml\" />\r\n    </modules>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/modules.xml b/.idea/modules.xml
+--- a/.idea/modules.xml	(revision 09e32960b277f855aff5ed9bf3628084a881474b)
++++ b/.idea/modules.xml	(date 1748064594608)
+@@ -3,9 +3,7 @@
+   <component name="ProjectModuleManager">
+     <modules>
+       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.Protectsong.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.Protectsong.app.androidTest.iml" />
+-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.Protectsong.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.Protectsong.app.unitTest.iml" />
+       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Protectsong.iml" filepath="$PROJECT_DIR$/.idea/modules/Protectsong.iml" />
+-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Protectsong.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Protectsong.app.iml" />
+       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Protectsong.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Protectsong.app.androidTest.iml" />
+       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Protectsong.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Protectsong.app.main.iml" />
+       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Protectsong.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Protectsong.app.unitTest.iml" />
+Index: .idea/deploymentTargetSelector.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"deploymentTargetSelector\">\r\n    <selectionStates>\r\n      <SelectionState runConfigName=\"app\">\r\n        <option name=\"selectionMode\" value=\"DROPDOWN\" />\r\n        <DropdownSelection timestamp=\"2025-05-21T06:53:05.499185Z\">\r\n          <Target type=\"DEFAULT_BOOT\">\r\n            <handle>\r\n              <DeviceId pluginId=\"LocalEmulator\" identifier=\"path=C:\\Users\\jaeseo\\.android\\avd\\Pixel_7_API_35.avd\" />\r\n            </handle>\r\n          </Target>\r\n        </DropdownSelection>\r\n        <DialogSelection>\r\n          <targets>\r\n            <Target type=\"DEFAULT_BOOT\">\r\n              <handle>\r\n                <DeviceId pluginId=\"LocalEmulator\" identifier=\"path=C:\\Users\\PC\\.android\\avd\\Pixel_4.avd\" />\r\n              </handle>\r\n            </Target>\r\n          </targets>\r\n        </DialogSelection>\r\n      </SelectionState>\r\n    </selectionStates>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/deploymentTargetSelector.xml b/.idea/deploymentTargetSelector.xml
+--- a/.idea/deploymentTargetSelector.xml	(revision 09e32960b277f855aff5ed9bf3628084a881474b)
++++ b/.idea/deploymentTargetSelector.xml	(date 1747971068526)
+@@ -4,7 +4,7 @@
+     <selectionStates>
+       <SelectionState runConfigName="app">
+         <option name="selectionMode" value="DROPDOWN" />
+-        <DropdownSelection timestamp="2025-05-21T06:53:05.499185Z">
++        <DropdownSelection timestamp="2025-05-23T03:27:54.303423Z">
+           <Target type="DEFAULT_BOOT">
+             <handle>
+               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\jaeseo\.android\avd\Pixel_7_API_35.avd" />
