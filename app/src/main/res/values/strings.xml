@@ -11,6 +11,7 @@
     <string name="user_info_title">사용자 정보 입력</string>
     <string name="user_info_description">정확한 정보를 입력하셔야 신고 출동 및 처리에 도움이 됩니다.</string>
     <string name="required_field_notice">(*) 항목은 필수입니다.</string>
+    <string name="accessibility_description">볼륨 버튼 감지를 위한 접근성 서비스입니다.</string>
 
     <!-- 입력 필드 라벨 -->
     <string name="phone">전화번호</string>
