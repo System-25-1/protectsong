@@ -10,6 +10,7 @@ import android.os.*
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.LinearLayout
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -19,7 +20,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import java.io.File
-import android.widget.LinearLayout
 
 class MainActivity : AppCompatActivity() {
 
@@ -62,6 +62,7 @@ class MainActivity : AppCompatActivity() {
         tvSettings.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
+
         tvMyReport.setOnClickListener {
             startActivity(Intent(this, MyReportActivity::class.java))
         }
@@ -87,10 +88,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         logoutButton.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
-            val intent = Intent(this, SplashActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
+            logout()
         }
 
         tvMyProfile.setOnClickListener {
@@ -108,10 +106,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_logout -> {
-                    FirebaseAuth.getInstance().signOut()
-                    val intent = Intent(this, SplashActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
+                    logout()
                     true
                 }
                 R.id.nav_my_report -> {
@@ -187,6 +182,29 @@ class MainActivity : AppCompatActivity() {
         startLoudSoundMonitor()
     }
 
+    private fun logout() {
+        // 🔇 소리 감지 중단
+        soundHandler.removeCallbacksAndMessages(null)
+
+        // 🎙 MediaRecorder 안전하게 정리
+        if (::recorder.isInitialized) {
+            try {
+                recorder.stop()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            recorder.release()
+        }
+
+        FirebaseAuth.getInstance().signOut()
+
+        val intent = Intent(this, SplashActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+
+        finishAffinity() // 모든 액티비티 종료
+    }
+
     private fun requestMicrophonePermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
             != PackageManager.PERMISSION_GRANTED
@@ -210,21 +228,23 @@ class MainActivity : AppCompatActivity() {
                 setOutputFile(tempFile.absolutePath)
 
                 prepare()
-                Log.d("SoundDetection", "Output file: ${tempFile.absolutePath}")
-                Log.d("SoundDetection", "Recorder prepared")
-
                 start()
             }
 
             soundHandler.post(object : Runnable {
                 override fun run() {
-                    val amp = recorder.maxAmplitude
-                    if (amp > 2000 && !isLoudSoundDetected) {
-                        isLoudSoundDetected = true
-                        Toast.makeText(this@MainActivity, "큰 소리 감지됨. 신고 화면으로 이동합니다.", Toast.LENGTH_SHORT).show()
-                        makeEmergencyCall()
-                    } else {
+                    try {
+                        if (::recorder.isInitialized) {
+                            val amp = recorder.maxAmplitude
+                            if (amp > 2000 && !isLoudSoundDetected) {
+                                isLoudSoundDetected = true
+                                Toast.makeText(this@MainActivity, "큰 소리 감지됨. 신고 화면으로 이동합니다.", Toast.LENGTH_SHORT).show()
+                                makeEmergencyCall()
+                            }
+                        }
                         soundHandler.postDelayed(this, 500)
+                    } catch (e: IllegalStateException) {
+                        Log.e("SoundDetection", "Recorder released")
                     }
                 }
             })
@@ -268,7 +288,11 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         whistlePlayer.release()
         if (::recorder.isInitialized) {
-            recorder.stop()
+            try {
+                recorder.stop()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
             recorder.release()
         }
     }
