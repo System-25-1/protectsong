@@ -1,0 +1,67 @@
+package com.example.protectsong
+
+import android.os.Bundle
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.protectsong.databinding.ActivityAdminReportListBinding
+import com.example.protectsong.model.Report
+import com.example.protectsong.adapter.AdminReportAdapter
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+
+class AdminReportListActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityAdminReportListBinding
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var auth: FirebaseAuth
+    private lateinit var adapter: AdminReportAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityAdminReportListBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        firestore = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
+
+        // 관리자 권한 확인
+        firestore.collection("users").document(auth.currentUser?.uid ?: "").get()
+            .addOnSuccessListener { document ->
+                val isAdmin = document.getBoolean("isAdmin") ?: false
+                if (!isAdmin) {
+                    Toast.makeText(this, "접근 권한이 없습니다.", Toast.LENGTH_SHORT).show()
+                    finish()
+                } else {
+                    setupRecyclerView()
+                    loadReports()
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "권한 확인 실패: ${it.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun setupRecyclerView() {
+        adapter = AdminReportAdapter { report, newStatus ->
+            firestore.collection("smsReports").document(report.id ?: return@AdminReportAdapter)
+                .update("status", newStatus)
+        }
+        binding.recyclerViewAdminReports.layoutManager = LinearLayoutManager(this)
+        binding.recyclerViewAdminReports.adapter = adapter
+    }
+
+    private fun loadReports() {
+        firestore.collection("smsReports")
+            .get()
+            .addOnSuccessListener { documents ->
+                val reports = documents.mapNotNull { doc ->
+                    doc.toObject(Report::class.java).apply { id = doc.id }
+                }
+                adapter.submitList(reports)
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "불러오기 실패: ${it.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+}

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="end"
+    android:padding="8dp">
+
+    <!-- 동영상 썸네일 + ▶ 오버레이 아이콘 -->
+    <FrameLayout
+        android:id="@+id/videoContainer"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginBottom="4dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/videoThumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_video_placeholder" />
+
+        <ImageView
+            android:id="@+id/videoPlayIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_play_circle_overlay"
+            android:background="@drawable/bg_play_circle"
+            android:padding="8dp"
+            android:visibility="visible" />
+    </FrameLayout>
+
+    <!-- 이미지 메시지 -->
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:visibility="gone"
+        android:layout_marginBottom="4dp"
+        android:scaleType="centerCrop"
+        android:background="@drawable/bg_image_border" />
+
+    <!-- 텍스트 메시지 -->
+    <TextView
+        android:id="@+id/textMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_bubble_me"
+        android:padding="10dp"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <!-- 시간 -->
+    <TextView
+        android:id="@+id/textTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        android:textColor="#888888"
+        android:layout_marginTop="4dp"/>
+</LinearLayout>

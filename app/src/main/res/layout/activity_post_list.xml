@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/postListRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF">
+
+    <!-- 상단 바 -->
+    <TextView
+        android:id="@+id/tvHeader"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="#002366"
+        android:gravity="center"
+        android:layout_marginTop="40dp"
+        android:text="지키송"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <!-- 검색창 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:padding="8dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="160dp"
+            android:layout_height="36dp"
+            android:hint="검색어 입력"
+            android:background="@android:drawable/edit_text"
+            android:paddingHorizontal="8dp"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="검색"
+            android:layout_marginStart="8dp"
+            android:textColor="#FFFFFF"
+            android:background="#002366" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnWritePost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="글쓰기"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#002366"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="end"
+        android:visibility="gone"
+        />
+
+    <!-- 제목 -->
+    <TextView
+        android:id="@+id/tvPostTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="민원 공지"
+        android:textSize="16sp"
+        android:textColor="#002366"
+        android:textStyle="bold"
+        android:paddingStart="16dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp" />
+
+    <!-- 구분선 -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#002366" />
+
+    <!-- 게시글 목록 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewPosts"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingHorizontal="8dp"
+        android:paddingTop="8dp"
+        android:clipToPadding="false" />
+
+    <!-- 페이지네이션 -->
+    <LinearLayout
+        android:id="@+id/paginationLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp">
+        <!-- 페이지 숫자 버튼들 동적으로 추가 -->
+    </LinearLayout>
+
+    <!-- 하단 네비게이션 -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        app:menu="@menu/bottom_nav_menu" />
+</LinearLayout>
