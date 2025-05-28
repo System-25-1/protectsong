@@ -4,8 +4,10 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
+import android.media.MediaRecorder
 import android.net.Uri
-import android.os.Bundle
+import android.os.*
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -15,9 +17,9 @@ import androidx.core.content.ContextCompat
 import com.example.protectsong.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import android.widget.LinearLayout
 import com.google.firebase.messaging.FirebaseMessaging
-
+import java.io.File
+import android.widget.LinearLayout
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,28 +30,27 @@ class MainActivity : AppCompatActivity() {
     private val ADMIN_UID = "MecPxatzCTMeHztzELY4ps4KVeh2"
     private val REQUEST_CALL_PERMISSION = 100
 
+    private lateinit var recorder: MediaRecorder
+    private lateinit var tempFile: File
+    private val soundHandler = Handler(Looper.getMainLooper())
+    private var isLoudSoundDetected = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ✅ 툴바 설정
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        // ✅ 드로어 토글 설정
         toggle = ActionBarDrawerToggle(
-            this,
-            binding.drawerLayout,
-            binding.toolbar,
-            R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close
+            this, binding.drawerLayout, binding.toolbar,
+            R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, android.R.color.white)
 
-        // ✅ 드로어 헤더 정보 설정
         val headerView = binding.navView.getHeaderView(0)
         val tvUserName = headerView.findViewById<TextView>(R.id.tvUserName)
         val tvStudentId = headerView.findViewById<TextView>(R.id.tvStudentId)
@@ -65,11 +66,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, MyReportActivity::class.java))
         }
 
-        // ✅ Firebase 사용자 정보 로드 및 FCM 저장
         val uid = FirebaseAuth.getInstance().currentUser?.uid
         if (uid != null) {
             val db = FirebaseFirestore.getInstance()
-
             db.collection("users").document(uid)
                 .get()
                 .addOnSuccessListener { document ->
@@ -78,10 +77,6 @@ class MainActivity : AppCompatActivity() {
                     tvUserName.text = name
                     tvStudentId.text = studentId
                 }
-                .addOnFailureListener {
-                    Toast.makeText(this, "사용자 정보를 불러오지 못했습니다", Toast.LENGTH_SHORT).show()
-                }
-
             FirebaseMessaging.getInstance().token
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -99,8 +94,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         tvMyProfile.setOnClickListener {
-            val intent = Intent(this, EditProfileActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, EditProfileActivity::class.java))
         }
 
         binding.navView.setNavigationItemSelectedListener { item ->
@@ -121,18 +115,15 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_my_report -> {
-                    val intent = Intent(this, MyReportActivity::class.java)
-                    startActivity(intent)
+                    startActivity(Intent(this, MyReportActivity::class.java))
                     true
                 }
                 else -> false
             }
         }
 
-        // 버튼들
         binding.btnSmsReport.setOnClickListener {
-            val intent = Intent(this, SmsReportActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, SmsReportActivity::class.java))
         }
 
         binding.btnEmergency.setOnClickListener {
@@ -143,15 +134,14 @@ class MainActivity : AppCompatActivity() {
         binding.btnWhistle.setOnClickListener {
             isWhistleOn = !isWhistleOn
             binding.tvWhistle.text = if (isWhistleOn) "on" else "off"
-            val backgroundRes = if (isWhistleOn)
+            val bg = if (isWhistleOn)
                 R.drawable.bg_rectangle_button_pressed
             else
                 R.drawable.bg_rectangle_button
-            binding.btnWhistle.setBackgroundResource(backgroundRes)
+            binding.btnWhistle.setBackgroundResource(bg)
 
-            if (isWhistleOn) {
-                whistlePlayer.start()
-            } else {
+            if (isWhistleOn) whistlePlayer.start()
+            else {
                 if (whistlePlayer.isPlaying) {
                     whistlePlayer.pause()
                     whistlePlayer.seekTo(0)
@@ -186,58 +176,66 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_home -> true
                 R.id.nav_post -> {
-                    val intent = Intent(this, PostListActivity::class.java)
-                    startActivity(intent)
+                    startActivity(Intent(this, PostListActivity::class.java))
                     true
                 }
                 else -> false
             }
         }
+
+        requestMicrophonePermission()
+        startLoudSoundMonitor()
     }
-    private fun loadNotices() {
-        val db = FirebaseFirestore.getInstance()
-        db.collection("posts")
-            .whereEqualTo("category", "공지")
-            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
-            .limit(3)
-            .get()
-            .addOnSuccessListener { documents ->
-                val container = findViewById<LinearLayout>(R.id.notice_container)
 
-                // 제목(TextView)을 제외한 나머지 공지 항목 제거
-                if (container.childCount > 1) {
-                    container.removeViews(1, container.childCount - 1)
-                }
+    private fun requestMicrophonePermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.RECORD_AUDIO),
+                102
+            )
+        }
+    }
 
-                for (doc in documents) {
-                    val postId = doc.id
-                    val title = doc.getString("title") ?: "제목 없음"
+    private fun startLoudSoundMonitor() {
+        try {
+            tempFile = File.createTempFile("temp_audio", ".3gp", cacheDir)
 
-                    val textView = TextView(this).apply {
-                        text = "• $title"
-                        textSize = 14f
-                        setPadding(16, 16, 16, 16)
-                        setTextColor(android.graphics.Color.BLACK)
-                        setBackgroundColor(android.graphics.Color.parseColor("#EEEEEE"))
-                        setOnClickListener {
-                            val intent = Intent(this@MainActivity, PostDetailActivity::class.java)
-                            intent.putExtra("postId", postId)
-                            startActivity(intent)
-                        }
+            recorder = MediaRecorder().apply {
+                setAudioSource(MediaRecorder.AudioSource.MIC)
+                setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+                setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+                setOutputFile(tempFile.absolutePath)
+
+                prepare()
+                Log.d("SoundDetection", "Output file: ${tempFile.absolutePath}")
+                Log.d("SoundDetection", "Recorder prepared")
+
+                start()
+            }
+
+            soundHandler.post(object : Runnable {
+                override fun run() {
+                    val amp = recorder.maxAmplitude
+                    if (amp > 2000 && !isLoudSoundDetected) {
+                        isLoudSoundDetected = true
+                        Toast.makeText(this@MainActivity, "큰 소리 감지됨. 신고 화면으로 이동합니다.", Toast.LENGTH_SHORT).show()
+                        makeEmergencyCall()
+                    } else {
+                        soundHandler.postDelayed(this, 500)
                     }
-
-                    container.addView(textView)
                 }
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "공지 불러오기 실패", Toast.LENGTH_SHORT).show()
-            }
+            })
+        } catch (e: Exception) {
+            Log.e("SoundDetection", "소리 감지 초기화 실패: ${e.message}")
+            Toast.makeText(this, "소리 감지 초기화 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
 
-    // ✅ 반드시 onCreate 밖에 위치해야 함
     private fun makeEmergencyCall() {
-        val phoneNumber = "tel:112"
-        val callIntent = Intent(Intent.ACTION_CALL, Uri.parse(phoneNumber))
+        val callIntent = Intent(Intent.ACTION_CALL, Uri.parse("tel:112"))
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
             != PackageManager.PERMISSION_GRANTED
         ) {
@@ -269,10 +267,47 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         whistlePlayer.release()
-    }
-    override fun onResume() {
-        super.onResume()
-        loadNotices()  // 🔹 공지 목록 불러오기
+        if (::recorder.isInitialized) {
+            recorder.stop()
+            recorder.release()
+        }
     }
 
+    override fun onResume() {
+        super.onResume()
+        loadNotices()
+    }
+
+    private fun loadNotices() {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("posts")
+            .whereEqualTo("category", "공지")
+            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .limit(3)
+            .get()
+            .addOnSuccessListener { docs ->
+                val container = findViewById<LinearLayout>(R.id.notice_container)
+                if (container.childCount > 1) container.removeViews(1, container.childCount - 1)
+                for (doc in docs) {
+                    val postId = doc.id
+                    val title = doc.getString("title") ?: "제목 없음"
+                    val textView = TextView(this).apply {
+                        text = "• $title"
+                        textSize = 14f
+                        setPadding(16, 16, 16, 16)
+                        setTextColor(android.graphics.Color.BLACK)
+                        setBackgroundColor(android.graphics.Color.parseColor("#EEEEEE"))
+                        setOnClickListener {
+                            val intent = Intent(this@MainActivity, PostDetailActivity::class.java)
+                            intent.putExtra("postId", postId)
+                            startActivity(intent)
+                        }
+                    }
+                    container.addView(textView)
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "공지 불러오기 실패", Toast.LENGTH_SHORT).show()
+            }
+    }
 }

@@ -17,6 +17,14 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val user = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            // 이미 로그인된 상태면 바로 MainActivity로 이동
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+            return // 아래 코드 실행 방지
+        }
 
         // 애니메이션 적용 (지키송 텍스트에)
         val scaleAnim = AnimationUtils.loadAnimation(this, R.anim.scale_bounce)
