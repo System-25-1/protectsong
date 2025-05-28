@@ -1,9 +1,10 @@
 package com.example.protectsong.adapter
-import com.example.protectsong.R
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.protectsong.R
 import com.example.protectsong.databinding.ItemSmsReportBinding
 import com.example.protectsong.model.Report
 import java.text.SimpleDateFormat
@@ -23,17 +24,16 @@ class ReportAdapter : RecyclerView.Adapter<ReportAdapter.ReportViewHolder>() {
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(report: Report) {
-            binding.tvContent.text = report.content
-            binding.tvBuilding.text = report.building
-            binding.tvStatus.text = report.status
+            binding.tvContent.text = report.content ?: "내용 없음"
+            binding.tvBuilding.text = report.building ?: "건물 정보 없음"
+            binding.tvStatus.text = report.status ?: "상태 없음"
+            binding.tvCategory.text = report.type ?: "카테고리 없음" // ✅ 추가
 
-            // 날짜 포맷 변환
-            val formattedDate = report.date?.let {
-                SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.KOREA).format(it)
+            val formattedDate = report.timestamp?.let {
+                SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.KOREA).format(it.toDate())
             } ?: "날짜 없음"
             binding.tvDate.text = formattedDate
 
-            // 상태 뱃지 색상 설정
             val badgeRes = when (report.status) {
                 "접수됨" -> R.drawable.bg_badge_received
                 "처리중" -> R.drawable.bg_badge_in_progress
@@ -42,6 +42,7 @@ class ReportAdapter : RecyclerView.Adapter<ReportAdapter.ReportViewHolder>() {
             }
             binding.tvStatus.setBackgroundResource(badgeRes)
         }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportViewHolder {
@@ -50,8 +51,10 @@ class ReportAdapter : RecyclerView.Adapter<ReportAdapter.ReportViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ReportViewHolder, position: Int) {
+        Log.d("ReportAdapter", "바인딩 중: ${reports[position].content}")
         holder.bind(reports[position])
     }
+
 
     override fun getItemCount(): Int = reports.size
 }

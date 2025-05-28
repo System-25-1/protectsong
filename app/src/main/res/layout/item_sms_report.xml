@@ -17,9 +17,19 @@
         android:textSize="12sp"
         android:textColor="#FFFFFF"
         android:layout_gravity="end"
-        android:background="@drawable/bg_badge_in_progress"/>
+        android:background="@drawable/bg_badge_in_progress" />
 
-    <!-- 내용 줄 -->
+    <!-- 날짜 (상단에 표시) -->
+    <TextView
+        android:id="@+id/tvDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2025.05.27 13:00"
+        android:textSize="12sp"
+        android:textColor="#888888"
+        android:layout_marginTop="4dp" />
+
+    <!-- 카테고리 -->
     <TextView
         android:id="@+id/tvCategory"
         android:layout_width="wrap_content"
@@ -27,31 +37,23 @@
         android:text="카테고리"
         android:textStyle="bold"
         android:textSize="16sp"
-        android:layout_marginTop="6dp"/>
+        android:layout_marginTop="6dp" />
 
+    <!-- 건물명 -->
     <TextView
         android:id="@+id/tvBuilding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="건물명"
         android:textSize="14sp"
-        android:layout_marginTop="2dp"/>
+        android:layout_marginTop="2dp" />
 
+    <!-- 신고 내용 -->
     <TextView
         android:id="@+id/tvContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="민원내용"
         android:textSize="14sp"
-        android:layout_marginTop="2dp"/>
-    <!-- 상태 뱃지 아래에 날짜 표시 -->
-    <TextView
-        android:id="@+id/tvDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="날짜"
-        android:textSize="12sp"
-        android:textColor="#888888"
-        android:layout_marginBottom="4dp"/>
-
+        android:layout_marginTop="2dp" />
 </LinearLayout>

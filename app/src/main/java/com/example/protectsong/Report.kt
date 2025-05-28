@@ -1,16 +1,14 @@
 package com.example.protectsong.model
 
-import java.util.Date
-
+import com.google.firebase.Timestamp
 
 data class Report(
-    val id: String = "",
-    val building: String = "",
-    val content: String = "",
-    val type: String = "",
-    val timestamp: String = "",
-    val uid: String = "",          // 또는 userId 로 변경 (Firestore 필드 기준)
-    val date: Date? = null,         // 🔍 날짜 검색 시 사용된다면 추가
-    val number: String = "",       // 🔍 신고번호 검색 시 사용된다면 추가
-    val status: String = ""        // 🔔 처리상태 표시 시 필요
+    var id: String? = null, // ✅ 문서 ID를 위한 필드 추가
+    val uid: String? = null,
+    val content: String? = null,
+    val building: String? = null,
+    val type: String? = null,
+    val timestamp: Timestamp? = null,
+    val status: String? = null,
+    val files: Any? = null
 )

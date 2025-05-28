@@ -52,23 +52,12 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- 🔍 민원 내용 검색 -->
         <EditText
-            android:id="@+id/etDate"
+            android:id="@+id/etContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="2025/05/19"
-            android:background="@android:drawable/edit_text"
-            android:padding="12dp"
-            android:layout_marginBottom="8dp"/>
-
-        <EditText
-            android:id="@+id/etReportNumber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="신고(사건)번호 입력"
-            android:background="@android:drawable/edit_text"
-            android:padding="12dp"
-            android:layout_marginBottom="8dp"/>
+            android:hint="민원 내용 입력" />
 
         <Button
             android:id="@+id/btnSearch"
@@ -77,7 +66,7 @@
             android:text="검색"
             android:background="#002366"
             android:textColor="#FFFFFF"
-            android:padding="12dp"/>
+            android:padding="12dp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -85,29 +74,14 @@
             android:text="※ 최근 1년 이내의 신고내역을 조회할 수 있습니다."
             android:textSize="12sp"
             android:textColor="#666666"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp" />
 
+        <!-- 📄 신고 내역 리스트 -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewReports"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginTop="8dp"
-            android:visibility="gone"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="신고(접수)일자와 신고(사건)번호 입력 후\n검색 버튼을 누르세요."
-                android:textColor="#888888"
-                android:gravity="center"
-                android:textSize="14sp" />
-        </LinearLayout>
+            android:layout_marginTop="8dp" />
     </LinearLayout>
 </LinearLayout>

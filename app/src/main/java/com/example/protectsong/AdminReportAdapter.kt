@@ -38,7 +38,7 @@ class AdminReportAdapter(
         private val spinnerStatus: Spinner = itemView.findViewById(R.id.spinnerStatus)
 
         fun bind(report: Report) {
-            tvNumber.text = "신고번호: ${report.number}"
+            tvNumber.text = "신고번호: ${report.id}"
             tvContent.text = "내용: ${report.content}"
 
             val statusOptions = listOf("접수됨", "처리중", "완료")

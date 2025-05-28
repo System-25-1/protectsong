@@ -1,12 +1,14 @@
 package com.example.protectsong
 
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.protectsong.adapter.ReportAdapter
 import com.example.protectsong.databinding.ActivityMyReportBinding
 import com.example.protectsong.model.Report
-import com.example.protectsong.adapter.ReportAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -30,38 +32,72 @@ class MyReportActivity : AppCompatActivity() {
         binding.recyclerViewReports.layoutManager = LinearLayoutManager(this)
         binding.recyclerViewReports.adapter = adapter
 
+
+        // ✅ 뒤로가기
         binding.backText.setOnClickListener {
             finish()
         }
 
-        val uid = auth.currentUser?.uid
-        if (uid == null) {
-            Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show()
-            return
+        // ✅ 검색 버튼
+        binding.btnSearch.setOnClickListener {
+            val queryText = binding.etContent.text.toString().trim()
+
+            if (queryText.isEmpty()) {
+                loadMyReports()
+                return@setOnClickListener
+            }
+
+            val uid = auth.currentUser?.uid ?: return@setOnClickListener
+
+            firestore.collection("smsReports")
+                .whereEqualTo("uid", uid)
+                .get()
+                .addOnSuccessListener { result ->
+                    val matchedReports = result.documents.mapNotNull { doc ->
+                        val report = doc.toObject(Report::class.java)?.apply { id = doc.id }
+                        if (report?.content?.contains(queryText, ignoreCase = true) == true) report else null
+                    }.sortedByDescending { it.timestamp }
+
+                    if (matchedReports.isEmpty()) {
+                        Toast.makeText(this, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show()
+                    }
+
+                    adapter.submitList(matchedReports)
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "검색에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                }
         }
 
-        // 🔽 최신순 정렬된 문자 신고 조회
+        // ✅ 전체 신고 내역 불러오기
+        loadMyReports()
+    }
+
+    private fun loadMyReports() {
+        val uid = auth.currentUser?.uid ?: return
+        Log.d("MyReportActivity", "현재 로그인 UID: $uid")
+
         firestore.collection("smsReports")
-            .whereEqualTo("userId", uid)
-            .orderBy("date", Query.Direction.DESCENDING)
+            .whereEqualTo("uid", uid)
+            .orderBy("timestamp", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { documents ->
-                val reports = documents.mapNotNull { doc ->
-                    Report(
-                        id = doc.id,
-                        date = doc.getTimestamp("date")?.toDate(),
-                        content = doc.getString("content") ?: "",
-                        building = doc.getString("building") ?: "",
-                        status = doc.getString("status") ?: "접수됨"
-                    )
+                val reports: List<Report> = documents.mapNotNull { doc ->
+                    doc.toObject(Report::class.java)?.also { it.id = doc.id }
                 }
-                adapter.submitList(reports)
+
+                Log.d("MyReportActivity", "불러온 문서 수: ${reports.size}")
+
                 if (reports.isEmpty()) {
-                    Toast.makeText(this, "신고 내역이 없습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "조회된 신고 내역이 없습니다.", Toast.LENGTH_SHORT).show()
                 }
+
+                adapter.submitList(reports)
             }
-            .addOnFailureListener {
-                Toast.makeText(this, "오류 발생: ${it.message}", Toast.LENGTH_SHORT).show()
+            .addOnFailureListener { e ->
+                Log.e("MyReportActivity", "쿼리 실패: ${e.message}", e)
+                Toast.makeText(this, "신고 조회에 실패했습니다", Toast.LENGTH_SHORT).show()
             }
     }
+
 }

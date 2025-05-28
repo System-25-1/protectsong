@@ -1,6 +1,5 @@
 package com.example.protectsong
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +13,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 class AdminReportListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAdminReportListBinding
-    private val reports = mutableListOf<Report>()
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var adapter: AdminReportAdapter
@@ -39,34 +37,14 @@ class AdminReportListActivity : AppCompatActivity() {
                     loadReports()
                 }
             }
-
-        // 테스트용 리포트 불러오기
-        FirebaseFirestore.getInstance().collection("smsReports")
-            .get()
-            .addOnSuccessListener { documents ->
-                reports.clear()
-                for (doc in documents) {
-                    val report = Report(
-                        id = doc.id,
-                        building = doc.getString("building") ?: "",
-                        content = doc.getString("content") ?: "",
-                        type = doc.getString("type") ?: "",
-                        timestamp = doc.getTimestamp("timestamp")?.toDate()?.toString() ?: "",
-                        uid = doc.getString("uid") ?: ""
-                    )
-                    reports.add(report)
-                }
-                // 필요에 따라 어댑터 연결
-                // binding.recyclerViewReports.adapter?.notifyDataSetChanged()
-            }
             .addOnFailureListener {
-                Toast.makeText(this, "불러오기 실패: ${it.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "권한 확인 실패: ${it.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
     private fun setupRecyclerView() {
         adapter = AdminReportAdapter { report, newStatus ->
-            firestore.collection("reports").document(report.id)
+            firestore.collection("smsReports").document(report.id ?: return@AdminReportAdapter)
                 .update("status", newStatus)
         }
         binding.recyclerViewAdminReports.layoutManager = LinearLayoutManager(this)
@@ -74,11 +52,11 @@ class AdminReportListActivity : AppCompatActivity() {
     }
 
     private fun loadReports() {
-        firestore.collection("reports")
+        firestore.collection("smsReports")
             .get()
             .addOnSuccessListener { documents ->
-                val reports = documents.mapNotNull {
-                    it.toObject(Report::class.java).copy(id = it.id)
+                val reports = documents.mapNotNull { doc ->
+                    doc.toObject(Report::class.java).apply { id = doc.id }
                 }
                 adapter.submitList(reports)
             }
