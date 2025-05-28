@@ -1,15 +1,16 @@
+# IntelliJ / Android Studio
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
+/.idea/                # .idea 디렉터리 전체 무시
+
+# Gradle
+/.gradle/              # Gradle 캐시 무시
+/build/                # 빌드 결과물 무시
+
+# Android
+/captures/             # 화면 캡처
+.externalNativeBuild/  # CMake 빌드
+.cxx/                  # NDK 빌드
+
+# 기타
+/local.properties      # SDK 경로 등 로컬 설정
+.DS_Store              # macOS
