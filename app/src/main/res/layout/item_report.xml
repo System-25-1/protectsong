@@ -1,55 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="12dp"
-    android:background="#F5F5F5"
+    android:background="@drawable/bg_card"
     android:layout_marginBottom="8dp">
 
-    <TextView
-        android:id="@+id/tvType"
+    <!-- 🟦 상단: 카테고리 / 건물명 / 처리상태 (한 줄) -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="분류"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="#222222" />
+        android:orientation="horizontal"
+        android:weightSum="3">
 
+        <TextView
+            android:id="@+id/tvCategory"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="카테고리"
+            android:textStyle="bold"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvBuilding"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="건물명"
+            android:textSize="14sp"
+            android:gravity="center" />
+
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="처리상태"
+            android:textAlignment="viewEnd"
+            android:textColor="#FFFFFF"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:background="@drawable/bg_status_processing"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <!-- 🟨 하단: 민원 내용 -->
     <TextView
         android:id="@+id/tvContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="내용"
+        android:text="민원 내용이 여기에 들어갑니다."
+        android:layout_marginTop="6dp"
         android:textSize="14sp"
-        android:textColor="#333333"
-        android:layout_marginTop="4dp" />
-
-    <TextView
-        android:id="@+id/tvBuilding"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="위치"
-        android:textSize="13sp"
-        android:textColor="#888888"
-        android:layout_marginTop="2dp" />
-
-    <TextView
-        android:id="@+id/tvDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="신고일자"
-        android:layout_marginTop="6dp" />
-
-    <TextView
-        android:id="@+id/tvNumber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="신고번호" />
-
-    <TextView
-        android:id="@+id/tvStatus"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="처리상태" />
+        android:textColor="#000000"
+        android:maxLines="2"
+        android:ellipsize="end"/>
 </LinearLayout>
