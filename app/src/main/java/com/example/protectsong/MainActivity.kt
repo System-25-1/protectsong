@@ -8,6 +8,7 @@ import android.media.MediaRecorder
 import android.net.Uri
 import android.os.*
 import android.util.Log
+import android.view.accessibility.AccessibilityManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -16,10 +17,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.protectsong.databinding.ActivityMainBinding
+import com.example.protectsong.whistle.WhistleService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import java.io.File
+import android.provider.Settings
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,13 +43,22 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // ─── 포그라운드 서비스로 WhistleService 시작 ───
+        Intent(this, WhistleService::class.java).also { svcIntent ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                ContextCompat.startForegroundService(this, svcIntent)
+            } else {
+                startService(svcIntent)
+            }
+        }
+
         // 접근성 권한이 꺼져 있다면 설정 화면으로 유도
         if (!isAccessibilityServiceEnabled()) {
             startActivity(Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS))
             Toast.makeText(this, "‘지키송 휘슬 서비스’를 활성화해주세요", Toast.LENGTH_LONG).show()
         }
 
-        // 툴바 및 내비게이션 드로어 셋업
+        // 툴바 및 네비게이션 드로어 셋업
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         toggle = ActionBarDrawerToggle(
@@ -57,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         toggle.syncState()
         toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, android.R.color.white)
 
-        // 헤더 뷰
+        // 헤더 뷰 초기화
         val header = binding.navView.getHeaderView(0)
         val tvUserName = header.findViewById<TextView>(R.id.tvUserName)
         val tvStudentId = header.findViewById<TextView>(R.id.tvStudentId)
@@ -77,7 +89,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, EditProfileActivity::class.java))
         }
 
-        // 사용자 정보 로드
+        // 사용자 정보 로드 및 FCM 토큰 갱신
         FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
             val db = FirebaseFirestore.getInstance()
             db.collection("users").document(uid)
@@ -107,12 +119,13 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        // 버튼들
+        // 버튼 클릭 리스너
         binding.btnSmsReport.setOnClickListener {
             startActivity(Intent(this, SmsReportActivity::class.java))
         }
         binding.btnEmergency.setOnClickListener { makeEmergencyCall() }
 
+        // 휘슬 사운드 버튼
         whistlePlayer = MediaPlayer.create(this, R.raw.whistle_sound)
         binding.btnWhistle.setOnClickListener {
             isWhistleOn = !isWhistleOn
@@ -128,10 +141,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // 즉시 통화 아이콘
         binding.ivCall.setOnClickListener {
             startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:010-8975-0220")))
         }
 
+        // 하단 네비게이션
         binding.bottomNavigation.selectedItemId = R.id.nav_home
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -161,6 +176,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // 권한 요청 및 소리 모니터링 시작
         requestMicrophonePermission()
         startLoudSoundMonitor()
     }
@@ -250,15 +266,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        whistlePlayer.release()
-        if (::recorder.isInitialized) {
-            try { recorder.stop() } catch (_: Exception) {}
-            recorder.release()
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         loadNotices()
@@ -298,13 +305,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isAccessibilityServiceEnabled(): Boolean {
-        val am = getSystemService(ACCESSIBILITY_SERVICE)
-                as android.view.accessibility.AccessibilityManager
-        val enabled = android.provider.Settings.Secure.getString(
+        val am = getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
+        val enabled = Settings.Secure.getString(
             contentResolver,
-            android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
         ) ?: return false
-
         return enabled.split(":").any { it.contains(packageName) }
     }
 }
