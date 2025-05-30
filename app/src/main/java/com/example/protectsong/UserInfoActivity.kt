@@ -74,9 +74,11 @@ class UserInfoActivity : AppCompatActivity() {
 
         binding.saveButton.isEnabled = false
 
-        binding.backButton.setOnClickListener {
+
+        binding.backText.setOnClickListener {
             finish()
         }
+
 
         binding.verifyPhoneButton.setOnClickListener {
             val phoneNumber = binding.phoneEdit.text.toString()
