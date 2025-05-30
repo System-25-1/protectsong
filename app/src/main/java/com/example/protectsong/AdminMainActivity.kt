@@ -2,8 +2,9 @@ package com.example.protectsong
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
-import android.widget.Toast
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -23,6 +24,7 @@ class AdminMainActivity : AppCompatActivity() {
     private var currentPage = 1
     private val itemsPerPage = 10
     private var allReports = listOf<SmsReport>()
+    private var filteredReports = listOf<SmsReport>()
     private var reportListener: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +45,7 @@ class AdminMainActivity : AppCompatActivity() {
         toggle.syncState()
         toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, android.R.color.white)
 
-        // ✅ 드로어 헤더 정보
+        // ✅ 드로어 헤더
         val headerView = binding.navView.getHeaderView(0)
         val tvUserName = headerView.findViewById<TextView>(R.id.tvUserName)
         val tvStudentId = headerView.findViewById<TextView>(R.id.tvStudentId)
@@ -62,24 +64,38 @@ class AdminMainActivity : AppCompatActivity() {
 
         logoutButton.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
-            val intent = Intent(this, SplashActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
+            startActivity(Intent(this, SplashActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            })
         }
 
         tvSettings.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
 
-        // ✅ 리사이클러뷰
+        // ✅ 리사이클러뷰 설정
         adapter = AdminPagedReportAdapter { report ->
             val intent = Intent(this, AdminReportDetailActivity::class.java)
             intent.putExtra("report", report)
             startActivity(intent)
         }
-
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
+
+        // ✅ 필터링 기능 연결
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) = applyFilters()
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        binding.spinnerStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long
+            ) = applyFilters()
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
 
         setupPaginationControls()
 
@@ -101,7 +117,6 @@ class AdminMainActivity : AppCompatActivity() {
         }
     }
 
-    // ✅ 실시간 리스너 등록
     private fun startListeningReports() {
         reportListener = db.collection("smsReports")
             .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -123,14 +138,29 @@ class AdminMainActivity : AppCompatActivity() {
                         timestamp = doc.getTimestamp("timestamp")?.toDate()?.time ?: 0L
                     )
                 }
-                updatePagedData()
+                applyFilters()
             }
+    }
+
+    private fun applyFilters() {
+        val keyword = binding.etSearch.text.toString().trim()
+        val selectedStatus = binding.spinnerStatus.selectedItem.toString()
+
+        filteredReports = allReports.filter { report ->
+            val matchesKeyword = keyword.isEmpty() || report.content.contains(keyword, ignoreCase = true)
+            val matchesStatus = selectedStatus == "전체" || report.status == selectedStatus
+            matchesKeyword && matchesStatus
+        }
+
+        currentPage = 1
+        updatePagedData()
+        updatePaginationButtons()
     }
 
     private fun updatePagedData() {
         val start = (currentPage - 1) * itemsPerPage
-        val end = (start + itemsPerPage).coerceAtMost(allReports.size)
-        val paged = allReports.subList(start, end)
+        val end = (start + itemsPerPage).coerceAtMost(filteredReports.size)
+        val paged = filteredReports.subList(start, end)
         adapter.submitList(paged)
         updatePageLabel()
     }
@@ -142,20 +172,44 @@ class AdminMainActivity : AppCompatActivity() {
                 updatePagedData()
             }
         }
+
         binding.btnNext.setOnClickListener {
-            if ((currentPage * itemsPerPage) < allReports.size) {
+            if ((currentPage * itemsPerPage) < filteredReports.size) {
                 currentPage++
                 updatePagedData()
             }
         }
     }
 
+    private fun updatePaginationButtons() {
+        binding.pageNumberContainer.removeAllViews()
+        val totalPages = getTotalPages()
+
+        // ⬅ 이전 버튼
+        binding.pageNumberContainer.addView(binding.btnPrev)
+
+        for (i in 1..totalPages) {
+            val btn = Button(this).apply {
+                text = i.toString()
+                setOnClickListener {
+                    currentPage = i
+                    updatePagedData()
+                }
+            }
+            binding.pageNumberContainer.addView(btn)
+        }
+
+        // ➡ 다음 버튼
+        binding.pageNumberContainer.addView(binding.btnNext)
+    }
+
     private fun updatePageLabel() {
-        binding.tvPage.text = "페이지 $currentPage / ${getTotalPages()}"
+        val total = getTotalPages()
+        binding.tvPage.text = "페이지 $currentPage / $total"
     }
 
     private fun getTotalPages(): Int {
-        return if (allReports.isEmpty()) 1 else ((allReports.size - 1) / itemsPerPage + 1)
+        return if (filteredReports.isEmpty()) 1 else ((filteredReports.size - 1) / itemsPerPage + 1)
     }
 
     override fun onStart() {
