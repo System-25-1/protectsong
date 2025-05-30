@@ -154,7 +154,7 @@
                 android:layout_height="55dp"
                 android:background="@drawable/bg_rectangle_button"
                 android:src="@android:drawable/ic_lock_silent_mode_off"
-                app:tint="#000000"
+                android:tint="#000000"
                 android:scaleType="centerInside"
                 android:contentDescription="호루라기" />
             <TextView
