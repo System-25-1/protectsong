@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- 사이렌 돔 -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M6,14h12v-3.5c0,-3.038 -2.462,-5.5 -5.5,-5.5S7,7.462 7,10.5V14z" />
+
+    <!-- 바닥 라인 -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M4,16h16v2H4z" />
+
+    <!-- 사이렌 깜빡이는 선들 -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M1,11h2v2H1zM21,11h2v2h-2zM11,1h2v2h-2zM4.22,4.22l1.42,1.42-1.42,-1.42zM18.36,4.22l1.42,1.42-1.42,-1.42z" />
+</vector>
