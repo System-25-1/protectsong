@@ -3,6 +3,7 @@ package com.example.protectsong
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.protectsong.databinding.ActivityPostDetailBinding
@@ -83,11 +84,20 @@ class PostDetailActivity : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(this, "불러오기 실패: ${it.message}", Toast.LENGTH_SHORT).show()
                 finish()
+
             }
 
         // 📦 목록으로 돌아가기
         binding.btnClose.setOnClickListener {
+            val intent = Intent(this, PostListActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
             finish()
         }
+
+        findViewById<TextView>(R.id.backText).setOnClickListener {
+            finish()
+        }
+
     }
 }

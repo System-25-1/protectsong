@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF">
@@ -11,33 +12,43 @@
         android:orientation="vertical"
         android:padding="0dp">
 
-        <!-- 상단 전체 파란바 -->
-        <RelativeLayout
+        <!-- 상단 툴바 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="#082478">
 
-            <ImageButton
-                android:id="@+id/backButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_back"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="15dp"
-                android:background="@drawable/circle_white_bg"
-                android:padding="8dp"
-                android:textStyle="bold"/>
-
+            <!-- '◀ 뒤로' 텍스트 -->
             <TextView
+                android:id="@+id/backText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="◀ 뒤로"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.5" />
+
+            <!-- 가운데 타이틀 -->
+            <TextView
+                android:id="@+id/titleText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="사용자 정보 입력"
-                android:layout_marginTop="25dp"
                 android:textColor="#FFFFFF"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_centerInParent="true" />
-        </RelativeLayout>
+                android:fontFamily="sans-serif"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- 안내 텍스트 -->
         <LinearLayout
@@ -63,108 +74,100 @@
                 android:layout_marginLeft="10dp"/>
         </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        <!-- 사용자 정보 입력 박스 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:layout_marginHorizontal="16dp"
             android:padding="16dp"
-        android:background="@drawable/rounded_gray_border"
-        android:layout_marginBottom="24dp"
-        android:clipToOutline="true">
-        <!--전화번호-->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="전화번호 *"
-            android:textColor="#000000"
-            android:textSize="14sp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="4dp"/>
-
-        <!-- 전화번호 입력 + 인증하기 버튼 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/phoneEdit"
-                android:layout_width="0dp"
-                android:layout_weight="1.5"
-                android:layout_height="48dp"
-                android:hint="010-1234-5678"
-                android:background="@drawable/rounded_input_bg_white"
-                android:paddingHorizontal="12dp"
-                android:inputType="phone"
-                android:textColorHint="#999999"
-                android:layout_marginTop="5dp"/>
-
-            <Button
-                android:id="@+id/verifyPhoneButton"
-                android:layout_width="0dp"
-                android:layout_weight="0.8"
-                android:layout_height="48dp"
-                android:text="인증하기"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/button_border"
-                android:textColor="#082478"
-                android:textStyle="bold"
-                android:layout_marginTop="5dp"/>
-        </LinearLayout>
-
-        <!-- 인증번호 입력 + 인증번호 확인 버튼 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
-
-            <EditText
-                android:id="@+id/verificationCodeEdit"
-                android:layout_width="0dp"
-                android:layout_weight="1.5"
-                android:layout_height="48dp"
-                android:hint="인증번호 입력"
-                android:background="@drawable/rounded_input_bg_white"
-                android:paddingHorizontal="12dp"
-                android:inputType="number"
-                android:textColorHint="#999999" />
-
-            <Button
-                android:id="@+id/checkCodeButton"
-                android:layout_width="0dp"
-                android:layout_weight="0.8"
-                android:layout_height="48dp"
-                android:text="인증번호 확인"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/button_border"
-                android:textColor="#082478"
-                android:textStyle="bold"/>
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="24dp"
+            android:background="@drawable/rounded_gray_border"
             android:layout_marginBottom="24dp"
-            android:background="#082478" />
+            android:clipToOutline="true">
 
-        <!-- 이름 + 사진 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <!-- 왼쪽 입력 필드 묶음 -->
-            <LinearLayout
-                android:layout_width="0dp"
+            <!-- 전화번호 -->
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.8"
-                android:orientation="vertical"
-                android:layout_marginEnd="12dp">
+                android:text="전화번호 *"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="4dp"/>
 
-                <!-- 이름 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/phoneEdit"
+                    android:layout_width="0dp"
+                    android:layout_weight="1.5"
+                    android:layout_height="48dp"
+                    android:hint="010-1234-5678"
+                    android:background="@drawable/rounded_input_bg_white"
+                    android:paddingHorizontal="12dp"
+                    android:inputType="phone"
+                    android:textColorHint="#999999"
+                    android:layout_marginTop="5dp"/>
+
+                <Button
+                    android:id="@+id/verifyPhoneButton"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.8"
+                    android:layout_height="48dp"
+                    android:text="인증하기"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/button_border"
+                    android:textColor="#082478"
+                    android:textStyle="bold"
+                    android:layout_marginTop="5dp"/>
+            </LinearLayout>
+
+            <!-- 인증번호 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <EditText
+                    android:id="@+id/verificationCodeEdit"
+                    android:layout_width="0dp"
+                    android:layout_weight="1.5"
+                    android:layout_height="48dp"
+                    android:hint="인증번호 입력"
+                    android:background="@drawable/rounded_input_bg_white"
+                    android:paddingHorizontal="12dp"
+                    android:inputType="number"
+                    android:textColorHint="#999999" />
+
+                <Button
+                    android:id="@+id/checkCodeButton"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.8"
+                    android:layout_height="48dp"
+                    android:text="인증번호 확인"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/button_border"
+                    android:textColor="#082478"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:background="#082478" />
+
+            <!-- 이름, 생년월일, 학번 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -182,7 +185,6 @@
                     android:paddingHorizontal="12dp"
                     android:layout_marginTop="5dp"/>
 
-                <!-- 생년월일 -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -202,7 +204,6 @@
                     android:paddingHorizontal="12dp"
                     android:layout_marginTop="5dp"/>
 
-                <!-- 학번 -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -221,74 +222,58 @@
                     android:layout_marginTop="5dp"/>
             </LinearLayout>
 
-            <!-- 오른쪽 사진 선택 -->
-            <ImageButton
-                android:id="@+id/pickImageButton"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:background="@drawable/button_border"
-                android:scaleType="fitCenter"
-                android:src="@drawable/login"
-                android:tint="#082478" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:background="#082478" />
 
-        </LinearLayout>
+            <!-- 보호자 정보 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="보호자 정보"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="2dp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
-            android:background="#082478" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp">
 
-        <!-- 보호자 정보 구역 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="보호자 정보"
-            android:textColor="#000000"
-            android:textSize="14sp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="2dp" />
+                <EditText
+                    android:id="@+id/guardianNameEdit"
+                    android:layout_width="0dp"
+                    android:layout_weight="1.5"
+                    android:layout_height="48dp"
+                    android:background="@drawable/rounded_input_bg_white"
+                    android:hint="이름"
+                    android:paddingHorizontal="12dp"
+                    android:layout_marginEnd="8dp" />
 
-        <!-- 보호자 이름 + 관계 (수평 배치) -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="4dp">
+                <Spinner
+                    android:id="@+id/relationshipSpinner"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="48dp"
+                    android:background="@drawable/spinner_with_arrow" />
+            </LinearLayout>
 
             <EditText
-                android:id="@+id/guardianNameEdit"
-                android:layout_width="0dp"
-                android:layout_weight="1.5"
+                android:id="@+id/guardianPhoneEdit"
+                android:layout_width="match_parent"
                 android:layout_height="48dp"
+                android:hint="010-1234-5678"
                 android:background="@drawable/rounded_input_bg_white"
-                android:hint="이름"
                 android:paddingHorizontal="12dp"
-                android:layout_marginEnd="8dp" />
-
-            <Spinner
-                android:id="@+id/relationshipSpinner"
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
-                android:layout_height="48dp"
-                android:background="@drawable/spinner_with_arrow" />
+                android:inputType="phone"
+                android:textColorHint="#999999"
+                android:layout_marginTop="5dp"/>
         </LinearLayout>
-
-        <!-- 보호자 전화번호 -->
-        <EditText
-            android:id="@+id/guardianPhoneEdit"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="010-1234-5678"
-            android:background="@drawable/rounded_input_bg_white"
-            android:paddingHorizontal="12dp"
-            android:inputType="phone"
-            android:textColorHint="#999999"
-            android:layout_marginTop="5dp"/>
-
-
-    </LinearLayout>
 
         <!-- 저장 버튼 -->
         <Button
@@ -301,6 +286,5 @@
             android:layout_marginTop="32dp"
             android:layout_marginBottom="32dp"
             android:background="#082478" />
-
     </LinearLayout>
 </ScrollView>

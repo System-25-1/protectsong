@@ -10,38 +10,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- 🟦 툴바 -->
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:background="#002366"
-            android:layout_marginTop="40dp"
+        <!-- 🟦 툴바 include -->
+        <include
+            android:id="@+id/toolbar_include"
+            layout="@layout/include_toolbar"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- 중앙 타이틀 -->
-        <TextView
-            android:id="@+id/toolbar_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="지키송"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginTop="14dp"
-            app:layout_constraintTop_toTopOf="@id/toolbar"
-            app:layout_constraintBottom_toBottomOf="@id/toolbar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- 📌 게시글 상세보기 내용 -->
+        <!-- ✅ 게시글 상세보기 내용 -->
         <ScrollView
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:padding="16dp"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintTop_toBottomOf="@id/toolbar_include"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">

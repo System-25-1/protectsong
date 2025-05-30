@@ -27,10 +27,9 @@ class EditProfileActivity : AppCompatActivity() {
 
         firestore = FirebaseFirestore.getInstance()
 
-        // 뒤로가기
         binding.backText.setOnClickListener { finish() }
 
-        // 보호자 관계 스피너 설정
+        // 보호자 관계 스피너
         val adapter = ArrayAdapter.createFromResource(
             this,
             R.array.relationship_options,
@@ -39,13 +38,9 @@ class EditProfileActivity : AppCompatActivity() {
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         binding.spinnerRelation.adapter = adapter
 
-        // 갤러리 이미지 선택
         setupProfileImagePicker()
-
-        // Firestore에서 사용자 정보 불러오기
         loadUserInfo()
 
-        // 수정 버튼
         binding.btnUpdate.setOnClickListener {
             saveGuardianInfo()
         }
@@ -61,12 +56,13 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun setupProfileImagePicker() {
-        binding.selectPhotoText.setOnClickListener {
+        binding.btnCameraOverlay.setOnClickListener {
             pickImageLauncher.launch("image/*")
         }
     }
 
-    // Firestore에서 사용자 정보 불러오기
+
+    // 사용자 정보 + 프로필 이미지 불러오기
     private fun loadUserInfo() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val docRef = firestore.collection("users").document(uid)
@@ -87,11 +83,12 @@ class EditProfileActivity : AppCompatActivity() {
                     spinnerRelation.setSelection(pos)
                 }
 
-                // 프로필 이미지 불러오기
-                val imageRef = FirebaseStorage.getInstance().getReference("profile_images/$uid.jpg")
-                imageRef.downloadUrl.addOnSuccessListener { uri ->
-                    Glide.with(this@EditProfileActivity)
-                        .load(uri)
+                // ✅ Glide로 원형 이미지 로딩
+                val imageUrl = document.getString("profileImageUrl")
+                if (!imageUrl.isNullOrEmpty()) {
+                    Glide.with(this)
+                        .load(imageUrl)
+                        .circleCrop()
                         .into(binding.profileImage)
                 }
             }
@@ -119,7 +116,6 @@ class EditProfileActivity : AppCompatActivity() {
         firestore.collection("users").document(uid)
             .update(updateMap)
             .addOnSuccessListener {
-                // SharedPreferences 저장
                 val prefs = getSharedPreferences("guardian_info", Context.MODE_PRIVATE)
                 prefs.edit().apply {
                     putString("guardian_name", guardianName)
@@ -129,26 +125,31 @@ class EditProfileActivity : AppCompatActivity() {
                 }
 
                 Toast.makeText(this, "수정되었습니다", Toast.LENGTH_SHORT).show()
-                // ✅ MainActivity로 이동
                 val intent = Intent(this, MainActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
-                finish() // 현재 EditProfileActivity 종료
-
+                finish()
             }
             .addOnFailureListener {
                 Toast.makeText(this, "정보 수정 실패: ${it.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
-    // ☁프로필 사진 Firebase Storage 업로드
+    // 이미지 업로드 + URL 저장
     private fun uploadProfileImageToFirebase(uri: Uri) {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val storageRef = FirebaseStorage.getInstance().getReference("profile_images/$uid.jpg")
 
         storageRef.putFile(uri)
             .addOnSuccessListener {
-                Toast.makeText(this, "사진 업로드 완료", Toast.LENGTH_SHORT).show()
+                storageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                    val imageUrl = downloadUri.toString()
+                    firestore.collection("users").document(uid)
+                        .update("profileImageUrl", imageUrl)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "사진 업로드 및 저장 완료", Toast.LENGTH_SHORT).show()
+                        }
+                }
             }
             .addOnFailureListener {
                 Toast.makeText(this, "사진 업로드 실패", Toast.LENGTH_SHORT).show()

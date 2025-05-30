@@ -7,8 +7,10 @@ import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.*
+import android.provider.Settings
 import android.util.Log
 import android.view.accessibility.AccessibilityManager
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -16,13 +18,13 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
 import com.example.protectsong.databinding.ActivityMainBinding
 import com.example.protectsong.whistle.WhistleService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import java.io.File
-import android.provider.Settings
 
 class MainActivity : AppCompatActivity() {
 
@@ -43,13 +45,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 접근성 권한이 꺼져 있다면 설정 화면으로 유도
+        // 접근성 권한 유도
         if (!isAccessibilityServiceEnabled()) {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
             Toast.makeText(this, "‘지키송 휘슬 서비스’를 활성화해주세요", Toast.LENGTH_LONG).show()
         }
 
-        // 툴바 및 네비게이션 드로어 셋업
+        // 툴바 & 네비게이션 드로어
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         toggle = ActionBarDrawerToggle(
@@ -62,6 +64,7 @@ class MainActivity : AppCompatActivity() {
 
         // 헤더 뷰 초기화
         val header = binding.navView.getHeaderView(0)
+        val profileImageView = header.findViewById<ImageView>(R.id.navProfileImage)
         header.findViewById<TextView>(R.id.tvSettings).setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
@@ -73,25 +76,33 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, EditProfileActivity::class.java))
         }
 
-        // 사용자 정보 로드 및 FCM 토큰 갱신
+        // 사용자 정보 및 프로필 이미지 불러오기
         FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
             val db = FirebaseFirestore.getInstance()
             db.collection("users").document(uid)
                 .get()
                 .addOnSuccessListener { doc ->
-                    header.findViewById<TextView>(R.id.tvUserName).text = doc.getString("name")
-                        ?: "이름없음"
-                    header.findViewById<TextView>(R.id.tvStudentId).text = doc.getString("studentId")
-                        ?: "학번없음"
+                    header.findViewById<TextView>(R.id.tvUserName).text = doc.getString("name") ?: "이름없음"
+                    header.findViewById<TextView>(R.id.tvStudentId).text = doc.getString("studentId") ?: "학번없음"
+                    val imageUrl = doc.getString("profileImageUrl")
+                    if (!imageUrl.isNullOrEmpty()) {
+                        Glide.with(this)
+                            .load(imageUrl)
+                            .circleCrop()
+                            .into(profileImageView)
+                    }
                 }
+
             FirebaseMessaging.getInstance().token
                 .addOnCompleteListener { t ->
-                    if (t.isSuccessful) db.collection("users").document(uid)
-                        .update("fcmToken", t.result)
+                    if (t.isSuccessful) {
+                        db.collection("users").document(uid)
+                            .update("fcmToken", t.result)
+                    }
                 }
         }
 
-        // 네비게이션 메뉴 클릭 리스너
+        // 네비게이션 메뉴 리스너
         binding.navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_mypage -> Toast.makeText(this, "마이페이지 클릭됨", Toast.LENGTH_SHORT).show()
@@ -103,13 +114,13 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        // 버튼 클릭 리스너
+        // 긴급/문자 신고 버튼
         binding.btnSmsReport.setOnClickListener {
             startActivity(Intent(this, SmsReportActivity::class.java))
         }
         binding.btnEmergency.setOnClickListener { makeEmergencyCall() }
 
-        // 휘슬 사운드 버튼
+        // 휘슬 버튼
         whistlePlayer = MediaPlayer.create(this, R.raw.whistle_sound)
         binding.btnWhistle.setOnClickListener {
             isWhistleOn = !isWhistleOn
@@ -123,7 +134,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 즉시 통화 아이콘
+        // 통화 아이콘
         binding.ivCall.setOnClickListener {
             startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:010-8975-0220")))
         }
@@ -141,7 +152,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 권한 요청 및 소리 모니터링 시작
+        // 마이크 권한 및 큰 소리 감지
         requestMicrophonePermission()
         startLoudSoundMonitor()
     }
@@ -152,10 +163,13 @@ class MainActivity : AppCompatActivity() {
                 .get()
                 .addOnSuccessListener { doc ->
                     val role = doc.getString("role")
-                    if (role == "admin") startActivity(Intent(this, ChatListActivity::class.java))
-                    else Intent(this, ChatActivity::class.java).apply {
-                        putExtra("chatWithUserId", ADMIN_UID)
-                        startActivity(this)
+                    if (role == "admin") {
+                        startActivity(Intent(this, ChatListActivity::class.java))
+                    } else {
+                        Intent(this, ChatActivity::class.java).apply {
+                            putExtra("chatWithUserId", ADMIN_UID)
+                            startActivity(this)
+                        }
                     }
                 }
         }
@@ -176,7 +190,9 @@ class MainActivity : AppCompatActivity() {
     private fun requestMicrophonePermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
             != PackageManager.PERMISSION_GRANTED
-        ) ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 102)
+        ) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 102)
+        }
     }
 
     private fun startLoudSoundMonitor() {
@@ -189,14 +205,13 @@ class MainActivity : AppCompatActivity() {
             prepare()
             start()
         }
+
         soundHandler.post(object : Runnable {
             override fun run() {
                 val amp = recorder.maxAmplitude
                 if (amp > 50000 && !isLoudSoundDetected) {
                     isLoudSoundDetected = true
-                    Toast.makeText(this@MainActivity,
-                        "큰 소리 감지됨. 신고 화면으로 이동합니다.",
-                        Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "큰 소리 감지됨. 신고 화면으로 이동합니다.", Toast.LENGTH_SHORT).show()
                     makeEmergencyCall()
                 }
                 soundHandler.postDelayed(this, 500)
@@ -207,18 +222,24 @@ class MainActivity : AppCompatActivity() {
     private fun makeEmergencyCall() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
             != PackageManager.PERMISSION_GRANTED
-        ) ActivityCompat.requestPermissions(
-            this, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_CALL_PERMISSION
-        )
-        else startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:112")))
+        ) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_CALL_PERMISSION
+            )
+        } else {
+            startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:112")))
+        }
     }
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CALL_PERMISSION && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) makeEmergencyCall()
-        else Toast.makeText(this, "전화 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+        if (requestCode == REQUEST_CALL_PERMISSION && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
+            makeEmergencyCall()
+        } else {
+            Toast.makeText(this, "전화 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onResume() {

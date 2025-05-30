@@ -9,13 +9,15 @@
 
     <!-- 프로필 이미지 -->
     <ImageView
+        android:id="@+id/navProfileImage"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="8dp"
         android:background="@drawable/bg_profile_circle"
         android:src="@drawable/ic_profile_placeholder"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:clipToOutline="true" />
 
     <!-- 이름 + 학번 -->
     <TextView
