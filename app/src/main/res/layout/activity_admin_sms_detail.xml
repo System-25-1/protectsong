@@ -75,7 +75,7 @@
                 android:hint="내용을 입력하세요"
                 android:inputType="textMultiLine" />
 
-            <!-- 첨부 이미지 (동적으로 표시) -->
+            <!-- 첨부 미디어 영역 (영상 or 이미지) -->
             <LinearLayout
                 android:id="@+id/imageSection"
                 android:layout_width="match_parent"
@@ -91,14 +91,40 @@
                     android:textStyle="bold"
                     android:layout_marginBottom="8dp" />
 
-                <ImageView
-                    android:id="@+id/imageAttachment"
+                <FrameLayout
+                    android:id="@+id/mediaContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:scaleType="centerCrop"
-                    android:background="@color/light_gray" />
+                    android:layout_height="200dp">
+
+                    <ImageView
+                        android:id="@+id/imageAttachment"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:background="@color/light_gray" />
+
+                    <ImageView
+                        android:id="@+id/playIconOverlay"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_play_circle_overlay"
+                        android:visibility="gone" />
+                </FrameLayout>
             </LinearLayout>
 
+            <!-- 신고자 정보 -->
+            <TextView
+                android:id="@+id/tvReporter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="신고자  이름/학번"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- 상태 선택 -->
             <Spinner
                 android:id="@+id/spinnerStatus"
                 android:layout_width="wrap_content"
@@ -106,6 +132,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_gravity="end" />
 
+            <!-- 저장 버튼 -->
             <Button
                 android:id="@+id/btnSave"
                 android:layout_width="match_parent"
