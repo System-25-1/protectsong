@@ -1,8 +1,10 @@
 package com.example.protectsong
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -17,16 +19,21 @@ class PostListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPostListBinding
     private lateinit var postAdapter: PostAdapter
     private val postList = mutableListOf<Post>()
+
     private val db = FirebaseFirestore.getInstance()
 
-    // ✅ 글쓰기 결과 처리 (작성 성공 시 새로고침)
+    private val allNotices = mutableListOf<Post>()
+    private val allNormalPosts = mutableListOf<Post>()
+    private var currentPage = 1
+    private val itemsPerPage = 10
+    private var totalPages = 1
+
     private val writePostLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             loadPostsFromFirestore()
         }
     }
 
-    // ✅ 게시글 상세 결과 처리 (삭제 또는 수정 시 새로고침)
     private val detailLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             val deleted = result.data?.getBooleanExtra("postDeleted", false) ?: false
@@ -47,26 +54,18 @@ class PostListActivity : AppCompatActivity() {
         loadPostsFromFirestore()
         setupSearch()
 
-        // ✅ 글쓰기 버튼 기본 숨김
         binding.btnWritePost.visibility = View.GONE
-
-        // ✅ 관리자일 경우 글쓰기 버튼 표시
         val uid = FirebaseAuth.getInstance().currentUser?.uid
         if (uid != null) {
-            FirebaseFirestore.getInstance().collection("users").document(uid)
+            db.collection("users").document(uid)
                 .get()
                 .addOnSuccessListener { document ->
-                    val role = document.getString("role")
-                    if (role == "admin") {
+                    if (document.getString("role") == "admin") {
                         binding.btnWritePost.visibility = View.VISIBLE
                     }
                 }
-                .addOnFailureListener {
-                    Toast.makeText(this, "사용자 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
-                }
         }
 
-        // ✅ 글쓰기 버튼 클릭 시
         binding.btnWritePost.setOnClickListener {
             val intent = Intent(this, AdminPostWriteActivity::class.java)
             writePostLauncher.launch(intent)
@@ -77,13 +76,126 @@ class PostListActivity : AppCompatActivity() {
         postAdapter = PostAdapter(postList) { post ->
             val intent = Intent(this, PostDetailActivity::class.java)
             intent.putExtra("postId", post.id)
-            detailLauncher.launch(intent)  // ✅ 수정/삭제 결과를 감지
+            detailLauncher.launch(intent)
         }
 
         binding.recyclerViewPosts.apply {
             layoutManager = LinearLayoutManager(this@PostListActivity)
             adapter = postAdapter
             setHasFixedSize(true)
+        }
+    }
+
+    private fun loadPostsFromFirestore() {
+        db.collection("posts")
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { result ->
+                allNotices.clear()
+                allNormalPosts.clear()
+
+                for (document in result) {
+                    val post = document.toObject(Post::class.java)
+                    if (post.isNotice) allNotices.add(post)
+                    else allNormalPosts.add(post)
+                }
+
+                currentPage = 1
+                totalPages = (allNormalPosts.size + itemsPerPage - 1) / itemsPerPage
+                displayPage(currentPage)
+                drawPagination()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "게시글을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun displayPage(page: Int) {
+        val fromIndex = (page - 1) * itemsPerPage
+        val toIndex = minOf(fromIndex + itemsPerPage, allNormalPosts.size)
+        val currentPosts = if (fromIndex < allNormalPosts.size) allNormalPosts.subList(fromIndex, toIndex) else emptyList()
+
+        postList.clear()
+        postList.addAll(allNotices)
+        postList.addAll(currentPosts)
+        postAdapter.notifyDataSetChanged()
+    }
+
+    private fun drawPagination() {
+        val layout = binding.paginationLayout
+        layout.removeAllViews()
+
+        // < 이전
+        if (currentPage > 1) {
+            val prev = TextView(this).apply {
+                text = "< 이전"
+                textSize = 16f
+                setPadding(20, 0, 20, 0)
+                setTextColor(Color.parseColor("#002366"))
+                setOnClickListener {
+                    currentPage--
+                    displayPage(currentPage)
+                    drawPagination()
+                }
+            }
+            layout.addView(prev)
+        }
+
+        // 페이지 번호
+        for (i in 1..totalPages) {
+            val tv = TextView(this).apply {
+                text = "$i"
+                textSize = 16f
+                setPadding(12, 0, 12, 0)
+                setTextColor(if (i == currentPage) Color.BLUE else Color.DKGRAY)
+                setOnClickListener {
+                    currentPage = i
+                    displayPage(i)
+                    drawPagination()
+                }
+            }
+            layout.addView(tv)
+        }
+
+        // 다음 >
+        if (currentPage < totalPages) {
+            val next = TextView(this).apply {
+                text = "다음 >"
+                textSize = 16f
+                setPadding(20, 0, 0, 0)
+                setTextColor(Color.parseColor("#002366"))
+                setOnClickListener {
+                    currentPage++
+                    displayPage(currentPage)
+                    drawPagination()
+                }
+            }
+            layout.addView(next)
+        }
+    }
+
+    private fun setupSearch() {
+        binding.btnSearch.setOnClickListener {
+            val keyword = binding.etSearch.text.toString().trim()
+            if (keyword.isEmpty()) {
+                displayPage(currentPage)
+                drawPagination()
+                return@setOnClickListener
+            }
+
+            val filtered = allNormalPosts.filter {
+                it.title.contains(keyword, ignoreCase = true) ||
+                        it.content.contains(keyword, ignoreCase = true)
+            }
+
+            postList.clear()
+            postList.addAll(allNotices)
+            postList.addAll(filtered)
+            postAdapter.notifyDataSetChanged()
+
+            if (filtered.isEmpty()) {
+                Toast.makeText(this, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -98,73 +210,20 @@ class PostListActivity : AppCompatActivity() {
                 R.id.nav_home -> {
                     val uid = FirebaseAuth.getInstance().currentUser?.uid
                     if (uid != null) {
-                        FirebaseFirestore.getInstance().collection("users")
-                            .document(uid)
+                        db.collection("users").document(uid)
                             .get()
                             .addOnSuccessListener { document ->
-                                val role = document.getString("role")
-                                if (role == "admin") {
+                                if (document.getString("role") == "admin") {
                                     startActivity(Intent(this, AdminMainActivity::class.java))
                                 } else {
                                     startActivity(Intent(this, MainActivity::class.java))
                                 }
-                            }
-                            .addOnFailureListener {
-                                Toast.makeText(this, "사용자 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
                             }
                     }
                     true
                 }
                 R.id.nav_post -> true
                 else -> false
-            }
-        }
-    }
-
-    private fun loadPostsFromFirestore() {
-        db.collection("posts")
-            .orderBy("timestamp", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { result ->
-                val notices = mutableListOf<Post>()
-                val others = mutableListOf<Post>()
-
-                for (document in result) {
-                    val post = document.toObject(Post::class.java)
-                    if (post.isNotice) {
-                        notices.add(post)
-                    } else {
-                        others.add(post)
-                    }
-                }
-
-                postList.clear()
-                postList.addAll(notices)
-                postList.addAll(others)
-                postAdapter.notifyDataSetChanged()
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "게시글을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    private fun setupSearch() {
-        binding.btnSearch.setOnClickListener {
-            val keyword = binding.etSearch.text.toString().trim()
-
-            val filtered = if (keyword.isEmpty()) {
-                postList
-            } else {
-                postList.filter {
-                    it.title.contains(keyword, ignoreCase = true) ||
-                            it.content.contains(keyword, ignoreCase = true)
-                }
-            }
-
-            postAdapter.updateData(filtered.toMutableList())
-
-            if (filtered.isEmpty()) {
-                Toast.makeText(this, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show()
             }
         }
     }
