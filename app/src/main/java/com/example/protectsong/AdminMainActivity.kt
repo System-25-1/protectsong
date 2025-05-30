@@ -11,8 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.protectsong.databinding.ActivityAdminSmsMainBinding
 import com.example.protectsong.model.SmsReport
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.*
 
 class AdminMainActivity : AppCompatActivity() {
 
@@ -24,6 +23,7 @@ class AdminMainActivity : AppCompatActivity() {
     private var currentPage = 1
     private val itemsPerPage = 10
     private var allReports = listOf<SmsReport>()
+    private var reportListener: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +81,6 @@ class AdminMainActivity : AppCompatActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
 
-        fetchReports()
         setupPaginationControls()
 
         // ✅ 하단 네비게이션
@@ -102,12 +101,17 @@ class AdminMainActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchReports() {
-        db.collection("smsReports")
+    // ✅ 실시간 리스너 등록
+    private fun startListeningReports() {
+        reportListener = db.collection("smsReports")
             .orderBy("timestamp", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { result ->
-                allReports = result.map { doc ->
+            .addSnapshotListener { snapshots, e ->
+                if (e != null || snapshots == null) {
+                    Toast.makeText(this, "데이터를 불러오는 중 오류 발생", Toast.LENGTH_SHORT).show()
+                    return@addSnapshotListener
+                }
+
+                allReports = snapshots.map { doc ->
                     SmsReport(
                         id = doc.id,
                         uid = doc.getString("uid") ?: "",
@@ -120,9 +124,6 @@ class AdminMainActivity : AppCompatActivity() {
                     )
                 }
                 updatePagedData()
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "데이터를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -157,8 +158,13 @@ class AdminMainActivity : AppCompatActivity() {
         return if (allReports.isEmpty()) 1 else ((allReports.size - 1) / itemsPerPage + 1)
     }
 
-    override fun onResume() {
-        super.onResume()
-        fetchReports()
+    override fun onStart() {
+        super.onStart()
+        startListeningReports()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        reportListener?.remove()
     }
 }

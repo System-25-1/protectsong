@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.protectsong">
 
     <!-- 권한 정의 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -9,8 +10,10 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.CALL_PHONE"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
-
+    <!-- Android 9(API 28) 이상 포그라운드 서비스 권한 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <!-- mediaPlayback 타입 포그라운드 서비스 권한 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
 
     <application
         android:allowBackup="true"
@@ -23,7 +26,7 @@
         android:theme="@style/Theme.Protectsong"
         tools:targetApi="31">
 
-        <!-- ✅ FCM 수신 서비스 등록 -->
+        <!-- FCM 수신 서비스 -->
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">
@@ -43,6 +46,25 @@
                 android:resource="@xml/file_paths"/>
         </provider>
 
+        <!-- 휘슬 감지용 포그라운드 서비스 -->
+        <service
+            android:name=".whistle.WhistleService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+
+        <!-- 접근성 서비스 -->
+        <service
+            android:name=".whistle.WhistleAccessibilityService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
         <!-- 액티비티 목록 -->
         <activity
             android:name=".SplashActivity"
@@ -55,22 +77,23 @@
         </activity>
 
         <activity android:name=".MainActivity" android:exported="true" android:label="@string/app_name"/>
-        <activity android:name=".SignupActivity"/>
-        <activity android:name=".LoginActivity"/>
-        <activity android:name=".UserInfoActivity"/>
-        <activity android:name=".EditProfileActivity"/>
-        <activity android:name=".SmsReportActivity"/>
-        <activity android:name=".SettingsActivity"/>
-        <activity android:name=".ChatActivity"/>
-        <activity android:name=".PostListActivity"/>
-        <activity android:name=".MyReportActivity"/>
-        <activity android:name=".PostDetailActivity"/>
-        <activity android:name=".ChatListActivity"/>
-        <activity android:name=".VideoPlayerActivity"/>
-        <activity android:name=".AdminReportListActivity"/>
-        <activity android:name=".AdminPostWriteActivity"/>
-        <activity android:name=".AdminMainActivity"/>
-        <activity android:name=".AdminReportDetailActivity"/>
+        <activity android:name=".SignupActivity" android:exported="true"/>
+        <activity android:name=".LoginActivity" android:exported="true"/>
+        <activity android:name=".UserInfoActivity" android:exported="true"/>
+        <activity android:name=".EditProfileActivity" android:exported="true"/>
+        <activity android:name=".SmsReportActivity" android:exported="true"/>
+        <activity android:name=".SettingsActivity" android:exported="true"/>
+        <activity android:name=".ChatActivity" android:exported="true"/>
+        <activity android:name=".PostListActivity" android:exported="true"/>
+        <activity android:name=".MyReportActivity" android:exported="true"/>
+        <activity android:name=".PostDetailActivity" android:exported="true"/>
+        <activity android:name=".ChatListActivity" android:exported="true"/>
+        <activity android:name=".VideoPlayerActivity" android:exported="true"/>
+        <activity android:name=".AdminReportListActivity" android:exported="true"/>
+        <activity android:name=".AdminPostWriteActivity" android:exported="true"/>
+        <activity android:name=".AdminMainActivity" android:exported="true"/>
+        <activity android:name=".AdminReportDetailActivity" android:exported="true"/>
+
     </application>
 
 </manifest>
