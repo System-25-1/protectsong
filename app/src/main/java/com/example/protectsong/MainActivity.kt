@@ -192,7 +192,7 @@ class MainActivity : AppCompatActivity() {
         soundHandler.post(object : Runnable {
             override fun run() {
                 val amp = recorder.maxAmplitude
-                if (amp > 5000 && !isLoudSoundDetected) {
+                if (amp > 50000 && !isLoudSoundDetected) {
                     isLoudSoundDetected = true
                     Toast.makeText(this@MainActivity,
                         "큰 소리 감지됨. 신고 화면으로 이동합니다.",
