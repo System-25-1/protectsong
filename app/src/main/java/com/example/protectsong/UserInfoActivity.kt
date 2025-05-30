@@ -2,13 +2,20 @@ package com.example.protectsong
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.protectsong.databinding.ActivityUserInfoBinding
 import com.google.firebase.FirebaseException
-import com.google.firebase.auth.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthOptions
+import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.concurrent.TimeUnit
 
@@ -19,7 +26,6 @@ class UserInfoActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private var verificationId: String? = null
 
-    // 관리자 UID 복사한 값 (Firebase 콘솔 > Authentication에서 복사)
     private val adminUid = "MecPxatzCTMeHztzELY4ps4KVeh2"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,21 +33,19 @@ class UserInfoActivity : AppCompatActivity() {
         binding = ActivityUserInfoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Firebase 초기화
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
         val currentUser = auth.currentUser
         val isAdmin = currentUser?.uid == adminUid
 
-        // ✅ 관리자 계정이면 사용자 정보 입력 생략하고 바로 이동
         if (isAdmin) {
             val adminInfo = mapOf(
-
                 "name" to "관리자",
                 "phone" to "",
                 "birth" to "",
                 "studentId" to "admin",
+                "role" to "admin",
                 "guardian" to mapOf(
                     "name" to "",
                     "phone" to "",
@@ -53,17 +57,15 @@ class UserInfoActivity : AppCompatActivity() {
                 .set(adminInfo)
                 .addOnSuccessListener {
                     Toast.makeText(this, "관리자 자동 등록 완료", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, MainActivity::class.java)) // ✅ MainActivity로 이동
+                    startActivity(Intent(this, MainActivity::class.java))
                     finish()
                 }
                 .addOnFailureListener {
                     Toast.makeText(this, "관리자 등록 실패: ${it.message}", Toast.LENGTH_SHORT).show()
                 }
-
             return
         }
 
-        // 🧍‍♀️ 일반 사용자 흐름
         val adapter = ArrayAdapter.createFromResource(
             this,
             R.array.relationship_options,
@@ -74,15 +76,54 @@ class UserInfoActivity : AppCompatActivity() {
 
         binding.saveButton.isEnabled = false
 
-
         binding.backText.setOnClickListener {
             finish()
         }
 
+        binding.birthEdit.addTextChangedListener(object : TextWatcher {
+            private var isEditing = false
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (isEditing) return
+                isEditing = true
+                val digits = s.toString().replace(".", "").take(8)
+                val formatted = when {
+                    digits.length >= 7 -> "${digits.substring(0, 4)}.${digits.substring(4, 6)}.${digits.substring(6)}"
+                    digits.length >= 5 -> "${digits.substring(0, 4)}.${digits.substring(4)}"
+                    digits.length >= 1 -> digits
+                    else -> ""
+                }
+                binding.birthEdit.setText(formatted)
+                binding.birthEdit.setSelection(formatted.length)
+                isEditing = false
+            }
+        })
+
+        binding.phoneEdit.addTextChangedListener(object : TextWatcher {
+            private var isFormatting = false
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (isFormatting) return
+                isFormatting = true
+
+                val digits = s.toString().replace("-", "")
+                val formatted = when {
+                    digits.length >= 11 -> "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7, 11)}"
+                    digits.length >= 7 -> "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7)}"
+                    digits.length >= 4 -> "${digits.substring(0, 3)}-${digits.substring(3)}"
+                    else -> digits
+                }
+
+                binding.phoneEdit.setText(formatted)
+                binding.phoneEdit.setSelection(formatted.length)
+                isFormatting = false
+            }
+        })
 
         binding.verifyPhoneButton.setOnClickListener {
-            val phoneNumber = binding.phoneEdit.text.toString()
-
+            val phoneNumber = binding.phoneEdit.text.toString().replace("-", "")
             if (phoneNumber.isEmpty()) {
                 Toast.makeText(this, "전화번호를 입력하세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -101,10 +142,7 @@ class UserInfoActivity : AppCompatActivity() {
                         Toast.makeText(this@UserInfoActivity, "인증 실패: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
 
-                    override fun onCodeSent(
-                        verificationId: String,
-                        token: PhoneAuthProvider.ForceResendingToken
-                    ) {
+                    override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
                         this@UserInfoActivity.verificationId = verificationId
                         Toast.makeText(this@UserInfoActivity, "인증번호가 전송되었습니다.", Toast.LENGTH_SHORT).show()
                     }
@@ -116,7 +154,6 @@ class UserInfoActivity : AppCompatActivity() {
 
         binding.checkCodeButton.setOnClickListener {
             val code = binding.verificationCodeEdit.text.toString()
-
             if (verificationId == null || code.isEmpty()) {
                 Toast.makeText(this, "인증번호를 입력하세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -127,44 +164,67 @@ class UserInfoActivity : AppCompatActivity() {
         }
 
         binding.saveButton.setOnClickListener {
-            val uid = intent.getStringExtra("uid") ?: return@setOnClickListener
-
             val phone = binding.phoneEdit.text.toString()
             val name = binding.nameEdit.text.toString()
             val birth = binding.birthEdit.text.toString()
             val studentId = binding.studentIdEdit.text.toString()
-
+            val password = binding.passwordEdit.text.toString()
+            val passwordConfirm = binding.passwordConfirmEdit.text.toString()
             val guardianName = binding.guardianNameEdit.text.toString()
             val guardianPhone = binding.guardianPhoneEdit.text.toString()
             val guardianRelation = binding.relationshipSpinner.selectedItem.toString()
 
-            if (phone.isEmpty() || name.isEmpty() || birth.isEmpty() || studentId.isEmpty()) {
+            if (phone.isEmpty() || name.isEmpty() || birth.isEmpty() || studentId.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "필수 항목을 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val updateMap = mapOf(
-                "phone" to phone,
-                "birth" to birth,
-                "studentId" to studentId,
-                "guardian" to mapOf(
-                    "name" to guardianName,
-                    "phone" to guardianPhone,
-                    "relation" to guardianRelation
-                )
-            )
+            if (!isPasswordValid(password)) {
+                binding.passwordWarning.visibility = View.VISIBLE
+                return@setOnClickListener
+            } else {
+                binding.passwordWarning.visibility = View.GONE
+            }
 
-            firestore.collection("users").document(uid)
-                .update(updateMap)
-                .addOnSuccessListener {
-                    Toast.makeText(this, "정보 저장 완료!", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, LoginActivity::class.java)
-                    startActivity(intent)
-                    finish()
+            if (password != passwordConfirm) {
+                Toast.makeText(this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val fakeEmail = "$studentId@protectsong.app"
+
+            auth.createUserWithEmailAndPassword(fakeEmail, password)
+                .addOnSuccessListener { result ->
+                    val uid = result.user?.uid ?: return@addOnSuccessListener
+
+                    val userInfo = mapOf(
+                        "phone" to phone,
+                        "name" to name,
+                        "birth" to birth,
+                        "studentId" to studentId,
+                        "role" to "user",
+                        "guardian" to mapOf(
+                            "name" to guardianName,
+                            "phone" to guardianPhone,
+                            "relation" to guardianRelation
+                        )
+                    )
+
+                    firestore.collection("users").document(uid)
+                        .set(userInfo)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "정보 저장 완료!", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(this, LoginActivity::class.java))
+                            finish()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "저장 실패: ${it.message}", Toast.LENGTH_SHORT).show()
+                            Log.e("UserInfo", "Firestore 저장 오류", it)
+                        }
                 }
                 .addOnFailureListener {
-                    Toast.makeText(this, "저장 실패: ${it.message}", Toast.LENGTH_SHORT).show()
-                    Log.e("UserInfo", "Firestore 저장 오류", it)
+                    Toast.makeText(this, "회원가입 실패: ${it.message}", Toast.LENGTH_SHORT).show()
+                    Log.e("UserInfo", "회원가입 실패", it)
                 }
         }
     }
@@ -178,5 +238,10 @@ class UserInfoActivity : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(this, "인증 실패: ${it.message}", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun isPasswordValid(password: String): Boolean {
+        val regex = Regex("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)[A-Za-z\\d]{8,16}$")
+        return regex.matches(password)
     }
 }

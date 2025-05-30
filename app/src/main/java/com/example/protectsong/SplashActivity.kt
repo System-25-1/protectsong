@@ -53,7 +53,7 @@ class SplashActivity : AppCompatActivity() {
 
         // ✅ 회원가입 버튼 클릭 → SignupActivity 이동 + 현재 액티비티 종료
         binding.signupButton.setOnClickListener {
-            val intent = Intent(this, SignupActivity::class.java)
+            val intent = Intent(this, UserInfoActivity::class.java)
             startActivity(intent)
             finish()
         }
