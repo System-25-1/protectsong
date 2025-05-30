@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.*
 import android.provider.Settings
 import android.util.Log
+import android.view.MotionEvent
 import android.view.accessibility.AccessibilityManager
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -114,30 +115,59 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        // 긴급/문자 신고 버튼
+        // 문자 신고 버튼
+        binding.btnSmsReport.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    v.setBackgroundResource(R.drawable.bg_left_curve_button_pressed)
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    v.setBackgroundResource(R.drawable.bg_left_curve_button)
+                }
+            }
+            false // 클릭 이벤트도 같이 동작하도록
+        }
         binding.btnSmsReport.setOnClickListener {
             startActivity(Intent(this, SmsReportActivity::class.java))
         }
-        binding.btnEmergency.setOnClickListener { makeEmergencyCall() }
 
-        // 휘슬 버튼
-        whistlePlayer = MediaPlayer.create(this, R.raw.whistle_sound)
-        binding.btnWhistle.setOnClickListener {
-            isWhistleOn = !isWhistleOn
-            binding.tvWhistle.text = if (isWhistleOn) "on" else "off"
-            binding.btnWhistle.setBackgroundResource(
-                if (isWhistleOn) R.drawable.bg_rectangle_button_pressed
-                else R.drawable.bg_rectangle_button
-            )
-            if (isWhistleOn) whistlePlayer.start() else whistlePlayer.pause().also {
-                whistlePlayer.seekTo(0)
+
+
+// 긴급 신고 버튼
+        binding.btnEmergency.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    v.setBackgroundResource(R.drawable.bg_circle_button_pressed)
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    v.setBackgroundResource(R.drawable.bg_circle_button)
+                }
             }
+            false
+        }
+        binding.btnEmergency.setOnClickListener {
+            makeEmergencyCall()
         }
 
-        // 통화 아이콘
+
+        // 전화 신고 버튼
+        binding.ivCall.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    v.setBackgroundResource(R.drawable.bg_right_curve_button_pressed)
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    v.setBackgroundResource(R.drawable.bg_right_curve_button)
+                }
+            }
+            false // 클릭 이벤트도 같이 동작하도록
+        }
+
         binding.ivCall.setOnClickListener {
+            // 전화 다이얼 화면으로 이동
             startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:010-8975-0220")))
         }
+
 
         // 하단 네비게이션
         binding.bottomNavigation.selectedItemId = R.id.nav_home
