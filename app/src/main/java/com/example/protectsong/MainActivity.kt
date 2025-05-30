@@ -43,18 +43,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ─── 포그라운드 서비스로 WhistleService 시작 ───
-        Intent(this, WhistleService::class.java).also { svcIntent ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                ContextCompat.startForegroundService(this, svcIntent)
-            } else {
-                startService(svcIntent)
-            }
-        }
-
         // 접근성 권한이 꺼져 있다면 설정 화면으로 유도
         if (!isAccessibilityServiceEnabled()) {
-            startActivity(Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS))
+            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
             Toast.makeText(this, "‘지키송 휘슬 서비스’를 활성화해주세요", Toast.LENGTH_LONG).show()
         }
 
@@ -71,21 +62,14 @@ class MainActivity : AppCompatActivity() {
 
         // 헤더 뷰 초기화
         val header = binding.navView.getHeaderView(0)
-        val tvUserName = header.findViewById<TextView>(R.id.tvUserName)
-        val tvStudentId = header.findViewById<TextView>(R.id.tvStudentId)
-        val logoutBtn = header.findViewById<TextView>(R.id.logout_button)
-        val tvSettings = header.findViewById<TextView>(R.id.tvSettings)
-        val tvMyReport = header.findViewById<TextView>(R.id.tvMyReport)
-        val tvMyProfile = header.findViewById<TextView>(R.id.tvMyProfile)
-
-        tvSettings.setOnClickListener {
+        header.findViewById<TextView>(R.id.tvSettings).setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
-        tvMyReport.setOnClickListener {
+        header.findViewById<TextView>(R.id.tvMyReport).setOnClickListener {
             startActivity(Intent(this, MyReportActivity::class.java))
         }
-        logoutBtn.setOnClickListener { logout() }
-        tvMyProfile.setOnClickListener {
+        header.findViewById<TextView>(R.id.logout_button).setOnClickListener { logout() }
+        header.findViewById<TextView>(R.id.tvMyProfile).setOnClickListener {
             startActivity(Intent(this, EditProfileActivity::class.java))
         }
 
@@ -95,15 +79,15 @@ class MainActivity : AppCompatActivity() {
             db.collection("users").document(uid)
                 .get()
                 .addOnSuccessListener { doc ->
-                    tvUserName.text = doc.getString("name") ?: "이름없음"
-                    tvStudentId.text = doc.getString("studentId") ?: "학번없음"
+                    header.findViewById<TextView>(R.id.tvUserName).text = doc.getString("name")
+                        ?: "이름없음"
+                    header.findViewById<TextView>(R.id.tvStudentId).text = doc.getString("studentId")
+                        ?: "학번없음"
                 }
             FirebaseMessaging.getInstance().token
                 .addOnCompleteListener { t ->
-                    if (t.isSuccessful) {
-                        db.collection("users").document(uid)
-                            .update("fcmToken", t.result)
-                    }
+                    if (t.isSuccessful) db.collection("users").document(uid)
+                        .update("fcmToken", t.result)
                 }
         }
 
@@ -134,9 +118,7 @@ class MainActivity : AppCompatActivity() {
                 if (isWhistleOn) R.drawable.bg_rectangle_button_pressed
                 else R.drawable.bg_rectangle_button
             )
-            if (isWhistleOn) whistlePlayer.start()
-            else if (whistlePlayer.isPlaying) {
-                whistlePlayer.pause()
+            if (isWhistleOn) whistlePlayer.start() else whistlePlayer.pause().also {
                 whistlePlayer.seekTo(0)
             }
         }
@@ -150,24 +132,7 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.selectedItemId = R.id.nav_home
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_chat -> {
-                    FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
-                        FirebaseFirestore.getInstance().collection("users").document(uid)
-                            .get()
-                            .addOnSuccessListener { doc ->
-                                val role = doc.getString("role")
-                                if (role == "admin") {
-                                    startActivity(Intent(this, ChatListActivity::class.java))
-                                } else {
-                                    Intent(this, ChatActivity::class.java).apply {
-                                        putExtra("chatWithUserId", ADMIN_UID)
-                                        startActivity(this)
-                                    }
-                                }
-                            }
-                    }
-                    true
-                }
+                R.id.nav_chat -> navigateToChat()
                 R.id.nav_post -> {
                     startActivity(Intent(this, PostListActivity::class.java))
                     true
@@ -181,12 +146,25 @@ class MainActivity : AppCompatActivity() {
         startLoudSoundMonitor()
     }
 
+    private fun navigateToChat(): Boolean {
+        FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
+            FirebaseFirestore.getInstance().collection("users").document(uid)
+                .get()
+                .addOnSuccessListener { doc ->
+                    val role = doc.getString("role")
+                    if (role == "admin") startActivity(Intent(this, ChatListActivity::class.java))
+                    else Intent(this, ChatActivity::class.java).apply {
+                        putExtra("chatWithUserId", ADMIN_UID)
+                        startActivity(this)
+                    }
+                }
+        }
+        return true
+    }
+
     private fun logout() {
         soundHandler.removeCallbacksAndMessages(null)
-        if (::recorder.isInitialized) {
-            try { recorder.stop() } catch (_: Exception) {}
-            recorder.release()
-        }
+        if (::recorder.isInitialized) recorder.stop().also { recorder.release() }
         FirebaseAuth.getInstance().signOut()
         Intent(this, SplashActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -198,72 +176,49 @@ class MainActivity : AppCompatActivity() {
     private fun requestMicrophonePermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
             != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 102)
-        }
+        ) ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 102)
     }
 
     private fun startLoudSoundMonitor() {
-        try {
-            tempFile = File.createTempFile("temp_audio", ".3gp", cacheDir)
-            recorder = MediaRecorder().apply {
-                setAudioSource(MediaRecorder.AudioSource.MIC)
-                setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-                setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-                setOutputFile(tempFile.absolutePath)
-                prepare()
-                start()
-            }
-            soundHandler.post(object : Runnable {
-                override fun run() {
-                    try {
-                        if (::recorder.isInitialized) {
-                            val amp = recorder.maxAmplitude
-                            if (amp > 2000 && !isLoudSoundDetected) {
-                                isLoudSoundDetected = true
-                                Toast.makeText(
-                                    this@MainActivity,
-                                    "큰 소리 감지됨. 신고 화면으로 이동합니다.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                makeEmergencyCall()
-                            }
-                        }
-                        soundHandler.postDelayed(this, 500)
-                    } catch (e: IllegalStateException) {
-                        Log.e("SoundDetection", "Recorder released")
-                    }
-                }
-            })
-        } catch (e: Exception) {
-            Log.e("SoundDetection", "초기화 실패: ${e.message}")
-            Toast.makeText(this, "소리 감지 초기화 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+        tempFile = File.createTempFile("temp_audio", ".3gp", cacheDir)
+        recorder = MediaRecorder().apply {
+            setAudioSource(MediaRecorder.AudioSource.MIC)
+            setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+            setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+            setOutputFile(tempFile.absolutePath)
+            prepare()
+            start()
         }
+        soundHandler.post(object : Runnable {
+            override fun run() {
+                val amp = recorder.maxAmplitude
+                if (amp > 2000 && !isLoudSoundDetected) {
+                    isLoudSoundDetected = true
+                    Toast.makeText(this@MainActivity,
+                        "큰 소리 감지됨. 신고 화면으로 이동합니다.",
+                        Toast.LENGTH_SHORT).show()
+                    makeEmergencyCall()
+                }
+                soundHandler.postDelayed(this, 500)
+            }
+        })
     }
 
     private fun makeEmergencyCall() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
             != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_CALL_PERMISSION
-            )
-        } else {
-            startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:112")))
-        }
+        ) ActivityCompat.requestPermissions(
+            this, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_CALL_PERMISSION
+        )
+        else startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:112")))
     }
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CALL_PERMISSION) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                makeEmergencyCall()
-            } else {
-                Toast.makeText(this, "전화 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
-            }
-        }
+        if (requestCode == REQUEST_CALL_PERMISSION && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) makeEmergencyCall()
+        else Toast.makeText(this, "전화 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
     }
 
     override fun onResume() {
@@ -282,17 +237,13 @@ class MainActivity : AppCompatActivity() {
                 val container = findViewById<LinearLayout>(R.id.notice_container)
                 if (container.childCount > 1) container.removeViews(1, container.childCount - 1)
                 docs.forEach { doc ->
-                    val postId = doc.id
-                    val title = doc.getString("title") ?: "제목 없음"
                     TextView(this).apply {
-                        text = "• $title"
+                        text = "• ${doc.getString("title") ?: "제목 없음"}"
                         textSize = 14f
                         setPadding(16, 16, 16, 16)
-                        setTextColor(android.graphics.Color.BLACK)
-                        setBackgroundColor(android.graphics.Color.parseColor("#EEEEEE"))
                         setOnClickListener {
                             Intent(this@MainActivity, PostDetailActivity::class.java).apply {
-                                putExtra("postId", postId)
+                                putExtra("postId", doc.id)
                                 startActivity(this)
                             }
                         }
