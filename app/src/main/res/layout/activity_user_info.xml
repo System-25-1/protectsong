@@ -6,7 +6,6 @@
     android:background="#FFFFFF">
 
     <LinearLayout
-        android:layout_marginTop="40dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -19,7 +18,6 @@
             android:layout_height="56dp"
             android:background="#082478">
 
-            <!-- '◀ 뒤로' 텍스트 -->
             <TextView
                 android:id="@+id/backText"
                 android:layout_width="wrap_content"
@@ -28,13 +26,12 @@
                 android:text="◀ 뒤로"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp"
-                android:fontFamily="sans-serif"
+                android:fontFamily="@font/pyeojin_gothic_regular"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintVertical_bias="0.5" />
 
-            <!-- 가운데 타이틀 -->
             <TextView
                 android:id="@+id/titleText"
                 android:layout_width="wrap_content"
@@ -43,7 +40,7 @@
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:fontFamily="sans-serif"
+                android:fontFamily="@font/pyeojin_gothic_regular"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -63,7 +60,9 @@
                 android:textColor="#222222"
                 android:textSize="12sp"
                 android:layout_marginTop="12dp"
-                android:layout_marginLeft="10dp"/>
+                android:layout_marginLeft="10dp"
+                android:fontFamily="@font/pyeojin_gothic_regular" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -71,10 +70,11 @@
                 android:textColor="#3366FF"
                 android:textSize="13sp"
                 android:layout_marginTop="12dp"
-                android:layout_marginLeft="10dp"/>
+                android:layout_marginLeft="10dp"
+                android:fontFamily="@font/pyeojin_gothic_regular" />
         </LinearLayout>
 
-        <!-- 사용자 정보 입력 박스 -->
+        <!-- 입력 폼 전체 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -92,6 +92,7 @@
                 android:text="전화번호 *"
                 android:textColor="#000000"
                 android:textSize="14sp"
+                android:fontFamily="@font/pyeojin_gothic_regular"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="4dp"/>
 
@@ -110,6 +111,7 @@
                     android:paddingHorizontal="12dp"
                     android:inputType="phone"
                     android:textColorHint="#999999"
+                    android:fontFamily="@font/pyeojin_gothic_regular"
                     android:layout_marginTop="5dp"/>
 
                 <Button
@@ -122,6 +124,7 @@
                     android:background="@drawable/button_border"
                     android:textColor="#082478"
                     android:textStyle="bold"
+                    android:fontFamily="@font/pyeojin_gothic_regular"
                     android:layout_marginTop="5dp"/>
             </LinearLayout>
 
@@ -141,7 +144,8 @@
                     android:background="@drawable/rounded_input_bg_white"
                     android:paddingHorizontal="12dp"
                     android:inputType="number"
-                    android:textColorHint="#999999" />
+                    android:textColorHint="#999999"
+                    android:fontFamily="@font/pyeojin_gothic_regular" />
 
                 <Button
                     android:id="@+id/checkCodeButton"
@@ -152,82 +156,113 @@
                     android:layout_marginStart="8dp"
                     android:background="@drawable/button_border"
                     android:textColor="#082478"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:fontFamily="@font/pyeojin_gothic_regular"/>
             </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="24dp"
-                android:background="#082478" />
 
             <!-- 이름, 생년월일, 학번 -->
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="이름 *"
-                    android:textColor="#000000"
-                    android:textSize="14sp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="2dp" />
-
-                <EditText
-                    android:id="@+id/nameEdit"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@drawable/rounded_input_bg_white"
-                    android:paddingHorizontal="12dp"
-                    android:layout_marginTop="5dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="생년월일 *"
-                    android:textColor="#000000"
-                    android:textSize="14sp"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="2dp" />
-
-                <EditText
-                    android:id="@+id/birthEdit"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@drawable/rounded_input_bg_white"
-                    android:inputType="date"
-                    android:hint="YYYY.MM.DD"
-                    android:paddingHorizontal="12dp"
-                    android:layout_marginTop="5dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="학번 *"
-                    android:textColor="#000000"
-                    android:textSize="14sp"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="2dp" />
-
-                <EditText
-                    android:id="@+id/studentIdEdit"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@drawable/rounded_input_bg_white"
-                    android:paddingHorizontal="12dp"
-                    android:layout_marginTop="5dp"/>
-            </LinearLayout>
-
-            <View
+                android:text="이름 *"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="@font/pyeojin_gothic_regular" />
+            <EditText
+                android:id="@+id/nameEdit"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="24dp"
-                android:background="#082478" />
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_input_bg_white"
+                android:paddingHorizontal="12dp"
+                android:fontFamily="@font/pyeojin_gothic_regular" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="생년월일 *"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="@font/pyeojin_gothic_regular" />
+            <EditText
+                android:id="@+id/birthEdit"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_input_bg_white"
+                android:inputType="date"
+                android:hint="YYYY.MM.DD"
+                android:paddingHorizontal="12dp"
+                android:fontFamily="@font/pyeojin_gothic_regular" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="학번 *"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="@font/pyeojin_gothic_regular" />
+            <EditText
+                android:id="@+id/studentIdEdit"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_input_bg_white"
+                android:paddingHorizontal="12dp"
+                android:fontFamily="@font/pyeojin_gothic_regular" />
+
+            <!-- 비밀번호 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="비밀번호 *"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="@font/pyeojin_gothic_regular" />
+            <EditText
+                android:id="@+id/passwordEdit"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_input_bg_white"
+                android:paddingHorizontal="12dp"
+                android:inputType="textPassword"
+                android:fontFamily="@font/pyeojin_gothic_regular" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="비밀번호 확인 *"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="@font/pyeojin_gothic_regular" />
+
+
+            <EditText
+                android:id="@+id/passwordConfirmEdit"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_input_bg_white"
+                android:paddingHorizontal="12dp"
+                android:inputType="textPassword"
+                android:fontFamily="@font/pyeojin_gothic_regular" />
+
+            <TextView
+                android:id="@+id/passwordWarning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="비밀번호는 8~16자의 영문 대문자, 소문자, 숫자를 모두 포함해 주세요."
+                android:textColor="#FF0000"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"
+                android:fontFamily="@font/pyeojin_gothic_regular" />
 
             <!-- 보호자 정보 -->
             <TextView
@@ -236,9 +271,8 @@
                 android:text="보호자 정보"
                 android:textColor="#000000"
                 android:textSize="14sp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="2dp" />
-
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/pyeojin_gothic_regular" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -253,7 +287,8 @@
                     android:background="@drawable/rounded_input_bg_white"
                     android:hint="이름"
                     android:paddingHorizontal="12dp"
-                    android:layout_marginEnd="8dp" />
+                    android:layout_marginEnd="8dp"
+                    android:fontFamily="@font/pyeojin_gothic_regular" />
 
                 <Spinner
                     android:id="@+id/relationshipSpinner"
@@ -272,7 +307,8 @@
                 android:paddingHorizontal="12dp"
                 android:inputType="phone"
                 android:textColorHint="#999999"
-                android:layout_marginTop="5dp"/>
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/pyeojin_gothic_regular" />
         </LinearLayout>
 
         <!-- 저장 버튼 -->
@@ -285,6 +321,7 @@
             android:textColor="#FFFFFF"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="32dp"
-            android:background="#082478" />
+            android:background="#082478"
+            android:fontFamily="@font/pyeojin_gothic_regular" />
     </LinearLayout>
 </ScrollView>

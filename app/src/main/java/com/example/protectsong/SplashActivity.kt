@@ -67,7 +67,12 @@ class SplashActivity : AppCompatActivity() {
         }
 
         binding.signupButton.setOnClickListener {
+
             startActivity(Intent(this, SignupActivity::class.java))
+
+            val intent = Intent(this, UserInfoActivity::class.java)
+            startActivity(intent)
+
             finish()
         }
 
