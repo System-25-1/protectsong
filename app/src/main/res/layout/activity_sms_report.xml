@@ -1,197 +1,217 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#F8F8F8">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="40dp"
-        android:padding="0dp">
+    <include
+        android:id="@+id/toolbar_include"
+        layout="@layout/include_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- 상단 파란바 -->
-        <RelativeLayout
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_include"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="#082478">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
 
-            <ImageButton
-                android:id="@+id/backButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp"
-                android:padding="8dp"
-                android:src="@drawable/ic_back"
-                android:background="@android:color/transparent"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="신고 유형"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/spinner_type"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/spinner_with_arrow" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="건물 선택"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/spinner_building"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/spinner_with_arrow" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/edit_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/edittext_border"
+                android:gravity="top"
+                android:hint="내용을 입력하세요"
+                android:inputType="textMultiLine"
+                android:scrollbars="vertical"
+                android:minLines="10"
+                android:maxLines="20"
+                android:overScrollMode="always" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="문자 신고"
-                android:layout_marginTop="25dp"
-                android:textColor="#FFFFFF"
+                android:text="파일 첨부"
                 android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_centerInParent="true" />
-        </RelativeLayout>
+                android:textSize="15sp"
+                android:layout_marginTop="20dp" />
 
-        <!-- 신고 유형 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="16dp"
-            android:paddingHorizontal="12dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="8dp">
+
+                <ImageButton
+                    android:id="@+id/imageAttachButton"
+                    android:layout_width="80dp"
+                    android:layout_height="70dp"
+                    android:background="@null"
+                    android:contentDescription="이미지 첨부"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_image" />
+
+                <ImageButton
+                    android:id="@+id/videoAttachButton"
+                    android:layout_width="80dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="50dp"
+                    android:background="@null"
+                    android:contentDescription="영상 첨부"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_video" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="신고 유형"
-                android:textSize="16sp"
-                android:layout_gravity="center_vertical" />
+                android:text="촬영 첨부"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:layout_marginTop="20dp" />
 
-            <Spinner
-                android:id="@+id/spinner_type"
-                android:layout_width="315dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_weight="1"
-                android:background="@drawable/spinner_with_arrow" />
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="8dp">
 
-        <!-- 건물 선택 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="12dp"
-            android:paddingHorizontal="12dp">
+                <ImageButton
+                    android:id="@+id/cameraButton"
+                    android:layout_width="80dp"
+                    android:layout_height="70dp"
+                    android:background="@null"
+                    android:contentDescription="사진 촬영"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_camera" />
+
+                <ImageButton
+                    android:id="@+id/camcorderButton"
+                    android:layout_width="80dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="50dp"
+                    android:background="@null"
+                    android:contentDescription="비디오 촬영"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_camcorder" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/attachedThumbnailsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:gravity="start" />
+
+            <LinearLayout
+                android:id="@+id/uploadStatusLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:visibility="gone"
+                android:padding="8dp"
+                android:layout_marginTop="8dp">
+
+                <ProgressBar
+                    android:id="@+id/uploadProgressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/uploadStatusText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="업로드 중..."
+                    android:textSize="14sp" />
+            </LinearLayout>
 
             <TextView
+                android:id="@+id/uploadInfoText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="건물 선택"
-                android:textSize="16sp"
-                android:layout_gravity="center_vertical" />
+                android:layout_marginTop="4dp"
+                android:text="( 파일 0개, 0.0MB / 50MB )"
+                android:textSize="12sp"
+                android:textColor="#CCCCCC"
+                android:layout_gravity="center_horizontal" />
 
-            <Spinner
-                android:id="@+id/spinner_building"
-                android:layout_width="105dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_weight="1"
-                android:background="@drawable/spinner_with_arrow" />
+            <Button
+                android:id="@+id/btnSubmit"
+                android:layout_width="150dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/rounded_button"
+                android:text="신고하기"
+                android:textColor="#FFFFFF" />
         </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-        <!-- 신고 내용 입력 -->
-
-        <!-- 파일 첨부 -->
-
-        <EditText
-            android:id="@+id/edit_content"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginHorizontal="12dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/edittext_border"
-            android:gravity="top"
-            android:hint="내용을 입력하세요"
-
-            android:padding="12dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="파일 첨부"
-            android:textStyle="bold"
-            android:textSize="15dp"
-            android:layout_marginTop="20dp"
-            android:paddingStart="12dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginTop="8dp"
-            android:paddingStart="12dp">
-
-            <ImageButton
-                android:id="@+id/imageAttachButton"
-                android:layout_width="80dp"
-                android:layout_height="70dp"
-                android:background="@null"
-                android:contentDescription="이미지 첨부"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_image" />
-
-            <ImageButton
-                android:id="@+id/videoAttachButton"
-                android:layout_width="80dp"
-                android:layout_height="70dp"
-                android:layout_marginStart="50dp"
-                android:background="@null"
-                android:contentDescription="영상 첨부"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_video" />
-
-        </LinearLayout>
-
-        <!-- 촬영 첨부 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:paddingStart="12dp"
-            android:textSize="15dp"
-            android:text="촬영 첨부"
-            android:textStyle="bold" />
-
-        <LinearLayout
-
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginTop="8dp"
-            android:paddingStart="12dp">
-
-            <ImageButton
-                android:id="@+id/cameraButton"
-                android:layout_width="80dp"
-                android:layout_height="70dp"
-                android:background="@null"
-                android:contentDescription="사진 촬영"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_camera" />
-
-            <ImageButton
-                android:id="@+id/camcorderButton"
-                android:layout_width="80dp"
-                android:layout_height="70dp"
-                android:layout_marginStart="50dp"
-                android:background="@null"
-                android:contentDescription="비디오 촬영"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_camcorder" />
-
-        </LinearLayout>
-
-        <!-- 신고하기 버튼 -->
-        <Button
-            android:id="@+id/btnSubmit"
-            android:layout_width="150dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:layout_marginHorizontal="12dp"
-            android:layout_marginTop="50dp"
-            android:background="@drawable/rounded_button"
-            android:text="신고하기"
-            android:textColor="#FFFFFF" />
-
-    </LinearLayout>
-</ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
