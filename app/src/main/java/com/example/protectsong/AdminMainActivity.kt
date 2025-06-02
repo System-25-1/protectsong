@@ -180,18 +180,19 @@ class AdminMainActivity : AppCompatActivity() {
     }
 
     private fun updatePaginationButtons() {
-        binding.pageNumberContainer.removeAllViews()
+        val container = binding.pageNumberContainer
+        container.removeAllViews()
         val totalPages = getTotalPages()
 
-        val container = binding.pageNumberContainer
-
-        // ← 이전
+        // < 이전
         if (currentPage > 1) {
             val prev = TextView(this).apply {
                 text = "< 이전"
                 textSize = 16f
-                setPadding(32, 16, 32, 16)
-                setTextColor(ContextCompat.getColor(context, R.color.blue_700))
+                setPadding(20, 0, 20, 0)
+                minWidth = 100
+                gravity = android.view.Gravity.CENTER
+                setTextColor(Color.parseColor("#002366"))
                 setOnClickListener {
                     currentPage--
                     updatePagedData()
@@ -201,22 +202,15 @@ class AdminMainActivity : AppCompatActivity() {
             container.addView(prev)
         }
 
-        // 페이지 숫자
+        // 페이지 번호
         for (i in 1..totalPages) {
             val tv = TextView(this).apply {
                 text = "$i"
                 textSize = 16f
-                setPadding(28, 16, 28, 16)
-                setTextColor(if (i == currentPage) Color.WHITE else Color.DKGRAY)
-                background = if (i == currentPage)
-                    ContextCompat.getDrawable(context, R.drawable.bg_selected_page)
-                else null
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    setMargins(12, 0, 12, 0)
-                }
+                setPadding(12, 0, 12, 0)
+                minWidth = 48
+                gravity = android.view.Gravity.CENTER
+                setTextColor(if (i == currentPage) Color.BLUE else Color.DKGRAY)
                 setOnClickListener {
                     currentPage = i
                     updatePagedData()
@@ -226,13 +220,15 @@ class AdminMainActivity : AppCompatActivity() {
             container.addView(tv)
         }
 
-        // 다음 →
+        // 다음 >
         if (currentPage < totalPages) {
             val next = TextView(this).apply {
                 text = "다음 >"
                 textSize = 16f
-                setPadding(32, 16, 32, 16)
-                setTextColor(ContextCompat.getColor(context, R.color.blue_700))
+                setPadding(20, 0, 0, 0)
+                setTextColor(Color.parseColor("#002366"))
+                minWidth = 100
+                gravity = android.view.Gravity.CENTER
                 setOnClickListener {
                     currentPage++
                     updatePagedData()
@@ -242,6 +238,7 @@ class AdminMainActivity : AppCompatActivity() {
             container.addView(next)
         }
     }
+
 
     private fun updatePageLabel() {
         val total = getTotalPages()

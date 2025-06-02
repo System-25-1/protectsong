@@ -132,6 +132,8 @@ class PostListActivity : AppCompatActivity() {
                 textSize = 16f
                 setPadding(20, 0, 20, 0)
                 setTextColor(Color.parseColor("#002366"))
+                minWidth = 100
+                gravity = android.view.Gravity.CENTER
                 setOnClickListener {
                     currentPage--
                     displayPage(currentPage)
@@ -147,6 +149,8 @@ class PostListActivity : AppCompatActivity() {
                 text = "$i"
                 textSize = 16f
                 setPadding(12, 0, 12, 0)
+                minWidth = 48
+                gravity = android.view.Gravity.CENTER
                 setTextColor(if (i == currentPage) Color.BLUE else Color.DKGRAY)
                 setOnClickListener {
                     currentPage = i
@@ -163,6 +167,8 @@ class PostListActivity : AppCompatActivity() {
                 text = "다음 >"
                 textSize = 16f
                 setPadding(20, 0, 0, 0)
+                minWidth = 100
+                gravity = android.view.Gravity.CENTER
                 setTextColor(Color.parseColor("#002366"))
                 setOnClickListener {
                     currentPage++
