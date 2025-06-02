@@ -10,31 +10,48 @@ import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import com.example.protectsong.databinding.ActivitySplashBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class SplashActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySplashBinding
+    private val auth = FirebaseAuth.getInstance()
+    private val firestore = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ✅ 로그인 상태 체크
-        val user = FirebaseAuth.getInstance().currentUser
+        val user = auth.currentUser
         if (user != null) {
-            // 이미 로그인된 상태면 바로 MainActivity로 이동
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
+            // 🔍 Firestore에서 role 확인
+            firestore.collection("users").document(user.uid)
+                .get()
+                .addOnSuccessListener { document ->
+                    val role = document.getString("role")
+                    Log.d("SplashActivity", "로그인된 사용자 role: $role")
+                    val intent = if (role == "admin") {
+                        Intent(this, AdminMainActivity::class.java)
+                    } else {
+                        Intent(this, MainActivity::class.java)
+                    }
+                    startActivity(intent)
+                    finish()
+                }
+                .addOnFailureListener { e ->
+                    Log.e("SplashActivity", "Firestore role 조회 실패", e)
+                    // 실패 시 일반 사용자용으로 기본 이동
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                }
             return
         }
 
-        // ✅ 애니메이션 적용 (지키송 텍스트에)
+        // 📌 로그인 안 된 상태 → splash 애니메이션 + 로그인 화면 전환
         val scaleAnim = AnimationUtils.loadAnimation(this, R.anim.scale_bounce)
         binding.splashText2.startAnimation(scaleAnim)
 
-        // ✅ 2초 후 splashView 숨기고 loginView 보여주기
         Handler(Looper.getMainLooper()).postDelayed({
             binding.splashView.visibility = View.GONE
             binding.loginView.visibility = View.VISIBLE
@@ -44,21 +61,21 @@ class SplashActivity : AppCompatActivity() {
             binding.signupButton.startAnimation(slideUp)
         }, 2000)
 
-        // ✅ 로그인 버튼 클릭 → LoginActivity 이동 + 현재 액티비티 종료
         binding.loginButton.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
 
-        // ✅ 회원가입 버튼 클릭 → SignupActivity 이동 + 현재 액티비티 종료
         binding.signupButton.setOnClickListener {
+
+            startActivity(Intent(this, SignupActivity::class.java))
+
             val intent = Intent(this, UserInfoActivity::class.java)
             startActivity(intent)
+
             finish()
         }
-        Log.d("SplashActivity", "currentUser: ${FirebaseAuth.getInstance().currentUser}")
 
+        Log.d("SplashActivity", "currentUser: $user")
     }
-
 }

@@ -38,17 +38,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- 🟨 신고 버튼들 -->
         <LinearLayout
             android:id="@+id/report_buttons"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
             android:layout_marginTop="40dp"
+            android:clipChildren="false"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp">
 
             <!-- 문자 신고 -->
             <LinearLayout
@@ -56,21 +58,19 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:gravity="center">
-                <ImageButton
+                android:gravity="center"
+                android:clipChildren="false"
+                android:layout_marginEnd="8dp">
+
+                <ImageView
                     android:id="@+id/btnSmsReport"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="120dp"
+                    android:layout_height="130dp"
                     android:background="@drawable/bg_left_curve_button"
-                    android:src="@android:drawable/ic_dialog_email"
+                    android:src="@drawable/message"
                     android:scaleType="centerInside"
-                    android:contentDescription="문자 신고" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="문자 신고"
-                    android:textSize="12sp"
-                    android:layout_marginTop="4dp"/>
+                    android:padding="10dp"
+                    android:adjustViewBounds="true" />
             </LinearLayout>
 
             <!-- 긴급 신고 -->
@@ -79,23 +79,19 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:gravity="center">
+                android:gravity="center"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="12dp">
+
                 <ImageButton
                     android:id="@+id/btnEmergency"
-                    android:layout_width="130dp"
-                    android:layout_height="130dp"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
                     android:background="@drawable/bg_circle_button"
-                    android:src="@android:drawable/ic_dialog_alert"
-                    app:tint="@android:color/white"
+                    android:src="@drawable/siren_gpt"
                     android:scaleType="centerInside"
+                    android:padding="20dp"
                     android:contentDescription="긴급 신고" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="긴급 신고"
-                    android:textColor="#8B0000"
-                    android:textSize="12sp"
-                    android:layout_marginTop="4dp"/>
             </LinearLayout>
 
             <!-- 전화 신고 -->
@@ -104,38 +100,39 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:gravity="center">
-                <ImageButton
+                android:gravity="center"
+                android:clipChildren="false"
+                android:layout_marginStart="8dp">
+
+                <ImageView
                     android:id="@+id/ivCall"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="120dp"
+                    android:layout_height="130dp"
                     android:background="@drawable/bg_right_curve_button"
-                    android:src="@android:drawable/ic_menu_call"
+                    android:src="@drawable/call"
                     android:scaleType="centerInside"
-                    android:contentDescription="전화 신고" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="전화 신고"
-                    android:textSize="12sp"
-                    android:layout_marginTop="4dp"/>
+                    android:padding="22dp"
+                    android:adjustViewBounds="true" />
             </LinearLayout>
         </LinearLayout>
+
+
+
 
         <!-- 🌟 배경 이미지 -->
         <ImageView
             android:id="@+id/star_bg"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_margin="64dp"
+            android:adjustViewBounds="true"
             android:alpha="0.15"
             android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
             android:src="@drawable/sookmyung"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_margin="64dp" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- 🔈 호루라기 버튼 -->
         <LinearLayout
@@ -153,17 +150,12 @@
                 android:layout_width="358dp"
                 android:layout_height="55dp"
                 android:background="@drawable/bg_rectangle_button"
-                android:src="@android:drawable/ic_lock_silent_mode_off"
-                app:tint="#000000"
+                android:src="@drawable/off"
                 android:scaleType="centerInside"
                 android:contentDescription="호루라기" />
-            <TextView
-                android:id="@+id/tvWhistle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="off"
-                android:textSize="12sp"
-                android:layout_marginTop="4dp"/>
+
+
+
         </LinearLayout>
 
         <!-- 📏 공지 위로 띄우는 가이드라인 -->
@@ -196,8 +188,9 @@
                 android:gravity="center"
                 android:padding="8dp"
                 android:text="공지"
+                android:fontFamily="@font/pyeojin_gothic_regular"
                 android:textColor="#FFFFFF"
-                android:textSize="16sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <!-- 공지 내용 영역 -->

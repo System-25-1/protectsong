@@ -6,6 +6,6 @@
 
     <!-- 테두리 -->
     <stroke
-        android:width="2dp"
-        android:color="#002366" /> <!-- 원하는 색상 코드 입력 -->
+        android:width="3dp"
+        android:color="#84797A" /> <!-- 원하는 색상 코드 입력 -->
 </shape>

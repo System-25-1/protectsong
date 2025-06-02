@@ -66,6 +66,12 @@
         <item>새힘관</item>
         <item>다목적관</item>
     </string-array>
+    <string-array name="status_array">
+        <item>전체</item>
+        <item>접수됨</item>
+        <item>처리중</item>
+        <item>처리완료</item>
+    </string-array>
 
     <string name="version_text">V %1$s</string>
 

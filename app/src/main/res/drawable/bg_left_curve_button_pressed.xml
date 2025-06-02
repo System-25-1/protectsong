@@ -1,0 +1,20 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="150dp"
+    android:viewportWidth="120"
+    android:viewportHeight="100">
+
+    <!-- 그림자 -->
+    <path
+        android:fillColor="#22000000"
+        android:pathData="M120,0 L35,0 C10,50 10,50 35,100 L120,100 C95,50 95,50 120,0 Z"
+        android:translateX="2"
+        android:translateY="2" />
+
+    <!-- 본체 -->
+    <path
+        android:fillColor="#D9D9D9"
+        android:strokeColor="#D9D9D9"
+        android:strokeWidth="3"
+        android:pathData="M120,0 L35,0 C10,50 10,50 35,100 L120,100 C95,50 95,50 120,0 Z" />
+</vector>
