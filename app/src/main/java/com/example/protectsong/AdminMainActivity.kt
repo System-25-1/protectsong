@@ -2,15 +2,12 @@ package com.example.protectsong
 
 import android.content.Intent
 import android.os.Bundle
-<<<<<<< HEAD
 import android.text.Editable
 import android.text.TextWatcher
-import android.widget.*
-=======
 import android.util.Log
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
->>>>>>> feature/jaeseo
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -51,17 +48,10 @@ class AdminMainActivity : AppCompatActivity() {
         toggle.syncState()
         toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, android.R.color.white)
 
-<<<<<<< HEAD
-        // ✅ 드로어 헤더
-        val headerView = binding.navView.getHeaderView(0)
-        val tvUserName = headerView.findViewById<TextView>(R.id.tvUserName)
-        val tvStudentId = headerView.findViewById<TextView>(R.id.tvStudentId)
-=======
         // ── 드로어 헤더 뷰 참조
         val headerView   = binding.navView.getHeaderView(0)
         val tvUserName   = headerView.findViewById<TextView>(R.id.tvUserName)
         val tvStudentId  = headerView.findViewById<TextView>(R.id.tvStudentId)
->>>>>>> feature/jaeseo
         val logoutButton = headerView.findViewById<TextView>(R.id.logout_button)
         val tvSettings   = headerView.findViewById<TextView>(R.id.tvSettings)
 
@@ -84,8 +74,8 @@ class AdminMainActivity : AppCompatActivity() {
                     Log.d("AdminMainDebug", "[4] nameVal = $nameVal, studentIdVal = $idVal")
 
                     // 실제 헤더에 덮어쓰기
-                    tvUserName.text   = nameVal  ?: "이름 없음"
-                    tvStudentId.text  = idVal    ?: "학번 없음"
+                    tvUserName.text  = nameVal  ?: "이름 없음"
+                    tvStudentId.text = idVal    ?: "학번 없음"
                 }
                 .addOnFailureListener { e ->
                     Log.e("AdminMainDebug", "[5] Firestore read failed", e)
@@ -93,8 +83,8 @@ class AdminMainActivity : AppCompatActivity() {
                 }
         } else {
             Log.w("AdminMainDebug", "[6] currentUser.uid 가 null 입니다.")
-            tvUserName.text   = "이름 없음"
-            tvStudentId.text  = "학번 없음"
+            tvUserName.text  = "이름 없음"
+            tvStudentId.text = "학번 없음"
         }
 
         // ── 로그아웃 버튼
@@ -118,8 +108,7 @@ class AdminMainActivity : AppCompatActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
 
-
-        // ✅ 필터링 기능 연결
+        // ── 필터링 기능 연결
         binding.etSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) = applyFilters()
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -134,12 +123,9 @@ class AdminMainActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-=======
->>>>>>> feature/jaeseo
         setupPaginationControls()
 
-
-        // ── 하단 네비게이션 세팅 (생략) …
+        // ── 하단 네비게이션 세팅
         binding.bottomNavigation.selectedItemId = R.id.nav_home
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -168,13 +154,13 @@ class AdminMainActivity : AppCompatActivity() {
 
                 allReports = snapshots.map { doc ->
                     SmsReport(
-                        id = doc.id,
-                        uid = doc.getString("uid") ?: "",
-                        type = doc.getString("type") ?: "",
-                        building = doc.getString("building") ?: "",
-                        content = doc.getString("content") ?: "",
-                        status = doc.getString("status") ?: "접수됨",
-                        files = doc.get("files") as? List<String> ?: emptyList(),
+                        id        = doc.id,
+                        uid       = doc.getString("uid") ?: "",
+                        type      = doc.getString("type") ?: "",
+                        building  = doc.getString("building") ?: "",
+                        content   = doc.getString("content") ?: "",
+                        status    = doc.getString("status") ?: "접수됨",
+                        files     = doc.get("files") as? List<String> ?: emptyList(),
                         timestamp = doc.getTimestamp("timestamp")?.toDate()?.time ?: 0L
                     )
                 }
