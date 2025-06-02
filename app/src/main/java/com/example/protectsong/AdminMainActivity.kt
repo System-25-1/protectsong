@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.widget.AdapterView
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -118,10 +119,13 @@ class AdminMainActivity : AppCompatActivity() {
         binding.spinnerStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long
-            ) = applyFilters()
+            ) {
+                applyFilters()
+            }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+
 
         setupPaginationControls()
 
