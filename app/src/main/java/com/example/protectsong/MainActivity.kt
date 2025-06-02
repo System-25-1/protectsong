@@ -26,6 +26,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import java.io.File
+import java.util.Locale
+import android.graphics.Color
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,7 +36,8 @@ class MainActivity : AppCompatActivity() {
     private var isWhistleOn = false
     private lateinit var whistlePlayer: MediaPlayer
     private val ADMIN_UID = "MecPxatzCTMeHztzELY4ps4KVeh2"
-    private val REQUEST_CALL_PERMISSION = 100
+    private val REQUEST_CALL_PERMISSION_EMERGENCY = 100
+    private val REQUEST_CALL_PERMISSION_SUPPORT = 101
 
     private lateinit var recorder: MediaRecorder
     private lateinit var tempFile: File
@@ -46,24 +49,22 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 접근성 권한 유도
+        // 접근성 권한
         if (!isAccessibilityServiceEnabled()) {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
             Toast.makeText(this, "‘지키송 휘슬 서비스’를 활성화해주세요", Toast.LENGTH_LONG).show()
         }
 
-        // 툴바 & 네비게이션 드로어
+        // 툴바 설정
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        toggle = ActionBarDrawerToggle(
-            this, binding.drawerLayout, binding.toolbar,
-            R.string.navigation_drawer_open, R.string.navigation_drawer_close
-        )
+        toggle = ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolbar,
+            R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, android.R.color.white)
 
-        // 헤더 뷰 초기화
+        // 네비게이션 헤더
         val header = binding.navView.getHeaderView(0)
         val profileImageView = header.findViewById<ImageView>(R.id.navProfileImage)
         header.findViewById<TextView>(R.id.tvSettings).setOnClickListener {
@@ -77,33 +78,26 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, EditProfileActivity::class.java))
         }
 
-        // 사용자 정보 및 프로필 이미지 불러오기
+        // 사용자 정보
         FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
             val db = FirebaseFirestore.getInstance()
-            db.collection("users").document(uid)
-                .get()
-                .addOnSuccessListener { doc ->
-                    header.findViewById<TextView>(R.id.tvUserName).text = doc.getString("name") ?: "이름없음"
-                    header.findViewById<TextView>(R.id.tvStudentId).text = doc.getString("studentId") ?: "학번없음"
-                    val imageUrl = doc.getString("profileImageUrl")
-                    if (!imageUrl.isNullOrEmpty()) {
-                        Glide.with(this)
-                            .load(imageUrl)
-                            .circleCrop()
-                            .into(profileImageView)
-                    }
+            db.collection("users").document(uid).get().addOnSuccessListener { doc ->
+                header.findViewById<TextView>(R.id.tvUserName).text = doc.getString("name") ?: "이름없음"
+                header.findViewById<TextView>(R.id.tvStudentId).text = doc.getString("studentId") ?: "학번없음"
+                val imageUrl = doc.getString("profileImageUrl")
+                if (!imageUrl.isNullOrEmpty()) {
+                    Glide.with(this).load(imageUrl).circleCrop().into(profileImageView)
                 }
+            }
 
-            FirebaseMessaging.getInstance().token
-                .addOnCompleteListener { t ->
-                    if (t.isSuccessful) {
-                        db.collection("users").document(uid)
-                            .update("fcmToken", t.result)
-                    }
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { t ->
+                if (t.isSuccessful) {
+                    db.collection("users").document(uid).update("fcmToken", t.result)
                 }
+            }
         }
 
-        // 네비게이션 메뉴 리스너
+        // 네비게이션 메뉴
         binding.navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_mypage -> Toast.makeText(this, "마이페이지 클릭됨", Toast.LENGTH_SHORT).show()
@@ -118,12 +112,8 @@ class MainActivity : AppCompatActivity() {
         // 문자 신고 버튼
         binding.btnSmsReport.setOnTouchListener { v, event ->
             when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    v.setBackgroundResource(R.drawable.bg_left_curve_button_pressed)
-                }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    v.setBackgroundResource(R.drawable.bg_left_curve_button)
-                }
+                MotionEvent.ACTION_DOWN -> v.setBackgroundResource(R.drawable.bg_left_curve_button_pressed)
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> v.setBackgroundResource(R.drawable.bg_left_curve_button)
             }
             false
         }
@@ -134,12 +124,8 @@ class MainActivity : AppCompatActivity() {
         // 긴급 신고 버튼
         binding.btnEmergency.setOnTouchListener { v, event ->
             when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    v.setBackgroundResource(R.drawable.bg_circle_button_pressed)
-                }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    v.setBackgroundResource(R.drawable.bg_circle_button)
-                }
+                MotionEvent.ACTION_DOWN -> v.setBackgroundResource(R.drawable.bg_circle_button_pressed)
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> v.setBackgroundResource(R.drawable.bg_circle_button)
             }
             false
         }
@@ -147,20 +133,16 @@ class MainActivity : AppCompatActivity() {
             makeEmergencyCall()
         }
 
-        // 전화 신고 버튼 (배경 및 클릭 모두 처리)
+        // 전화 신고 버튼
         binding.ivCall.setOnTouchListener { v, event ->
             when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    v.setBackgroundResource(R.drawable.bg_right_curve_button_pressed)
-                }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    v.setBackgroundResource(R.drawable.bg_right_curve_button)
-                }
+                MotionEvent.ACTION_DOWN -> v.setBackgroundResource(R.drawable.bg_right_curve_button_pressed)
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> v.setBackgroundResource(R.drawable.bg_right_curve_button)
             }
             false
         }
         binding.ivCall.setOnClickListener {
-            makeEmergencyCall()
+            makeDirectCallToSupport()
         }
 
         // 휘슬 버튼
@@ -171,8 +153,7 @@ class MainActivity : AppCompatActivity() {
                 else R.drawable.bg_rectangle_button
             )
             binding.btnWhistle.setImageResource(
-                if (isWhistleOn) R.drawable.bell_on_white_only
-                else R.drawable.off
+                if (isWhistleOn) R.drawable.on else R.drawable.off
             )
         }
 
@@ -189,7 +170,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 마이크 권한 및 소리 감지
         requestMicrophonePermission()
         startLoudSoundMonitor()
     }
@@ -197,8 +177,7 @@ class MainActivity : AppCompatActivity() {
     private fun navigateToChat(): Boolean {
         FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
             FirebaseFirestore.getInstance().collection("users").document(uid)
-                .get()
-                .addOnSuccessListener { doc ->
+                .get().addOnSuccessListener { doc ->
                     val role = doc.getString("role")
                     if (role == "admin") {
                         startActivity(Intent(this, ChatListActivity::class.java))
@@ -257,23 +236,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun makeEmergencyCall() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_CALL_PERMISSION
-            )
-        } else {
-            startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:112")))
+        val dialIntent = Intent(Intent.ACTION_DIAL).apply {
+            data = Uri.parse("tel:112")
         }
+        startActivity(dialIntent)
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults: IntArray
-    ) {
+    private fun makeDirectCallToSupport() {
+        val dialIntent = Intent(Intent.ACTION_DIAL).apply {
+            data = Uri.parse("tel:01089750220")
+        }
+        startActivity(dialIntent)
+    }
+
+
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CALL_PERMISSION && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
-            makeEmergencyCall()
+        if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
+            when (requestCode) {
+                REQUEST_CALL_PERMISSION_EMERGENCY -> makeEmergencyCall()
+                REQUEST_CALL_PERMISSION_SUPPORT -> makeDirectCallToSupport()
+            }
         } else {
             Toast.makeText(this, "전화 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
         }
@@ -294,18 +278,49 @@ class MainActivity : AppCompatActivity() {
             .addOnSuccessListener { docs ->
                 val container = findViewById<LinearLayout>(R.id.notice_container)
                 if (container.childCount > 1) container.removeViews(1, container.childCount - 1)
+
                 docs.forEach { doc ->
-                    TextView(this).apply {
-                        text = "• ${doc.getString("title") ?: "제목 없음"}"
-                        textSize = 14f
-                        setPadding(16, 16, 16, 16)
-                        setOnClickListener {
-                            Intent(this@MainActivity, PostDetailActivity::class.java).apply {
-                                putExtra("postId", doc.id)
-                                startActivity(this)
-                            }
+                    val title = doc.getString("title") ?: "제목 없음"
+                    val timestamp = doc.getTimestamp("timestamp")
+                    val dateStr = timestamp?.toDate()?.let {
+                        java.text.SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).format(it)
+                    } ?: ""
+
+                    val rowLayout = LinearLayout(this).apply {
+                        orientation = LinearLayout.HORIZONTAL
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
+                        setPadding(16, 12, 16, 12)
+                    }
+
+                    val titleView = TextView(this).apply {
+                        text = "• $title"
+                        textSize = 20f
+                        layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                    }
+
+                    val dateView = TextView(this).apply {
+                        text = dateStr
+                        textSize = 18f
+                        setTextColor(Color.GRAY)
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
+                    }
+
+                    rowLayout.setOnClickListener {
+                        Intent(this@MainActivity, PostDetailActivity::class.java).apply {
+                            putExtra("postId", doc.id)
+                            startActivity(this)
                         }
-                    }.also { container.addView(it) }
+                    }
+
+                    rowLayout.addView(titleView)
+                    rowLayout.addView(dateView)
+                    container.addView(rowLayout)
                 }
             }
             .addOnFailureListener {
@@ -315,10 +330,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun isAccessibilityServiceEnabled(): Boolean {
         val am = getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
-        val enabled = Settings.Secure.getString(
-            contentResolver,
-            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
-        ) ?: return false
+        val enabled = Settings.Secure.getString(contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+            ?: return false
         return enabled.split(":").any { it.contains(packageName) }
     }
 }

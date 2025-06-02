@@ -188,8 +188,9 @@
                 android:gravity="center"
                 android:padding="8dp"
                 android:text="공지"
+                android:fontFamily="@font/pyeojin_gothic_regular"
                 android:textColor="#FFFFFF"
-                android:textSize="16sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <!-- 공지 내용 영역 -->
