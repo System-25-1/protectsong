@@ -315,3 +315,4 @@ class MainActivity : AppCompatActivity() {
         return enabled.split(":").any { it.contains(packageName) }
     }
 }
+
