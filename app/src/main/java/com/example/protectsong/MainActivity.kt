@@ -35,9 +35,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toggle: ActionBarDrawerToggle
     private var isWhistleOn = false
     private lateinit var whistlePlayer: MediaPlayer
+
     private val ADMIN_UID = "MecPxatzCTMeHztzELY4ps4KVeh2"
     private val REQUEST_CALL_PERMISSION_EMERGENCY = 100
     private val REQUEST_CALL_PERMISSION_SUPPORT = 101
+
+    private val ADMIN_UID = "Os1oJCzG45OKwyglRdc0JXxbghw2"
+    private val REQUEST_CALL_PERMISSION = 100
+
 
     private lateinit var recorder: MediaRecorder
     private lateinit var tempFile: File
@@ -335,3 +340,4 @@ class MainActivity : AppCompatActivity() {
         return enabled.split(":").any { it.contains(packageName) }
     }
 }
+

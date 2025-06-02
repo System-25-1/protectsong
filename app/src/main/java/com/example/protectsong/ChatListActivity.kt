@@ -20,7 +20,7 @@ class ChatListActivity : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
-    private val adminUid = "MecPxatzCTMeHztzELY4ps4KVeh2"
+    private val adminUid = "Os1oJCzG45OKwyglRdc0JXxbghw2"
     private val studentChats = mutableListOf<ChatListItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {

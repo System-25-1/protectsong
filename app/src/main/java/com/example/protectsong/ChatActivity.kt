@@ -38,7 +38,7 @@ class ChatActivity : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
-    private val adminUid = "MecPxatzCTMeHztzELY4ps4KVeh2"
+    private val adminUid = "Os1oJCzG45OKwyglRdc0JXxbghw2"
     private val currentUserId: String by lazy { auth.currentUser?.uid ?: "" }
     private val targetUserId: String by lazy {
         if (currentUserId == adminUid) {
