@@ -125,15 +125,13 @@ class MainActivity : AppCompatActivity() {
                     v.setBackgroundResource(R.drawable.bg_left_curve_button)
                 }
             }
-            false // 클릭 이벤트도 같이 동작하도록
+            false
         }
         binding.btnSmsReport.setOnClickListener {
             startActivity(Intent(this, SmsReportActivity::class.java))
         }
 
-
-
-// 긴급 신고 버튼
+        // 긴급 신고 버튼
         binding.btnEmergency.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -149,8 +147,7 @@ class MainActivity : AppCompatActivity() {
             makeEmergencyCall()
         }
 
-
-        // 전화 신고 버튼
+        // 전화 신고 버튼 (배경 및 클릭 모두 처리)
         binding.ivCall.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -160,14 +157,24 @@ class MainActivity : AppCompatActivity() {
                     v.setBackgroundResource(R.drawable.bg_right_curve_button)
                 }
             }
-            false // 클릭 이벤트도 같이 동작하도록
+            false
         }
-
         binding.ivCall.setOnClickListener {
-            // 전화 다이얼 화면으로 이동
-            startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:010-8975-0220")))
+            makeEmergencyCall()
         }
 
+        // 휘슬 버튼
+        binding.btnWhistle.setOnClickListener {
+            isWhistleOn = !isWhistleOn
+            binding.btnWhistle.setBackgroundResource(
+                if (isWhistleOn) R.drawable.bg_rectangle_button_pressed
+                else R.drawable.bg_rectangle_button
+            )
+            binding.btnWhistle.setImageResource(
+                if (isWhistleOn) R.drawable.bell_on_white_only
+                else R.drawable.off
+            )
+        }
 
         // 하단 네비게이션
         binding.bottomNavigation.selectedItemId = R.id.nav_home
@@ -182,7 +189,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 마이크 권한 및 큰 소리 감지
+        // 마이크 권한 및 소리 감지
         requestMicrophonePermission()
         startLoudSoundMonitor()
     }
