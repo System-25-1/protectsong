@@ -1,14 +1,15 @@
 package com.example.protectsong
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.widget.AdapterView
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.LinearLayout
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -50,33 +51,25 @@ class AdminMainActivity : AppCompatActivity() {
         toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, android.R.color.white)
 
         // ── 드로어 헤더 뷰 참조
-        val headerView   = binding.navView.getHeaderView(0)
-        val tvUserName   = headerView.findViewById<TextView>(R.id.tvUserName)
-        val tvStudentId  = headerView.findViewById<TextView>(R.id.tvStudentId)
+        val headerView = binding.navView.getHeaderView(0)
+        val tvUserName = headerView.findViewById<TextView>(R.id.tvUserName)
+        val tvStudentId = headerView.findViewById<TextView>(R.id.tvStudentId)
         val logoutButton = headerView.findViewById<TextView>(R.id.logout_button)
-        val tvSettings   = headerView.findViewById<TextView>(R.id.tvSettings)
+        val tvSettings = headerView.findViewById<TextView>(R.id.tvSettings)
 
-        // ── ① 현재 FirebaseAuth에 로그인된 UID를 찍어본다
         val uid = FirebaseAuth.getInstance().currentUser?.uid
         Log.d("AdminMainDebug", "[1] currentUser.uid = $uid")
 
         if (uid != null) {
-            // ── ② Firestore에서 users/{uid} 문서를 읽어올 때 로그로 확인
             db.collection("users").document(uid)
                 .get()
                 .addOnSuccessListener { doc ->
-                    // 문서가 존재하는지, 내부에 값이 뭔지 찍어본다
                     Log.d("AdminMainDebug", "[2] doc.exists() = ${doc.exists()}")
                     Log.d("AdminMainDebug", "[3] doc.data = ${doc.data}")
-
-                    // “name”과 “studentId” 필드가 실제로 뭔지 찍어본다
                     val nameVal = doc.getString("name")
-                    val idVal   = doc.getString("studentId")
-                    Log.d("AdminMainDebug", "[4] nameVal = $nameVal, studentIdVal = $idVal")
-
-                    // 실제 헤더에 덮어쓰기
-                    tvUserName.text  = nameVal  ?: "이름 없음"
-                    tvStudentId.text = idVal    ?: "학번 없음"
+                    val idVal = doc.getString("studentId")
+                    tvUserName.text = nameVal ?: "이름 없음"
+                    tvStudentId.text = idVal ?: "학번 없음"
                 }
                 .addOnFailureListener { e ->
                     Log.e("AdminMainDebug", "[5] Firestore read failed", e)
@@ -84,11 +77,10 @@ class AdminMainActivity : AppCompatActivity() {
                 }
         } else {
             Log.w("AdminMainDebug", "[6] currentUser.uid 가 null 입니다.")
-            tvUserName.text  = "이름 없음"
+            tvUserName.text = "이름 없음"
             tvStudentId.text = "학번 없음"
         }
 
-        // ── 로그아웃 버튼
         logoutButton.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
             startActivity(Intent(this, SplashActivity::class.java).apply {
@@ -96,7 +88,6 @@ class AdminMainActivity : AppCompatActivity() {
             })
         }
 
-        // ── 설정 버튼
         tvSettings.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
@@ -106,10 +97,10 @@ class AdminMainActivity : AppCompatActivity() {
             intent.putExtra("report", report)
             startActivity(intent)
         }
+
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
 
-        // ── 필터링 기능 연결
         binding.etSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) = applyFilters()
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -117,19 +108,12 @@ class AdminMainActivity : AppCompatActivity() {
         })
 
         binding.spinnerStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long
-            ) {
+            override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
                 applyFilters()
             }
-
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-
-        setupPaginationControls()
-
-        // ── 하단 네비게이션 세팅
         binding.bottomNavigation.selectedItemId = R.id.nav_home
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -158,13 +142,13 @@ class AdminMainActivity : AppCompatActivity() {
 
                 allReports = snapshots.map { doc ->
                     SmsReport(
-                        id        = doc.id,
-                        uid       = doc.getString("uid") ?: "",
-                        type      = doc.getString("type") ?: "",
-                        building  = doc.getString("building") ?: "",
-                        content   = doc.getString("content") ?: "",
-                        status    = doc.getString("status") ?: "접수됨",
-                        files     = doc.get("files") as? List<String> ?: emptyList(),
+                        id = doc.id,
+                        uid = doc.getString("uid") ?: "",
+                        type = doc.getString("type") ?: "",
+                        building = doc.getString("building") ?: "",
+                        content = doc.getString("content") ?: "",
+                        status = doc.getString("status") ?: "접수됨",
+                        files = doc.get("files") as? List<String> ?: emptyList(),
                         timestamp = doc.getTimestamp("timestamp")?.toDate()?.time ?: 0L
                     )
                 }
@@ -195,42 +179,68 @@ class AdminMainActivity : AppCompatActivity() {
         updatePageLabel()
     }
 
-    private fun setupPaginationControls() {
-        binding.btnPrev.setOnClickListener {
-            if (currentPage > 1) {
-                currentPage--
-                updatePagedData()
-            }
-        }
-
-        binding.btnNext.setOnClickListener {
-            if ((currentPage * itemsPerPage) < filteredReports.size) {
-                currentPage++
-                updatePagedData()
-            }
-        }
-    }
-
     private fun updatePaginationButtons() {
         binding.pageNumberContainer.removeAllViews()
         val totalPages = getTotalPages()
 
-        // ⬅ 이전 버튼
-        binding.pageNumberContainer.addView(binding.btnPrev)
+        val container = binding.pageNumberContainer
 
+        // ← 이전
+        if (currentPage > 1) {
+            val prev = TextView(this).apply {
+                text = "< 이전"
+                textSize = 16f
+                setPadding(32, 16, 32, 16)
+                setTextColor(ContextCompat.getColor(context, R.color.blue_700))
+                setOnClickListener {
+                    currentPage--
+                    updatePagedData()
+                    updatePaginationButtons()
+                }
+            }
+            container.addView(prev)
+        }
+
+        // 페이지 숫자
         for (i in 1..totalPages) {
-            val btn = Button(this).apply {
-                text = i.toString()
+            val tv = TextView(this).apply {
+                text = "$i"
+                textSize = 16f
+                setPadding(28, 16, 28, 16)
+                setTextColor(if (i == currentPage) Color.WHITE else Color.DKGRAY)
+                background = if (i == currentPage)
+                    ContextCompat.getDrawable(context, R.drawable.bg_selected_page)
+                else null
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    setMargins(12, 0, 12, 0)
+                }
                 setOnClickListener {
                     currentPage = i
                     updatePagedData()
+                    updatePaginationButtons()
                 }
             }
-            binding.pageNumberContainer.addView(btn)
+            container.addView(tv)
         }
 
-        // ➡ 다음 버튼
-        binding.pageNumberContainer.addView(binding.btnNext)
+        // 다음 →
+        if (currentPage < totalPages) {
+            val next = TextView(this).apply {
+                text = "다음 >"
+                textSize = 16f
+                setPadding(32, 16, 32, 16)
+                setTextColor(ContextCompat.getColor(context, R.color.blue_700))
+                setOnClickListener {
+                    currentPage++
+                    updatePagedData()
+                    updatePaginationButtons()
+                }
+            }
+            container.addView(next)
+        }
     }
 
     private fun updatePageLabel() {
