@@ -3,6 +3,8 @@ package com.example.protectsong
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.location.Location
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
@@ -22,12 +24,14 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.example.protectsong.databinding.ActivityMainBinding
 import com.example.protectsong.whistle.WhistleService
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import java.io.File
-import java.util.Locale
-import android.graphics.Color
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,30 +40,38 @@ class MainActivity : AppCompatActivity() {
     private var isWhistleOn = false
     private lateinit var whistlePlayer: MediaPlayer
 
-
     private val ADMIN_UID = "Os1oJCzG45OKwyglRdc0JXxbghw2"
     private val REQUEST_CALL_PERMISSION = 100
     private val REQUEST_CALL_PERMISSION_EMERGENCY = 100
     private val REQUEST_CALL_PERMISSION_SUPPORT = 101
-
 
     private lateinit var recorder: MediaRecorder
     private lateinit var tempFile: File
     private val soundHandler = Handler(Looper.getMainLooper())
     private var isLoudSoundDetected = false
 
+    // 🔹 모스 부호 관련 변수
+    private var pressStartTime = 0L
+    private var lastReleaseTime = 0L
+    private val pressPattern = mutableListOf<Char>() // 's' = short, 'l' = long
+    private val SHORT_THRESHOLD = 300L
+    private val PATTERN_TIMEOUT = 3000L
+
+    // 🔹 위치 추적
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 접근성 권한
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
         if (!isAccessibilityServiceEnabled()) {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
             Toast.makeText(this, "‘지키송 휘슬 서비스’를 활성화해주세요", Toast.LENGTH_LONG).show()
         }
 
-        // 툴바 설정
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         toggle = ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolbar,
@@ -68,7 +80,6 @@ class MainActivity : AppCompatActivity() {
         toggle.syncState()
         toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, android.R.color.white)
 
-        // 네비게이션 헤더
         val header = binding.navView.getHeaderView(0)
         val profileImageView = header.findViewById<ImageView>(R.id.navProfileImage)
         header.findViewById<TextView>(R.id.tvSettings).setOnClickListener {
@@ -82,7 +93,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, EditProfileActivity::class.java))
         }
 
-        // 사용자 정보
         FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
             val db = FirebaseFirestore.getInstance()
             db.collection("users").document(uid).get().addOnSuccessListener { doc ->
@@ -101,7 +111,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 네비게이션 메뉴
         binding.navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_mypage -> Toast.makeText(this, "마이페이지 클릭됨", Toast.LENGTH_SHORT).show()
@@ -113,7 +122,6 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        // 문자 신고 버튼
         binding.btnSmsReport.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> v.setBackgroundResource(R.drawable.bg_left_curve_button_pressed)
@@ -125,7 +133,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, SmsReportActivity::class.java))
         }
 
-        // 긴급 신고 버튼
         binding.btnEmergency.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> v.setBackgroundResource(R.drawable.bg_circle_button_pressed)
@@ -137,7 +144,6 @@ class MainActivity : AppCompatActivity() {
             makeEmergencyCall()
         }
 
-        // 전화 신고 버튼
         binding.ivCall.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> v.setBackgroundResource(R.drawable.bg_right_curve_button_pressed)
@@ -149,19 +155,44 @@ class MainActivity : AppCompatActivity() {
             makeDirectCallToSupport()
         }
 
-        // 휘슬 버튼
-        binding.btnWhistle.setOnClickListener {
-            isWhistleOn = !isWhistleOn
-            binding.btnWhistle.setBackgroundResource(
-                if (isWhistleOn) R.drawable.bg_rectangle_button_pressed
-                else R.drawable.bg_rectangle_button
-            )
-            binding.btnWhistle.setImageResource(
-                if (isWhistleOn) R.drawable.on else R.drawable.off
-            )
+        // 🔹 휘슬 버튼 모스 부호 인식용 터치 이벤트
+        binding.btnWhistle.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    pressStartTime = System.currentTimeMillis()
+                    true
+                }
+                MotionEvent.ACTION_UP -> {
+                    val pressDuration = System.currentTimeMillis() - pressStartTime
+                    val now = System.currentTimeMillis()
+
+                    if (now - lastReleaseTime > PATTERN_TIMEOUT) {
+                        pressPattern.clear()
+                    }
+
+                    pressPattern.add(
+                        if (pressDuration < SHORT_THRESHOLD) 's' else 'l'
+                    )
+                    lastReleaseTime = now
+
+                    isWhistleOn = !isWhistleOn
+                    binding.btnWhistle.setBackgroundResource(
+                        if (isWhistleOn) R.drawable.bg_rectangle_button_pressed
+                        else R.drawable.bg_rectangle_button
+                    )
+                    binding.btnWhistle.setImageResource(
+                        if (isWhistleOn) R.drawable.on else R.drawable.off
+                    )
+
+                    if (pressPattern.size >= 9) {
+                        checkMorsePattern()
+                    }
+                    true
+                }
+                else -> false
+            }
         }
 
-        // 하단 네비게이션
         binding.bottomNavigation.selectedItemId = R.id.nav_home
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -176,6 +207,39 @@ class MainActivity : AppCompatActivity() {
 
         requestMicrophonePermission()
         startLoudSoundMonitor()
+    }
+
+    private fun checkMorsePattern() {
+        val sosPattern = listOf('s', 's', 's', 'l', 'l', 'l', 's', 's', 's')
+        if (pressPattern == sosPattern) {
+            pressPattern.clear()
+            triggerEmergencyWithLocation()
+        }
+    }
+
+    private fun triggerEmergencyWithLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 2001)
+            return
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            val reportData = hashMapOf(
+                "type" to "긴급 신고 (모스)",
+                "timestamp" to System.currentTimeMillis(),
+                "location" to if (location != null) "${location.latitude}, ${location.longitude}" else "위치 정보 없음"
+            )
+
+            FirebaseFirestore.getInstance()
+                .collection("emergency_reports")
+                .add(reportData)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "모스 부호 감지 → 신고 완료", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "신고 실패", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 
     private fun navigateToChat(): Boolean {
@@ -253,17 +317,16 @@ class MainActivity : AppCompatActivity() {
         startActivity(dialIntent)
     }
 
-
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
             when (requestCode) {
                 REQUEST_CALL_PERMISSION_EMERGENCY -> makeEmergencyCall()
                 REQUEST_CALL_PERMISSION_SUPPORT -> makeDirectCallToSupport()
+                2001 -> triggerEmergencyWithLocation()
             }
         } else {
-            Toast.makeText(this, "전화 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "권한이 필요합니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -287,7 +350,7 @@ class MainActivity : AppCompatActivity() {
                     val title = doc.getString("title") ?: "제목 없음"
                     val timestamp = doc.getTimestamp("timestamp")
                     val dateStr = timestamp?.toDate()?.let {
-                        java.text.SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).format(it)
+                        SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).format(it)
                     } ?: ""
 
                     val rowLayout = LinearLayout(this).apply {
@@ -339,4 +402,3 @@ class MainActivity : AppCompatActivity() {
         return enabled.split(":").any { it.contains(packageName) }
     }
 }
-
