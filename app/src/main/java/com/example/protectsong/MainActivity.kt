@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toggle: ActionBarDrawerToggle
     private var isWhistleOn = false
     private lateinit var whistlePlayer: MediaPlayer
-    private val ADMIN_UID = "MecPxatzCTMeHztzELY4ps4KVeh2"
+    private val ADMIN_UID = "Os1oJCzG45OKwyglRdc0JXxbghw2"
     private val REQUEST_CALL_PERMISSION = 100
 
     private lateinit var recorder: MediaRecorder

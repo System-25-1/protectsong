@@ -2,6 +2,7 @@ package com.example.protectsong
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -30,11 +31,11 @@ class AdminMainActivity : AppCompatActivity() {
         binding = ActivityAdminSmsMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ✅ 툴바 설정
+        // ── 툴바 세팅
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        // ✅ 드로어 토글
+        // ── 드로어 토글
         toggle = ActionBarDrawerToggle(
             this, binding.drawerLayout, binding.toolbar,
             R.string.navigation_drawer_open, R.string.navigation_drawer_close
@@ -43,23 +44,46 @@ class AdminMainActivity : AppCompatActivity() {
         toggle.syncState()
         toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, android.R.color.white)
 
-        // ✅ 드로어 헤더 정보
-        val headerView = binding.navView.getHeaderView(0)
-        val tvUserName = headerView.findViewById<TextView>(R.id.tvUserName)
-        val tvStudentId = headerView.findViewById<TextView>(R.id.tvStudentId)
+        // ── 드로어 헤더 뷰 참조
+        val headerView   = binding.navView.getHeaderView(0)
+        val tvUserName   = headerView.findViewById<TextView>(R.id.tvUserName)
+        val tvStudentId  = headerView.findViewById<TextView>(R.id.tvStudentId)
         val logoutButton = headerView.findViewById<TextView>(R.id.logout_button)
-        val tvSettings = headerView.findViewById<TextView>(R.id.tvSettings)
+        val tvSettings   = headerView.findViewById<TextView>(R.id.tvSettings)
 
+        // ── ① 현재 FirebaseAuth에 로그인된 UID를 찍어본다
         val uid = FirebaseAuth.getInstance().currentUser?.uid
+        Log.d("AdminMainDebug", "[1] currentUser.uid = $uid")
+
         if (uid != null) {
-            FirebaseFirestore.getInstance().collection("users").document(uid)
+            // ── ② Firestore에서 users/{uid} 문서를 읽어올 때 로그로 확인
+            db.collection("users").document(uid)
                 .get()
                 .addOnSuccessListener { doc ->
-                    tvUserName.text = doc.getString("name") ?: "이름 없음"
-                    tvStudentId.text = doc.getString("studentId") ?: "학번 없음"
+                    // 문서가 존재하는지, 내부에 값이 뭔지 찍어본다
+                    Log.d("AdminMainDebug", "[2] doc.exists() = ${doc.exists()}")
+                    Log.d("AdminMainDebug", "[3] doc.data = ${doc.data}")
+
+                    // “name”과 “studentId” 필드가 실제로 뭔지 찍어본다
+                    val nameVal = doc.getString("name")
+                    val idVal   = doc.getString("studentId")
+                    Log.d("AdminMainDebug", "[4] nameVal = $nameVal, studentIdVal = $idVal")
+
+                    // 실제 헤더에 덮어쓰기
+                    tvUserName.text   = nameVal  ?: "이름 없음"
+                    tvStudentId.text  = idVal    ?: "학번 없음"
                 }
+                .addOnFailureListener { e ->
+                    Log.e("AdminMainDebug", "[5] Firestore read failed", e)
+                    Toast.makeText(this, "헤더 정보 불러오기 실패: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+        } else {
+            Log.w("AdminMainDebug", "[6] currentUser.uid 가 null 입니다.")
+            tvUserName.text   = "이름 없음"
+            tvStudentId.text  = "학번 없음"
         }
 
+        // ── 로그아웃 버튼
         logoutButton.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
             val intent = Intent(this, SplashActivity::class.java)
@@ -67,23 +91,24 @@ class AdminMainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // ── 설정 버튼
         tvSettings.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
 
-        // ✅ 리사이클러뷰
+        // ── 리사이클러뷰·페이지네이션 세팅 (생략) …
+
         adapter = AdminPagedReportAdapter { report ->
             val intent = Intent(this, AdminReportDetailActivity::class.java)
             intent.putExtra("report", report)
             startActivity(intent)
         }
-
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
-
         setupPaginationControls()
 
-        // ✅ 하단 네비게이션
+
+        // ── 하단 네비게이션 세팅 (생략) …
         binding.bottomNavigation.selectedItemId = R.id.nav_home
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
