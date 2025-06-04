@@ -20,16 +20,12 @@ class ChatListActivity : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
-    private val adminUid = "Os1oJCzG45OKwyglRdc0JXxbghw2"
     private val studentChats = mutableListOf<ChatListItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChatListBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-
-        Log.d("🔥Auth", "현재 로그인한 UID: ${auth.currentUser?.uid}")
 
         adapter = ChatListAdapter(studentChats) { studentUid ->
             val intent = Intent(this, ChatActivity::class.java)
@@ -40,14 +36,22 @@ class ChatListActivity : AppCompatActivity() {
         binding.recyclerViewChatList.adapter = adapter
         binding.recyclerViewChatList.layoutManager = LinearLayoutManager(this)
 
-        // ✅ 뒤로 버튼 → MainActivity로 이동
         findViewById<TextView>(R.id.backText).setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
 
-
-        loadChatList()
+        // 🔐 관리자 확인 후 로드
+        auth.currentUser?.getIdToken(true)
+            ?.addOnSuccessListener { result ->
+                val isAdmin = result.claims["admin"] == true
+                if (isAdmin) {
+                    Log.d("🔥AdminCheck", "관리자 계정입니다.")
+                    loadChatList()
+                } else {
+                    Log.e("🔥AdminCheck", "⚠ 관리자 권한이 없습니다.")
+                }
+            }
 
         binding.bottomNavigation.selectedItemId = R.id.nav_chat
         binding.bottomNavigation.setOnItemSelectedListener {
@@ -63,8 +67,6 @@ class ChatListActivity : AppCompatActivity() {
                 else -> true
             }
         }
-
-
     }
 
     private fun loadChatList() {
