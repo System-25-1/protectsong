@@ -30,6 +30,7 @@
             android:orientation="vertical"
             android:padding="12dp">
 
+            <!-- 신고 유형 선택 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -51,6 +52,7 @@
                     android:background="@drawable/spinner_background"/>
             </LinearLayout>
 
+            <!-- 건물 선택 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -72,6 +74,7 @@
                     android:background="@drawable/spinner_background"/>
             </LinearLayout>
 
+            <!-- 내용 입력 -->
             <EditText
                 android:id="@+id/edit_content"
                 android:layout_width="match_parent"
@@ -81,11 +84,24 @@
                 android:gravity="top"
                 android:hint="내용을 입력하세요"
                 android:inputType="textMultiLine"
+                android:maxLength="1000"
                 android:maxLines="20"
                 android:minLines="10"
                 android:overScrollMode="always"
                 android:scrollbars="vertical" />
 
+            <!-- 글자 수 표시 -->
+            <TextView
+                android:id="@+id/tvCharCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 / 1000자"
+                android:textSize="12sp"
+                android:textColor="#888888"
+                android:layout_gravity="end"
+                android:layout_marginTop="4dp" />
+
+            <!-- 파일 첨부 -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -121,6 +137,7 @@
                     android:src="@drawable/ic_video" />
             </LinearLayout>
 
+            <!-- 촬영 첨부 -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -156,6 +173,7 @@
                     android:src="@drawable/ic_camcorder" />
             </LinearLayout>
 
+            <!-- 첨부 썸네일 목록 -->
             <LinearLayout
                 android:id="@+id/attachedThumbnailsContainer"
                 android:layout_width="match_parent"
@@ -164,6 +182,7 @@
                 android:layout_marginTop="8dp"
                 android:gravity="start" />
 
+            <!-- 업로드 상태 -->
             <LinearLayout
                 android:id="@+id/uploadStatusLayout"
                 android:layout_width="match_parent"
@@ -190,6 +209,7 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
+            <!-- 업로드 정보 -->
             <TextView
                 android:id="@+id/uploadInfoText"
                 android:layout_width="wrap_content"
@@ -200,6 +220,7 @@
                 android:textColor="#CCCCCC"
                 android:layout_gravity="center_horizontal" />
 
+            <!-- 저장하기 버튼 -->
             <Button
                 android:id="@+id/btnSubmit"
                 android:layout_width="150dp"
@@ -211,5 +232,4 @@
                 android:textColor="#FFFFFF" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

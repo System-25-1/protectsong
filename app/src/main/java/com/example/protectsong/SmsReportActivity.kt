@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +33,7 @@ class SmsReportActivity : AppCompatActivity() {
     private var imageUri: Uri? = null
     private var videoUri: Uri? = null
     private var totalUploadSizeMB = 0L
+    private var isUploading = false
 
     private lateinit var uploadStatusLayout: LinearLayout
     private lateinit var uploadStatusText: TextView
@@ -42,12 +45,18 @@ class SmsReportActivity : AppCompatActivity() {
     )
     private val REQUEST_PERMISSIONS = 1010
 
+    private var currentToast: Toast? = null
+    private fun showToast(message: String) {
+        currentToast?.cancel()
+        currentToast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
+        currentToast?.show()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySmsReportBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ✅ SMS 신고 화면 진입 로그
         logUserAction("SMS 신고 화면 진입", "사용자가 신고 작성 화면에 들어옴")
 
         uploadStatusLayout = findViewById(R.id.uploadStatusLayout)
@@ -95,12 +104,29 @@ class SmsReportActivity : AppCompatActivity() {
         }
 
         binding.btnSubmit.setOnClickListener {
+            val contentText = binding.editContent.text.toString().trim()
+
+            if (contentText.isEmpty()) {
+                showToast("내용을 입력해주세요.")
+                return@setOnClickListener
+            }
+
+            if (contentText.length < 10) {
+                showToast("내용은 최소 10자 이상 입력해야 합니다.")
+                return@setOnClickListener
+            }
+
+            if (isUploading) {
+                showToast("파일 업로드가 완료된 후에 저장할 수 있습니다.")
+                return@setOnClickListener
+            }
+
             val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnClickListener
             val reportData = hashMapOf(
                 "uid" to uid,
                 "type" to binding.spinnerType.selectedItem.toString(),
                 "building" to binding.spinnerBuilding.selectedItem.toString(),
-                "content" to binding.editContent.text.toString(),
+                "content" to contentText,
                 "timestamp" to Date(),
                 "files" to uploadedFileUrls,
                 "status" to "접수됨"
@@ -109,24 +135,47 @@ class SmsReportActivity : AppCompatActivity() {
             FirebaseFirestore.getInstance().collection("smsReports")
                 .add(reportData)
                 .addOnSuccessListener {
-                    // ✅ 신고 접수 로그
                     logUserAction("신고 접수", "건물: ${reportData["building"]}, 유형: ${reportData["type"]}, 내용: ${reportData["content"]}")
-                    Toast.makeText(this, "신고가 접수되었습니다!", Toast.LENGTH_SHORT).show()
+                    showToast("신고가 접수되었습니다!")
                     startActivity(Intent(this, MainActivity::class.java).apply {
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                     })
                     finish()
                 }
                 .addOnFailureListener {
-                    Toast.makeText(this, "신고 실패: ${it.message}", Toast.LENGTH_SHORT).show()
+                    showToast("신고 실패: ${it.message}")
                 }
         }
+
+        binding.editContent.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val length = s?.length ?: 0
+                binding.tvCharCount.text = "$length / 1000자"
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
     }
 
     private fun hasPermissions(): Boolean {
         return REQUIRED_PERMISSIONS.all {
             ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
         }
+    }
+
+    private fun updateUploadInfo() {
+        uploadInfoText.text = "( 파일 ${uploadedFileUrls.size}개, ${"%.1f".format(totalUploadSizeMB.toFloat())}MB / 50MB )"
+    }
+
+    private fun logUserAction(action: String, detail: String) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val log = hashMapOf(
+            "userId" to uid,
+            "action" to action,
+            "detail" to detail,
+            "timestamp" to FieldValue.serverTimestamp()
+        )
+        FirebaseFirestore.getInstance().collection("logs").add(log)
     }
 
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -157,19 +206,17 @@ class SmsReportActivity : AppCompatActivity() {
         return sizeInBytes / (1024 * 1024)
     }
 
-    private fun updateUploadInfo() {
-        uploadInfoText.text = "( 파일 ${uploadedFileUrls.size}개, ${"%.1f".format(totalUploadSizeMB.toFloat())}MB / 50MB )"
-    }
-
     private fun uploadFileToFirebase(uri: Uri, type: String) {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val fileSizeMB = getFileSizeInMB(uri)
 
         if (totalUploadSizeMB + fileSizeMB > 50) {
-            Toast.makeText(this, "파일 용량은 총 50MB까지만 가능합니다", Toast.LENGTH_SHORT).show()
+            showToast("파일 용량은 총 50MB까지만 가능합니다")
             return
         }
+
         totalUploadSizeMB += fileSizeMB
+        isUploading = true
 
         uploadStatusText.text = if (type == "image") "이미지 업로드 중..." else "동영상 업로드 중..."
         uploadStatusLayout.visibility = View.VISIBLE
@@ -193,22 +240,22 @@ class SmsReportActivity : AppCompatActivity() {
                         addThumbnail(uri, downloadUrl.toString(), type)
                         uploadStatusLayout.visibility = View.GONE
                         updateUploadInfo()
-
-                        // ✅ 파일 업로드 로그
+                        isUploading = false
+                        showToast("$type 업로드 완료!")
                         logUserAction("파일 업로드", "$type 파일 업로드 완료: $downloadUrl")
-
-                        Toast.makeText(this, "$type 업로드 완료!", Toast.LENGTH_SHORT).show()
                     }
                 }
                 .addOnFailureListener {
                     uploadStatusLayout.visibility = View.GONE
-                    Toast.makeText(this, "$type 업로드 실패: ${it.message}", Toast.LENGTH_SHORT).show()
+                    isUploading = false
+                    showToast("$type 업로드 실패: ${it.message}")
                 }
 
         } catch (e: Exception) {
             e.printStackTrace()
             uploadStatusLayout.visibility = View.GONE
-            Toast.makeText(this, "$type 파일 처리 오류", Toast.LENGTH_SHORT).show()
+            isUploading = false
+            showToast("$type 파일 처리 오류")
         }
     }
 
@@ -280,31 +327,18 @@ class SmsReportActivity : AppCompatActivity() {
         FirebaseStorage.getInstance().getReferenceFromUrl(fileUrl)
             .delete()
             .addOnSuccessListener {
-                // ✅ 파일 삭제 로그
                 logUserAction("파일 삭제", "파일 삭제됨: $fileUrl")
-                Toast.makeText(this, "파일 삭제 완료", Toast.LENGTH_SHORT).show()
+                showToast("파일 삭제 완료")
             }
             .addOnFailureListener {
-                Toast.makeText(this, "파일 삭제 실패", Toast.LENGTH_SHORT).show()
+                showToast("파일 삭제 실패")
             }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_PERMISSIONS && !hasPermissions()) {
-            Toast.makeText(this, "권한이 거부되어 촬영 기능을 사용할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            showToast("권한이 거부되어 촬영 기능을 사용할 수 없습니다.")
         }
-    }
-
-    // ✅ 공통 로그 기록 함수
-    private fun logUserAction(action: String, detail: String) {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val log = hashMapOf(
-            "userId" to uid,
-            "action" to action,
-            "detail" to detail,
-            "timestamp" to FieldValue.serverTimestamp()
-        )
-        FirebaseFirestore.getInstance().collection("logs").add(log)
     }
 }
