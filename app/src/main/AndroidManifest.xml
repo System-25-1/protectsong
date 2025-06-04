@@ -95,6 +95,7 @@
         <activity android:name=".AdminPostWriteActivity" android:exported="true"/>
         <activity android:name=".AdminMainActivity" android:exported="true"/>
         <activity android:name=".AdminReportDetailActivity" android:exported="true"/>
+        <activity android:name=".LogListActivity" />
 
     </application>
 
