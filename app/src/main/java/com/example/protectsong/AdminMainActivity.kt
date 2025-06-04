@@ -153,7 +153,7 @@ class AdminMainActivity : AppCompatActivity() {
                 allReports = snapshots.map { doc ->
                     SmsReport(
                         id = doc.id,
-                        uid = doc.getString("uid") ?: "",
+                        userId = doc.getString("userId") ?: "",
                         type = doc.getString("type") ?: "",
                         building = doc.getString("building") ?: "",
                         content = doc.getString("content") ?: "",
