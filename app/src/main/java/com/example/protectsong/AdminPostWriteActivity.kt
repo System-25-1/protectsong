@@ -9,7 +9,6 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import android.content.Intent
 
-
 class AdminPostWriteActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAdminPostWriteBinding
@@ -54,6 +53,17 @@ class AdminPostWriteActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // 🔒 글자수 제한 검사
+            if (title.length > 30) {
+                Toast.makeText(this, "제목은 30자 이내로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (content.length > 5000) {
+                Toast.makeText(this, "내용은 5000자 이내로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             if (editMode) {
                 // ✏ 기존 게시글 수정
                 val data = mapOf(
@@ -95,33 +105,31 @@ class AdminPostWriteActivity : AppCompatActivity() {
                         Toast.makeText(this, "등록 실패: ${it.message}", Toast.LENGTH_SHORT).show()
                     }
             }
+        }
 
-        }// ✅ 하단 네비게이션 리스너 설정
         // ✅ 하단 네비게이션 클릭 리스너 설정
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_chat -> {
-                    startActivity(Intent(this, ChatListActivity::class.java))  // 관리자 채팅 목록 화면
+                    startActivity(Intent(this, ChatListActivity::class.java))
                     overridePendingTransition(0, 0)
                     true
                 }
                 R.id.nav_home -> {
-                    startActivity(Intent(this, AdminMainActivity::class.java))  // 관리자 메인 화면
+                    startActivity(Intent(this, AdminMainActivity::class.java))
                     overridePendingTransition(0, 0)
                     true
                 }
                 R.id.nav_post -> {
-                    // 현재 화면 → 아무 동작 없음
                     true
                 }
                 else -> false
             }
         }
 
-// ✅ 현재 탭 강조 (post)
+        // ✅ 현재 탭 강조
         binding.bottomNavigation.post {
             binding.bottomNavigation.selectedItemId = R.id.nav_post
         }
-
     }
 }
