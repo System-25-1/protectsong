@@ -71,9 +71,10 @@ class PostListActivity : AppCompatActivity() {
             writePostLauncher.launch(intent)
         }
     }
+
     override fun onResume() {
         super.onResume()
-        loadPostsFromFirestore() // 🔁 실시간 반영용으로 추가
+        loadPostsFromFirestore()
     }
 
     private fun initRecyclerView() {
@@ -129,7 +130,6 @@ class PostListActivity : AppCompatActivity() {
         val layout = binding.paginationLayout
         layout.removeAllViews()
 
-        // < 이전
         if (currentPage > 1) {
             val prev = TextView(this).apply {
                 text = "< 이전"
@@ -147,7 +147,6 @@ class PostListActivity : AppCompatActivity() {
             layout.addView(prev)
         }
 
-        // 페이지 번호
         for (i in 1..totalPages) {
             val tv = TextView(this).apply {
                 text = "$i"
@@ -165,7 +164,6 @@ class PostListActivity : AppCompatActivity() {
             layout.addView(tv)
         }
 
-        // 다음 >
         if (currentPage < totalPages) {
             val next = TextView(this).apply {
                 text = "다음 >"
@@ -193,17 +191,22 @@ class PostListActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val filtered = allNormalPosts.filter {
+            val filteredNotices = allNotices.filter {
+                it.title.contains(keyword, ignoreCase = true) ||
+                        it.content.contains(keyword, ignoreCase = true)
+            }
+
+            val filteredNormal = allNormalPosts.filter {
                 it.title.contains(keyword, ignoreCase = true) ||
                         it.content.contains(keyword, ignoreCase = true)
             }
 
             postList.clear()
-            postList.addAll(allNotices)
-            postList.addAll(filtered)
+            postList.addAll(filteredNotices)
+            postList.addAll(filteredNormal)
             postAdapter.notifyDataSetChanged()
 
-            if (filtered.isEmpty()) {
+            if (filteredNotices.isEmpty() && filteredNormal.isEmpty()) {
                 Toast.makeText(this, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show()
             }
         }
