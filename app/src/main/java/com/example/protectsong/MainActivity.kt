@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.*
@@ -18,7 +19,6 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.example.protectsong.databinding.ActivityMainBinding
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -34,21 +34,22 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val ADMIN_UID = "Os1oJCzG45OKwyglRdc0JXxbghw2"
     private val REQUEST_CALL_PHONE = 103
-
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private lateinit var recorder: MediaRecorder
     private lateinit var tempFile: File
     private val soundHandler = Handler(Looper.getMainLooper())
     private var isLoudSoundDetected = false
 
-    // 볼륨 패턴 감지용
     private val volumePattern = mutableListOf<Char>()
     private var lastVolumeKeyTime = 0L
     private val VOLUME_PATTERN_TIMEOUT = 3000L
+
+    private var isWhistlePlaying = false
+    private var whistlePlayer: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,6 +123,11 @@ class MainActivity : AppCompatActivity() {
             makeDirectCallToSupport()
         }
 
+        binding.btnWhistle.setImageResource(R.drawable.off)
+        binding.btnWhistle.setOnClickListener {
+            toggleWhistle()
+        }
+
         binding.bottomNavigation.selectedItemId = R.id.nav_home
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -137,7 +143,34 @@ class MainActivity : AppCompatActivity() {
         startLoudSoundMonitor()
     }
 
-    // 🔸 볼륨 패턴 감지
+    private fun toggleWhistle() {
+        if (!isWhistlePlaying) {
+            whistlePlayer = MediaPlayer.create(this, R.raw.whistle_sound)
+            whistlePlayer?.isLooping = true
+            whistlePlayer?.start()
+
+            binding.btnWhistle.setImageResource(R.drawable.on)
+            binding.btnWhistle.setBackgroundResource(R.drawable.bg_rectangle_button_pressed) // ✅ 배경 적용
+            isWhistlePlaying = true
+        } else {
+            whistlePlayer?.stop()
+            whistlePlayer?.release()
+            whistlePlayer = null
+
+            binding.btnWhistle.setImageResource(R.drawable.off)
+            binding.btnWhistle.setBackgroundResource(R.drawable.bg_rectangle_button) // ✅ 기본 배경 복귀
+            isWhistlePlaying = false
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isWhistlePlaying) {
+            whistlePlayer?.stop()
+            whistlePlayer?.release()
+        }
+    }
+
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         val now = System.currentTimeMillis()
         if (now - lastVolumeKeyTime > VOLUME_PATTERN_TIMEOUT) {
@@ -166,7 +199,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // 🔸 자동 전화 연결
     private fun callEmergencyNumberDirectly() {
         val callIntent = Intent(Intent.ACTION_CALL)
         callIntent.data = Uri.parse("tel:01093808120")
@@ -178,7 +210,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(callIntent)
     }
 
-    // 🔸 권한 요청 결과 처리
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CALL_PHONE && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
