@@ -1,0 +1,112 @@
+[33m3cf69da[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdev[m[33m)[m HEAD@{0}: commit: 학번입력수정
+[33m024b026[m HEAD@{1}: commit: 회원가입 권한 수정
+[33mf700499[m HEAD@{2}: merge origin/dev: Merge made by the 'ort' strategy.
+[33m17c4c27[m HEAD@{3}: commit: 전화번호인증수정
+[33m7df179e[m HEAD@{4}: merge origin/dev: Fast-forward
+[33m9e52703[m HEAD@{5}: commit (merge): Remove IDE and build files from tracking
+[33m9b8ae57[m[33m ([m[1;31morigin/feature/jaeseo[m[33m, [m[1;32mfeature/jaeseo[m[33m)[m HEAD@{6}: merge feature/jaeseo: Fast-forward
+[33ma927c96[m HEAD@{7}: checkout: moving from feature/jaeseo to dev
+[33m9b8ae57[m[33m ([m[1;31morigin/feature/jaeseo[m[33m, [m[1;32mfeature/jaeseo[m[33m)[m HEAD@{8}: commit: 전화번호 입력 수정
+[33m1ece145[m HEAD@{9}: commit: 사용자 정보입력 수정
+[33mb583a50[m HEAD@{10}: commit: 보호자 전화번호 - 수정
+[33ma927c96[m HEAD@{11}: merge dev: Fast-forward
+[33m22250ef[m HEAD@{12}: checkout: moving from dev to feature/jaeseo
+[33ma927c96[m HEAD@{13}: reset: moving to HEAD
+[33ma927c96[m HEAD@{14}: commit (merge): remove .idea and .gradle from Git tracking
+[33m0f3d77b[m HEAD@{15}: pull origin dev: Fast-forward
+[33mb36f969[m HEAD@{16}: checkout: moving from feature/jaeseo to dev
+[33m22250ef[m HEAD@{17}: reset: moving to HEAD
+[33m22250ef[m HEAD@{18}: commit: 문자신고 수정
+[33m8fdec10[m HEAD@{19}: commit: 큰소리감지 기준 수정
+[33macc7d80[m HEAD@{20}: commit: 종크기 수정
+[33m1cc99f1[m HEAD@{21}: commit: 휘슬소리 재생
+[33ma965ed8[m HEAD@{22}: checkout: moving from feature/jaeseo to feature/jaeseo
+[33ma965ed8[m HEAD@{23}: commit (merge): Merge dev into feature/jaeseo and resolve conflicts
+[33mb08aa7b[m HEAD@{24}: checkout: moving from feature/jaeseo to feature/jaeseo
+[33mb08aa7b[m HEAD@{25}: commit: Stop tracking .idea/libraries
+[33m8232302[m HEAD@{26}: merge dev: updating HEAD
+[33m8232302[m HEAD@{27}: checkout: moving from dev to feature/jaeseo
+[33mb36f969[m HEAD@{28}: commit (merge): A
+[33m9f42976[m HEAD@{29}: reset: moving to HEAD
+[33m9f42976[m HEAD@{30}: commit: ui수정
+[33m1f7a0cd[m HEAD@{31}: commit: 글씨체 수정
+[33mf14abe7[m HEAD@{32}: commit: ui수정
+[33medace36[m HEAD@{33}: commit: chore: .gitignore 중복 제거
+[33m96fec70[m HEAD@{34}: pull origin dev: Fast-forward
+[33m1bd77ae[m HEAD@{35}: checkout: moving from feature/jaeseo to dev
+[33m8232302[m HEAD@{36}: commit: chore: gradle.properties에 필요한 설정 반영
+[33mb0ccdf7[m HEAD@{37}: commit: refactor: IDE/Gradle 캐시 및 local.properties를 Git 추적 대상에서 제외
+[33m893ca98[m HEAD@{38}: commit: ci: .gitignore에 .idea/, .gradle/, local.properties 추가
+[33me960a76[m HEAD@{39}: commit: chore: .gitignore 및 libs.versions.toml 수정
+[33m3e02e48[m HEAD@{40}: commit (merge): chore: resolve merge conflicts by removing IDE/Gradle files
+[33m66a6c06[m HEAD@{41}: commit: Update .gitignore: ignore IDE, Gradle cache, and local.properties
+[33m09b6cf5[m HEAD@{42}: commit: Remove tracked .gradle/, .idea/ and local.properties
+[33m347bf15[m HEAD@{43}: checkout: moving from feature/jaeseo to feature/jaeseo
+[33m347bf15[m HEAD@{44}: checkout: moving from dev to feature/jaeseo
+[33m1bd77ae[m HEAD@{45}: checkout: moving from feature/jaeseo to dev
+[33m347bf15[m HEAD@{46}: checkout: moving from dev to feature/jaeseo
+[33m1bd77ae[m HEAD@{47}: merge origin/dev: Fast-forward
+[33m20785a1[m HEAD@{48}: commit: Merge feature/jaeseo into dev: 충돌 해결 및 코드 병합 완료
+[33mb308850[m HEAD@{49}: commit: dev: MainActivity 및 IDE 설정 파일 수정 커밋
+[33m522fb03[m HEAD@{50}: commit (merge): Merge feature/jaeseo into dev: IDE 캐시(.gradle, .idea) 충돌 해소
+[33m5cb870a[m HEAD@{51}: pull origin dev: Fast-forward
+[33ma7cab30[m HEAD@{52}: checkout: moving from feature/jaeseo to dev
+[33m347bf15[m HEAD@{53}: commit: 관리자로그인, 학번중복제한 수정
+[33ma7cab30[m HEAD@{54}: checkout: moving from dev to feature/jaeseo
+[33ma7cab30[m HEAD@{55}: merge feature/jaeseo: Fast-forward
+[33me18045d[m HEAD@{56}: checkout: moving from feature/jaeseo to dev
+[33ma7cab30[m HEAD@{57}: commit: 회원가입수정
+[33me18045d[m HEAD@{58}: merge dev: Fast-forward
+[33m93bac86[m HEAD@{59}: checkout: moving from dev to feature/jaeseo
+[33me18045d[m HEAD@{60}: pull origin dev: Fast-forward
+[33m93bac86[m HEAD@{61}: checkout: moving from feature/jaeseo to dev
+[33m93bac86[m HEAD@{62}: checkout: moving from feature/jaeseo to feature/jaeseo
+[33m93bac86[m HEAD@{63}: checkout: moving from feature/jaeseo to feature/jaeseo
+[33m93bac86[m HEAD@{64}: merge dev: Fast-forward
+[33m0b921dc[m HEAD@{65}: checkout: moving from dev to feature/jaeseo
+[33m93bac86[m HEAD@{66}: commit (merge): Merge feature/jaeseo into dev: remove IDE & Gradle cache files
+[33mcb8d50f[m HEAD@{67}: checkout: moving from feature/jaeseo to dev
+[33m0b921dc[m HEAD@{68}: commit: 관리자 신고내용 ui수정
+[33maa79c4e[m HEAD@{69}: checkout: moving from dev to feature/jaeseo
+[33mcb8d50f[m HEAD@{70}: commit (merge): Remove tracked IDE & Gradle caches from dev
+[33m7ed7e48[m HEAD@{71}: commit: Remove tracked IDE configs from dev
+[33m195667c[m HEAD@{72}: checkout: moving from dev to dev
+[33m195667c[m HEAD@{73}: pull origin dev: Fast-forward
+[33m87762e4[m HEAD@{74}: checkout: moving from feature/jaeseo to dev
+[33maa79c4e[m HEAD@{75}: commit: ui수정
+[33mfb44a6e[m HEAD@{76}: commit (merge): Remove tracked IDE/Gradle caches
+[33m63f0f15[m HEAD@{77}: commit: Remove tracked Gradle cache (.gradle/) from feature/jaeseo
+[33m25640ac[m HEAD@{78}: commit: Ignore Gradle cache (.gradle/) in feature/jaeseo
+[33mbcd1bea[m HEAD@{79}: checkout: moving from feature/jaeseo to feature/jaeseo
+[33mbcd1bea[m HEAD@{80}: checkout: moving from dev to feature/jaeseo
+[33m87762e4[m HEAD@{81}: merge origin/dev: Fast-forward
+[33m3ede96d[m HEAD@{82}: pull origin dev: Fast-forward
+[33m5fb802d[m HEAD@{83}: checkout: moving from dev to dev
+[33m5fb802d[m HEAD@{84}: commit (merge): Resolve .gitignore merge conflict
+[33m5b70f05[m HEAD@{85}: checkout: moving from feature/jaeseo to dev
+[33mbcd1bea[m HEAD@{86}: commit: Ignore IDE config (.idea/) in feature/jaeseo
+[33m9dfe147[m HEAD@{87}: checkout: moving from dev to feature/jaeseo
+[33m5b70f05[m HEAD@{88}: pull origin dev: Fast-forward
+[33m730c8d6[m HEAD@{89}: checkout: moving from feature/jaeseo to dev
+[33m9dfe147[m HEAD@{90}: commit: 휘슬소리 오류 수정
+[33m2af4f12[m HEAD@{91}: checkout: moving from dev to feature/jaeseo
+[33m730c8d6[m HEAD@{92}: checkout: moving from feature/jaeseo to dev
+[33m2af4f12[m HEAD@{93}: checkout: moving from dev to feature/jaeseo
+[33m730c8d6[m HEAD@{94}: checkout: moving from dev to dev
+[33m730c8d6[m HEAD@{95}: merge feature/jaeseo: Merge made by the 'ort' strategy.
+[33m9b7e9cd[m HEAD@{96}: commit: Ignore IDE config (.idea/) globally
+[33m7b43793[m HEAD@{97}: checkout: moving from feature/jaeseo to dev
+[33m2af4f12[m HEAD@{98}: commit: 앱꺼져도 휘슬재생가능 수정
+[33m7b43793[m HEAD@{99}: checkout: moving from dev to feature/jaeseo
+[33m7b43793[m HEAD@{100}: checkout: moving from feature/jaeseo to dev
+[33m7b43793[m HEAD@{101}: checkout: moving from dev to feature/jaeseo
+[33m7b43793[m HEAD@{102}: merge feature/jaeseo: Fast-forward
+[33m2beb5fe[m HEAD@{103}: checkout: moving from feature/jaeseo to dev
+[33m7b43793[m HEAD@{104}: commit (merge): Merge remote-tracking branch 'origin/dev' into feature/jaeseo
+[33m0d08376[m HEAD@{105}: checkout: moving from dev to feature/jaeseo
+[33m2beb5fe[m HEAD@{106}: commit (merge): Merge branch 'main' into dev
+[33m9124ba2[m HEAD@{107}: checkout: moving from main to dev
+[33m56204b9[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{108}: commit: Remove .idea folder, .gradle cache and local.properties from tracking
+[33m53ed3e1[m HEAD@{109}: commit: Ignore entire .idea and .gradle directories
+[33mf1d7f0c[m HEAD@{110}: checkout: moving from main to main
+[33mf1d7f0c[m HEAD

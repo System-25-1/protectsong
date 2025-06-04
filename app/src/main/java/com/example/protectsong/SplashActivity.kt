@@ -25,30 +25,36 @@ class SplashActivity : AppCompatActivity() {
 
         val user = auth.currentUser
         if (user != null) {
-            // 🔍 Firestore에서 role 확인
             firestore.collection("users").document(user.uid)
                 .get()
                 .addOnSuccessListener { document ->
-                    val role = document.getString("role")
-                    Log.d("SplashActivity", "로그인된 사용자 role: $role")
-                    val intent = if (role == "admin") {
-                        Intent(this, AdminMainActivity::class.java)
+                    if (document.exists()) {
+                        val role = document.getString("role")
+                        Log.d("SplashActivity", "로그인된 사용자 role: $role")
+
+                        val intent = if (role == "admin") {
+                            Intent(this, AdminMainActivity::class.java)
+                        } else {
+                            Intent(this, MainActivity::class.java)
+                        }
+                        startActivity(intent)
                     } else {
-                        Intent(this, MainActivity::class.java)
+                        // 🔸 Firestore 문서가 존재하지 않음 → 회원가입 미완료로 간주
+                        Log.d("SplashActivity", "사용자 문서 없음 → UserInfoActivity 이동")
+                        startActivity(Intent(this, UserInfoActivity::class.java))
                     }
-                    startActivity(intent)
                     finish()
                 }
                 .addOnFailureListener { e ->
-                    Log.e("SplashActivity", "Firestore role 조회 실패", e)
-                    // 실패 시 일반 사용자용으로 기본 이동
-                    startActivity(Intent(this, MainActivity::class.java))
+                    Log.e("SplashActivity", "Firestore 사용자 정보 조회 실패", e)
+                    auth.signOut()
+                    startActivity(Intent(this, LoginActivity::class.java))
                     finish()
                 }
             return
         }
 
-        // 📌 로그인 안 된 상태 → splash 애니메이션 + 로그인 화면 전환
+        // 로그인 안 된 상태 → splash 애니메이션 + 로그인/회원가입 버튼 표시
         val scaleAnim = AnimationUtils.loadAnimation(this, R.anim.scale_bounce)
         binding.splashText2.startAnimation(scaleAnim)
 

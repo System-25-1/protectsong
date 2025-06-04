@@ -4,6 +4,7 @@ package com.example.protectsong
 import com.example.protectsong.accessibility.UnifiedAccessibilityService
 import android.content.ComponentName
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -56,6 +57,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // 🔹 전화 권한 자동 요청
+        checkCallPermission()
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -220,6 +224,27 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Toast.makeText(this, "마이크 사용 실패: ${e.message}", Toast.LENGTH_LONG).show()
             e.printStackTrace()
+        }
+    }
+
+    private fun checkCallPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
+            != PackageManager.PERMISSION_GRANTED) {
+
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CALL_PHONE)) {
+                AlertDialog.Builder(this)
+                    .setTitle("전화 권한 필요")
+                    .setMessage("신고 기능을 사용하려면 전화 권한이 필요합니다.\n설정으로 이동하여 권한을 허용해 주세요.")
+                    .setPositiveButton("설정") { _, _ ->
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        intent.data = Uri.parse("package:$packageName")
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("취소", null)
+                    .show()
+            } else {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_CALL_PHONE)
+            }
         }
     }
 
