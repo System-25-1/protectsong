@@ -19,6 +19,8 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import java.util.concurrent.TimeUnit
+import com.example.protectsong.BuildConfig
+
 
 class UserInfoActivity : AppCompatActivity() {
 
@@ -54,6 +56,11 @@ class UserInfoActivity : AppCompatActivity() {
                     "relation" to ""
                 )
             )
+
+
+
+
+
 
             firestore.collection("users").document(adminUid)
                 .set(adminInfo)
@@ -108,13 +115,43 @@ class UserInfoActivity : AppCompatActivity() {
         // 전화번호 입력 포맷팅 (예: 010-1234-5678)
         binding.phoneEdit.addTextChangedListener(object : TextWatcher {
             private var isFormatting = false
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            private var deletingHyphen = false
+            private var hyphenStart = 0
+            private var deletingBackward = false
+            private var previousText = ""
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                previousText = s?.toString() ?: ""
+                if (count > 0 && after == 0) {
+                    val deletedChar = s?.get(start)
+                    deletingHyphen = deletedChar == '-'
+                    hyphenStart = start
+                    deletingBackward = true
+                } else {
+                    deletingHyphen = false
+                    deletingBackward = false
+                }
+            }
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
             override fun afterTextChanged(s: Editable?) {
                 if (isFormatting) return
                 isFormatting = true
 
                 val digits = s.toString().replace("-", "")
+
+                // 🔹 11자 초과 시 입력 차단 및 이전 상태로 복원
+                if (digits.length > 11) {
+                    Toast.makeText(binding.root.context, "전화번호는 최대 11자리까지 입력할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                    binding.phoneEdit.removeTextChangedListener(this)
+                    binding.phoneEdit.setText(previousText)
+                    binding.phoneEdit.setSelection(previousText.length)
+                    binding.phoneEdit.addTextChangedListener(this)
+                    isFormatting = false
+                    return
+                }
+
                 val formatted = when {
                     digits.length >= 11 -> "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7, 11)}"
                     digits.length >= 7 -> "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7)}"
@@ -122,21 +159,61 @@ class UserInfoActivity : AppCompatActivity() {
                     else -> digits
                 }
 
+                binding.phoneEdit.removeTextChangedListener(this)
                 binding.phoneEdit.setText(formatted)
-                binding.phoneEdit.setSelection(formatted.length)
+
+                val newCursorPos = when {
+                    deletingHyphen && hyphenStart > 0 -> hyphenStart - 1
+                    else -> formatted.length
+                }
+
+                binding.phoneEdit.setSelection(newCursorPos.coerceAtMost(formatted.length))
+                binding.phoneEdit.addTextChangedListener(this)
+
                 isFormatting = false
             }
         })
+
         //보호자정보포맷팅
         binding.guardianPhoneEdit.addTextChangedListener(object : TextWatcher {
             private var isFormatting = false
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            private var deletingHyphen = false
+            private var hyphenStart = 0
+            private var deletingBackward = false
+            private var previousText = ""
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                previousText = s?.toString() ?: ""
+                if (count > 0 && after == 0) {
+                    val deletedChar = s?.get(start)
+                    deletingHyphen = deletedChar == '-'
+                    hyphenStart = start
+                    deletingBackward = true
+                } else {
+                    deletingHyphen = false
+                    deletingBackward = false
+                }
+            }
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
             override fun afterTextChanged(s: Editable?) {
                 if (isFormatting) return
                 isFormatting = true
 
                 val digits = s.toString().replace("-", "")
+
+                // 🔹 11자 초과 시 입력 차단 및 이전 상태로 복원
+                if (digits.length > 11) {
+                    Toast.makeText(binding.root.context, "전화번호는 최대 11자리까지 입력할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                    binding.guardianPhoneEdit.removeTextChangedListener(this)
+                    binding.guardianPhoneEdit.setText(previousText)
+                    binding.guardianPhoneEdit.setSelection(previousText.length)
+                    binding.guardianPhoneEdit.addTextChangedListener(this)
+                    isFormatting = false
+                    return
+                }
+
                 val formatted = when {
                     digits.length >= 11 -> "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7, 11)}"
                     digits.length >= 7 -> "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7)}"
@@ -144,8 +221,17 @@ class UserInfoActivity : AppCompatActivity() {
                     else -> digits
                 }
 
+                binding.guardianPhoneEdit.removeTextChangedListener(this)
                 binding.guardianPhoneEdit.setText(formatted)
-                binding.guardianPhoneEdit.setSelection(formatted.length)
+
+                val newCursorPos = when {
+                    deletingHyphen && hyphenStart > 0 -> hyphenStart - 1
+                    else -> formatted.length
+                }
+
+                binding.guardianPhoneEdit.setSelection(newCursorPos.coerceAtMost(formatted.length))
+                binding.guardianPhoneEdit.addTextChangedListener(this)
+
                 isFormatting = false
             }
         })

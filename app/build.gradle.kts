@@ -13,6 +13,8 @@ android {
     buildFeatures {
         viewBinding = true
         dataBinding = true
+        buildConfig = true
+
     }
     signingConfigs {
         getByName("debug") {
