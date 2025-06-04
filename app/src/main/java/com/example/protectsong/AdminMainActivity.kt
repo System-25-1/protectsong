@@ -9,7 +9,6 @@ import android.util.Log
 import android.widget.AdapterView
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.LinearLayout
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -36,6 +35,9 @@ class AdminMainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAdminSmsMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // ✅ 관리자 페이지 접속 로그 기록
+        logAdminAction("관리자 홈 접속", "AdminMainActivity에 접속함")
 
         // ── 툴바 세팅
         setSupportActionBar(binding.toolbar)
@@ -82,6 +84,7 @@ class AdminMainActivity : AppCompatActivity() {
         }
 
         logoutButton.setOnClickListener {
+            logAdminAction("로그아웃", "관리자 로그아웃") // ✅ 로그아웃 기록
             FirebaseAuth.getInstance().signOut()
             startActivity(Intent(this, SplashActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -89,10 +92,11 @@ class AdminMainActivity : AppCompatActivity() {
         }
 
         tvSettings.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+            startActivity(Intent(this, LogListActivity::class.java))
         }
 
         adapter = AdminPagedReportAdapter { report ->
+            logAdminAction("신고 상세 보기", "reportId: ${report.id}") // ✅ 상세 보기 기록
             val intent = Intent(this, AdminReportDetailActivity::class.java)
             intent.putExtra("report", report)
             startActivity(intent)
@@ -160,6 +164,8 @@ class AdminMainActivity : AppCompatActivity() {
         val keyword = binding.etSearch.text.toString().trim()
         val selectedStatus = binding.spinnerStatus.selectedItem.toString()
 
+        logAdminAction("검색/필터", "검색어: '$keyword', 상태: '$selectedStatus'") // ✅ 검색/필터 기록
+
         filteredReports = allReports.filter { report ->
             val matchesKeyword = keyword.isEmpty() || report.content.contains(keyword, ignoreCase = true)
             val matchesStatus = selectedStatus == "전체" || report.status == selectedStatus
@@ -184,7 +190,6 @@ class AdminMainActivity : AppCompatActivity() {
         container.removeAllViews()
         val totalPages = getTotalPages()
 
-        // < 이전
         if (currentPage > 1) {
             val prev = TextView(this).apply {
                 text = "< 이전"
@@ -202,7 +207,6 @@ class AdminMainActivity : AppCompatActivity() {
             container.addView(prev)
         }
 
-        // 페이지 번호
         for (i in 1..totalPages) {
             val tv = TextView(this).apply {
                 text = "$i"
@@ -220,7 +224,6 @@ class AdminMainActivity : AppCompatActivity() {
             container.addView(tv)
         }
 
-        // 다음 >
         if (currentPage < totalPages) {
             val next = TextView(this).apply {
                 text = "다음 >"
@@ -239,7 +242,6 @@ class AdminMainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun updatePageLabel() {
         val total = getTotalPages()
         binding.tvPage.text = "페이지 $currentPage / $total"
@@ -257,5 +259,20 @@ class AdminMainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         reportListener?.remove()
+    }
+
+    // ✅ 로그 기록 함수
+    private fun logAdminAction(action: String, detail: String) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val log = hashMapOf(
+            "userId" to uid,
+            "action" to action,
+            "detail" to detail,
+            "timestamp" to FieldValue.serverTimestamp()
+        )
+        FirebaseFirestore.getInstance().collection("logs").add(log)
+            .addOnFailureListener { e ->
+                Log.e("LogSystem", "로그 저장 실패: ${e.message}")
+            }
     }
 }

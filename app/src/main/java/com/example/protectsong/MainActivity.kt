@@ -364,13 +364,13 @@ class MainActivity : AppCompatActivity() {
 
                     val titleView = TextView(this).apply {
                         text = "• $title"
-                        textSize = 20f
+                        textSize = 18f
                         layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                     }
 
                     val dateView = TextView(this).apply {
                         text = dateStr
-                        textSize = 18f
+                        textSize = 15f
                         setTextColor(Color.GRAY)
                         layoutParams = LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.WRAP_CONTENT,
