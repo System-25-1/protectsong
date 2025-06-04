@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.protectsong.databinding.ActivitySignupBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 
 class SignupActivity : AppCompatActivity() {
 
@@ -23,6 +24,11 @@ class SignupActivity : AppCompatActivity() {
         // ✅ Firebase 초기화
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
+
+        // 🔧 캐시 문제 방지 (테스트 중 비활성화 권장)
+        firestore.firestoreSettings = FirebaseFirestoreSettings.Builder()
+            .setPersistenceEnabled(false)
+            .build()
 
         // 🔙 뒤로가기 버튼
         binding.backButton.setOnClickListener {
@@ -55,11 +61,18 @@ class SignupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            Log.d("SignupDebug", "입력된 학번: '$studentId'")
+
             // 🔸 학번 중복 검사
             firestore.collection("users")
                 .whereEqualTo("studentId", studentId)
                 .get()
                 .addOnSuccessListener { documents ->
+                    Log.d("SignupDebug", "중복 문서 수: ${documents.size()}")
+                    for (doc in documents) {
+                        Log.d("SignupDebug", "중복 문서 ID: ${doc.id}, studentId: ${doc.get("studentId")}, type=${doc.get("studentId")?.javaClass?.name}")
+                    }
+
                     if (!documents.isEmpty) {
                         Toast.makeText(this, "이미 사용 중인 학번입니다.", Toast.LENGTH_SHORT).show()
                         return@addOnSuccessListener
@@ -74,8 +87,8 @@ class SignupActivity : AppCompatActivity() {
                             val userMap = hashMapOf(
                                 "name" to name,
                                 "email" to email,
-                                "studentId" to studentId,
-                                "role" to "user" // 🔹 기본은 일반 사용자, 필요 시 관리자 계정만 "admin"으로 등록
+                                "studentId" to studentId.toString(),  // 🔹 문자열로 강제
+                                "role" to "user"
                             )
 
                             firestore.collection("users").document(uid)

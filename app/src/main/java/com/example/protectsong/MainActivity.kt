@@ -110,16 +110,36 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnSmsReport.setOnClickListener {
+            binding.btnSmsReport.setBackgroundResource(R.drawable.bg_left_curve_button_pressed)
             startActivity(Intent(this, SmsReportActivity::class.java))
+            binding.btnSmsReport.postDelayed({
+                binding.btnSmsReport.setBackgroundResource(R.drawable.bg_left_curve_button)
+            }, 200)
         }
 
+
         binding.btnEmergency.setOnClickListener {
+            binding.btnEmergency.setBackgroundResource(R.drawable.bg_circle_button_pressed)
             makeEmergencyCall()
+            binding.btnEmergency.postDelayed({
+                binding.btnEmergency.setBackgroundResource(R.drawable.bg_circle_button)
+            }, 200)
         }
 
         binding.ivCall.setOnClickListener {
-            makeDirectCallToSupport()
+            // 배경 눌림 효과 주기
+            binding.ivCall.setBackgroundResource(R.drawable.bg_right_curve_button_pressed)
+            binding.ivCall.postDelayed({
+                binding.ivCall.setBackgroundResource(R.drawable.bg_right_curve_button)
+            }, 200)
+            // 전화 화면으로 이동
+            val dialIntent = Intent(Intent.ACTION_DIAL).apply {
+                data = Uri.parse("tel:01089750220")
+            }
+            startActivity(dialIntent)
+
         }
+
 
         binding.btnWhistle.setImageResource(R.drawable.off)
         binding.btnWhistle.setOnClickListener {
