@@ -3,6 +3,7 @@ package com.example.protectsong
 import com.example.protectsong.accessibility.UnifiedAccessibilityService
 import android.content.ComponentName
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -20,6 +21,7 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.example.protectsong.databinding.ActivityMainBinding
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -53,6 +55,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // 🔹 전화 권한 자동 요청
+        checkCallPermission()
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -117,7 +122,6 @@ class MainActivity : AppCompatActivity() {
             }, 200)
         }
 
-
         binding.btnEmergency.setOnClickListener {
             binding.btnEmergency.setBackgroundResource(R.drawable.bg_circle_button_pressed)
             makeEmergencyCall()
@@ -127,19 +131,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.ivCall.setOnClickListener {
-            // 배경 눌림 효과 주기
             binding.ivCall.setBackgroundResource(R.drawable.bg_right_curve_button_pressed)
             binding.ivCall.postDelayed({
                 binding.ivCall.setBackgroundResource(R.drawable.bg_right_curve_button)
             }, 200)
-            // 전화 화면으로 이동
             val dialIntent = Intent(Intent.ACTION_DIAL).apply {
                 data = Uri.parse("tel:01089750220")
             }
             startActivity(dialIntent)
-
         }
-
 
         binding.btnWhistle.setImageResource(R.drawable.off)
         binding.btnWhistle.setOnClickListener {
@@ -159,6 +159,27 @@ class MainActivity : AppCompatActivity() {
         }
 
         startLoudSoundMonitor()
+    }
+
+    private fun checkCallPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
+            != PackageManager.PERMISSION_GRANTED) {
+
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CALL_PHONE)) {
+                AlertDialog.Builder(this)
+                    .setTitle("전화 권한 필요")
+                    .setMessage("신고 기능을 사용하려면 전화 권한이 필요합니다.\n설정으로 이동하여 권한을 허용해 주세요.")
+                    .setPositiveButton("설정") { _, _ ->
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        intent.data = Uri.parse("package:$packageName")
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("취소", null)
+                    .show()
+            } else {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_CALL_PHONE)
+            }
+        }
     }
 
     private fun toggleWhistle() {
