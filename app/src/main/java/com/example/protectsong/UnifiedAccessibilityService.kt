@@ -67,18 +67,13 @@ class UnifiedAccessibilityService : AccessibilityService() {
     }
 
     private fun callEmergencyNumber() {
-        val intent = Intent(Intent.ACTION_CALL).apply {
-            data = Uri.parse("tel:112")
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        val intent = Intent(this, com.example.protectsong.CallActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            putExtra("phone", "01093808120")
         }
-
-        val permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            startActivity(intent)
-        } else {
-            Toast.makeText(this, "전화 권한이 없어 신고할 수 없습니다.", Toast.LENGTH_LONG).show()
-        }
+        startActivity(intent)
     }
+
 
     // 🔸 휘슬 제어
     private fun handleWhistleControl(event: KeyEvent) {
