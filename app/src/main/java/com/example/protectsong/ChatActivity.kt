@@ -1,3 +1,4 @@
+// === ChatActivity.kt ===
 package com.example.protectsong
 
 import android.Manifest
@@ -56,10 +57,11 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var capturedUri: Uri
 
     private val REQUIRED_PERMISSIONS = arrayOf(
-        Manifest.permission.CAMERA,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
+        Manifest.permission.CAMERA
     )
     private val REQUEST_PERMISSIONS = 1001
+
+    private val chatItems = mutableListOf<ChatDisplayItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,7 +82,7 @@ class ChatActivity : AppCompatActivity() {
             finish()
         }
 
-        adapter = ChatAdapter(emptyList(), currentUserId)
+        adapter = ChatAdapter(chatItems, currentUserId)
         binding.recyclerViewChat.adapter = adapter
         binding.recyclerViewChat.layoutManager = LinearLayoutManager(this)
 
@@ -181,10 +183,10 @@ class ChatActivity : AppCompatActivity() {
                     displayItems.add(ChatDisplayItem.MessageItem(msg))
                 }
 
-                adapter = ChatAdapter(displayItems, currentUserId)
-                binding.recyclerViewChat.adapter = adapter
+                chatItems.clear()
+                chatItems.addAll(displayItems)
                 adapter.notifyDataSetChanged()
-                binding.recyclerViewChat.scrollToPosition(displayItems.size - 1)
+                binding.recyclerViewChat.scrollToPosition(chatItems.size - 1)
             }
     }
 

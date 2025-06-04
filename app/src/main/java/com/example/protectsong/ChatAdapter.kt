@@ -1,3 +1,4 @@
+// === ChatAdapter.kt ===
 package com.example.protectsong.adapter
 
 import android.content.Intent
@@ -15,7 +16,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ChatAdapter(
-    private val items: List<ChatDisplayItem>,
+    private val items: MutableList<ChatDisplayItem>,
     private val myId: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -62,6 +63,12 @@ class ChatAdapter(
     }
 
     override fun getItemCount(): Int = items.size
+
+    fun updateItems(newItems: List<ChatDisplayItem>) {
+        items.clear()
+        items.addAll(newItems)
+        notifyDataSetChanged()
+    }
 
     inner class DateViewHolder(private val binding: ItemDateHeaderBinding) :
         RecyclerView.ViewHolder(binding.root) {
