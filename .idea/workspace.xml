@@ -15,6 +15,16 @@
           <theme>@style/Theme.Protectsong</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_my_report.xml">
+        <config>
+          <theme>@style/Theme.Protectsong</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_signup.xml">
+        <config>
+          <theme>@style/Theme.Protectsong</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/include_toolbar.xml">
         <config>
           <theme>@style/Theme.Protectsong</theme>
@@ -47,7 +57,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fdf4906c-19cc-436d-9853-776bdaedaba1" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_my_report.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_my_report.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/protectsong/SignupActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/protectsong/SignupActivity.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
