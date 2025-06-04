@@ -59,11 +59,11 @@ class AdminMainActivity : AppCompatActivity() {
         val tvStudentId = headerView.findViewById<TextView>(R.id.tvStudentId)
         val logoutButton = headerView.findViewById<TextView>(R.id.logout_button)
         val tvSettings = headerView.findViewById<TextView>(R.id.tvSettings)
-        val tvMyReport = headerView.findViewById<TextView>(R.id.tvMyReport) // 🔽 추가됨
+       // val tvMyReport = headerView.findViewById<TextView>(R.id.tvMyReport) // 🔽 추가됨
 
         // 🔽 관리자 전용 설정
         tvSettings.text = "로그 확인"
-        tvMyReport.visibility = android.view.View.GONE
+       // tvMyReport.visibility = android.view.View.GONE
 
         val uid = FirebaseAuth.getInstance().currentUser?.uid
         Log.d("AdminMainDebug", "[1] currentUser.uid = $uid")
@@ -153,7 +153,7 @@ class AdminMainActivity : AppCompatActivity() {
                 allReports = snapshots.map { doc ->
                     SmsReport(
                         id = doc.id,
-                        uid = doc.getString("uid") ?: "",
+                        userId = doc.getString("userId") ?: "",
                         type = doc.getString("type") ?: "",
                         building = doc.getString("building") ?: "",
                         content = doc.getString("content") ?: "",

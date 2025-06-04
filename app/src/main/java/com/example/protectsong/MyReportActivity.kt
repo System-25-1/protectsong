@@ -78,7 +78,7 @@ class MyReportActivity : AppCompatActivity() {
         val uid = auth.currentUser?.uid ?: return
 
         firestore.collection("smsReports")
-            .whereEqualTo("uid", uid)
+            .whereEqualTo("userId", FirebaseAuth.getInstance().currentUser?.uid)
             .get()
             .addOnSuccessListener { snapshot ->
                 allDocuments = snapshot.documents.filter { doc ->

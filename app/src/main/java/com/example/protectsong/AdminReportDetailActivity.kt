@@ -37,7 +37,7 @@ class AdminReportDetailActivity : AppCompatActivity() {
         binding.tvContent.setText(report.content)
 
         // 신고자 정보 표시
-        db.collection("users").document(report.uid)
+        db.collection("users").document(report.userId)
             .get()
             .addOnSuccessListener { doc ->
                 val name = doc.getString("name") ?: "이름없음"

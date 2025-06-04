@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class SmsReport(
     val id: String = "",
-    val uid: String = "",
+    val userId: String = "",
     val type: String = "",
     val building: String = "",
     val content: String = "",

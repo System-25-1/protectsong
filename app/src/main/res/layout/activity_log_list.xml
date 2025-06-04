@@ -3,28 +3,32 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="#FFFFFF"
+    android:padding="16dp">
 
-    <!-- ✅ include에 ID 꼭 선언 -->
     <include
         android:id="@+id/includeToolbar"
         layout="@layout/include_toolbar" />
 
     <EditText
-        android:id="@+id/etSearch"
+        android:id="@+id/etSearchStudentId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="userId 또는 action 검색" />
+        android:hint="학번 검색"
+        android:inputType="text"
+        android:layout_marginTop="8dp" />
 
     <Button
         android:id="@+id/btnExportCsv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="CSV로 내보내기" />
+        android:text="CSV로 내보내기"
+        android:layout_marginTop="8dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:layout_marginTop="8dp" />
 </LinearLayout>

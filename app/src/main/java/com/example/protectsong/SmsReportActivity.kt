@@ -5,13 +5,16 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -38,10 +41,23 @@ class SmsReportActivity : AppCompatActivity() {
     private lateinit var uploadStatusLayout: LinearLayout
     private lateinit var uploadStatusText: TextView
     private lateinit var uploadInfoText: TextView
+    private fun logUserAction(action: String, detail: String) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val log = hashMapOf(
+            "userId" to uid,
+            "action" to action,
+            "detail" to detail,
+            "timestamp" to FieldValue.serverTimestamp()
+        )
+        FirebaseFirestore.getInstance().collection("logs").add(log)
+    }
+    private fun updateUploadInfo() {
+        uploadInfoText.text = "( 파일 ${uploadedFileUrls.size}개, ${"%.1f".format(totalUploadSizeMB.toFloat())}MB / 50MB )"
+    }
 
     private val REQUIRED_PERMISSIONS = arrayOf(
         Manifest.permission.CAMERA,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
+        Manifest.permission.RECORD_AUDIO
     )
     private val REQUEST_PERMISSIONS = 1010
 
@@ -50,6 +66,32 @@ class SmsReportActivity : AppCompatActivity() {
         currentToast?.cancel()
         currentToast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
         currentToast?.show()
+    }
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let { uploadFileToFirebase(it, "image") }
+    }
+
+    private val pickVideoLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let { uploadFileToFirebase(it, "video") }
+    }
+
+    private val takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) imageUri?.let { uploadFileToFirebase(it, "image") }
+    }
+
+    private val takeVideoLauncher = registerForActivityResult(ActivityResultContracts.CaptureVideo()) { success ->
+        if (success) videoUri?.let { uploadFileToFirebase(it, "video") }
+    }
+    private fun getFileSizeInMB(uri: Uri): Long {
+        val cursor = contentResolver.query(uri, null, null, null, null)
+        val sizeIndex = cursor?.getColumnIndex(android.provider.OpenableColumns.SIZE) ?: -1
+        var sizeInBytes: Long = 0
+        if (cursor != null && sizeIndex != -1) {
+            cursor.moveToFirst()
+            sizeInBytes = cursor.getLong(sizeIndex)
+            cursor.close()
+        }
+        return sizeInBytes / (1024 * 1024)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,9 +106,7 @@ class SmsReportActivity : AppCompatActivity() {
         uploadInfoText = findViewById(R.id.uploadInfoText)
         updateUploadInfo()
 
-        if (!hasPermissions()) {
-            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_PERMISSIONS)
-        }
+        checkAndRequestPermissions()
 
         binding.toolbarInclude.backText.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java).apply {
@@ -92,12 +132,20 @@ class SmsReportActivity : AppCompatActivity() {
         }
 
         binding.cameraButton.setOnClickListener {
+            if (!hasPermissions()) {
+                checkAndRequestPermissions()
+                return@setOnClickListener
+            }
             val file = File.createTempFile("IMG_", ".jpg", getExternalFilesDir("Pictures"))
             imageUri = FileProvider.getUriForFile(this, "$packageName.provider", file)
             imageUri?.let { takePictureLauncher.launch(it) }
         }
 
         binding.camcorderButton.setOnClickListener {
+            if (!hasPermissions()) {
+                checkAndRequestPermissions()
+                return@setOnClickListener
+            }
             val file = File.createTempFile("VID_", ".mp4", getExternalFilesDir("Movies"))
             videoUri = FileProvider.getUriForFile(this, "$packageName.provider", file)
             videoUri?.let { takeVideoLauncher.launch(it) }
@@ -123,7 +171,7 @@ class SmsReportActivity : AppCompatActivity() {
 
             val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnClickListener
             val reportData = hashMapOf(
-                "uid" to uid,
+                "userId" to uid,
                 "type" to binding.spinnerType.selectedItem.toString(),
                 "building" to binding.spinnerBuilding.selectedItem.toString(),
                 "content" to contentText,
@@ -157,53 +205,18 @@ class SmsReportActivity : AppCompatActivity() {
         })
     }
 
+    private fun checkAndRequestPermissions() {
+        if (!hasPermissions()) {
+            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_PERMISSIONS)
+        }
+    }
+
     private fun hasPermissions(): Boolean {
-        return REQUIRED_PERMISSIONS.all {
+        val result = REQUIRED_PERMISSIONS.all {
             ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
         }
-    }
-
-    private fun updateUploadInfo() {
-        uploadInfoText.text = "( 파일 ${uploadedFileUrls.size}개, ${"%.1f".format(totalUploadSizeMB.toFloat())}MB / 50MB )"
-    }
-
-    private fun logUserAction(action: String, detail: String) {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val log = hashMapOf(
-            "userId" to uid,
-            "action" to action,
-            "detail" to detail,
-            "timestamp" to FieldValue.serverTimestamp()
-        )
-        FirebaseFirestore.getInstance().collection("logs").add(log)
-    }
-
-    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        uri?.let { uploadFileToFirebase(it, "image") }
-    }
-
-    private val pickVideoLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        uri?.let { uploadFileToFirebase(it, "video") }
-    }
-
-    private val takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-        if (success) imageUri?.let { uploadFileToFirebase(it, "image") }
-    }
-
-    private val takeVideoLauncher = registerForActivityResult(ActivityResultContracts.CaptureVideo()) { success ->
-        if (success) videoUri?.let { uploadFileToFirebase(it, "video") }
-    }
-
-    private fun getFileSizeInMB(uri: Uri): Long {
-        val cursor = contentResolver.query(uri, null, null, null, null)
-        val sizeIndex = cursor?.getColumnIndex(android.provider.OpenableColumns.SIZE) ?: -1
-        var sizeInBytes: Long = 0
-        if (cursor != null && sizeIndex != -1) {
-            cursor.moveToFirst()
-            sizeInBytes = cursor.getLong(sizeIndex)
-            cursor.close()
-        }
-        return sizeInBytes / (1024 * 1024)
+        Log.d("권한체크", "hasPermissions: $result")
+        return result
     }
 
     private fun uploadFileToFirebase(uri: Uri, type: String) {
@@ -338,7 +351,16 @@ class SmsReportActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_PERMISSIONS && !hasPermissions()) {
-            showToast("권한이 거부되어 촬영 기능을 사용할 수 없습니다.")
+            AlertDialog.Builder(this)
+                .setTitle("권한 필요")
+                .setMessage("촬영 기능을 사용하려면 카메라 및 오디오 권한이 필요합니다. 설정으로 이동하시겠습니까?")
+                .setPositiveButton("설정으로 이동") { _, _ ->
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    intent.data = Uri.parse("package:$packageName")
+                    startActivity(intent)
+                }
+                .setNegativeButton("취소", null)
+                .show()
         }
     }
 }

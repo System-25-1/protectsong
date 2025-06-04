@@ -11,28 +11,35 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 
-class LogListAdapter(private val logs: List<LogEntry>) : ListAdapter<LogEntry, LogListAdapter.LogViewHolder>(DIFF_CALLBACK) {
+class LogListAdapter(private val logs: List<LogEntry>) :
+    ListAdapter<LogEntry, LogListAdapter.LogViewHolder>(DIFF_CALLBACK) {
 
-    inner class LogViewHolder(private val binding: ItemLogBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class LogViewHolder(private val binding: ItemLogBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
         fun bind(log: LogEntry) {
             val db = FirebaseFirestore.getInstance()
 
             db.collection("users").document(log.userId)
                 .get()
                 .addOnSuccessListener { userDoc ->
-                    val name = userDoc.getString("name") ?: log.userId
-                    binding.tvUserId.text = name
+                    val name = userDoc.getString("name") ?: ""
+                    val studentId = userDoc.getString("studentId") ?: log.studentId
+                    binding.tvUserId.text = if (name.isNotEmpty())
+                        "$name ($studentId)"
+                    else
+                        studentId
                 }
                 .addOnFailureListener {
-                    binding.tvUserId.text = log.userId
+                    binding.tvUserId.text = log.studentId
                 }
 
             binding.tvAction.text = log.action
             binding.tvDetail.text = log.detail
+
             val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
             binding.tvTimestamp.text = sdf.format(Date(log.timestamp))
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LogViewHolder {
@@ -46,8 +53,11 @@ class LogListAdapter(private val logs: List<LogEntry>) : ListAdapter<LogEntry, L
 
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<LogEntry>() {
-            override fun areItemsTheSame(oldItem: LogEntry, newItem: LogEntry): Boolean = oldItem.timestamp == newItem.timestamp
-            override fun areContentsTheSame(oldItem: LogEntry, newItem: LogEntry): Boolean = oldItem == newItem
+            override fun areItemsTheSame(oldItem: LogEntry, newItem: LogEntry): Boolean =
+                oldItem.timestamp == newItem.timestamp
+
+            override fun areContentsTheSame(oldItem: LogEntry, newItem: LogEntry): Boolean =
+                oldItem == newItem
         }
     }
 }

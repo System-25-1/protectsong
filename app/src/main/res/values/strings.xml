@@ -72,11 +72,10 @@
         <item>처리중</item>
         <item>처리완료</item>
     </string-array>
+    <string name="accessibility_service_description">지키송 접근성 서비스</string>
 
     <string name="version_text">V %1$s</string>
-    <string name="accessibility_service_description">
-    모스부호 패턴을 감지하여 자동으로 112에 전화하는 서비스입니다.
-</string>
+
 
 
 
