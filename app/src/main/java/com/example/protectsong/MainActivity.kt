@@ -1,3 +1,4 @@
+// 생략된 import는 기존 그대로 유지
 package com.example.protectsong
 
 import com.example.protectsong.accessibility.UnifiedAccessibilityService
@@ -20,6 +21,7 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.example.protectsong.databinding.ActivityMainBinding
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -39,6 +41,7 @@ class MainActivity : AppCompatActivity() {
 
     private val ADMIN_UID = "Os1oJCzG45OKwyglRdc0JXxbghw2"
     private val REQUEST_CALL_PHONE = 103
+    private val REQUEST_RECORD_AUDIO = 104
 
     private lateinit var recorder: MediaRecorder
     private lateinit var tempFile: File
@@ -117,7 +120,6 @@ class MainActivity : AppCompatActivity() {
             }, 200)
         }
 
-
         binding.btnEmergency.setOnClickListener {
             binding.btnEmergency.setBackgroundResource(R.drawable.bg_circle_button_pressed)
             makeEmergencyCall()
@@ -127,19 +129,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.ivCall.setOnClickListener {
-            // 배경 눌림 효과 주기
             binding.ivCall.setBackgroundResource(R.drawable.bg_right_curve_button_pressed)
             binding.ivCall.postDelayed({
                 binding.ivCall.setBackgroundResource(R.drawable.bg_right_curve_button)
             }, 200)
-            // 전화 화면으로 이동
             val dialIntent = Intent(Intent.ACTION_DIAL).apply {
                 data = Uri.parse("tel:01089750220")
             }
             startActivity(dialIntent)
-
         }
-
 
         binding.btnWhistle.setImageResource(R.drawable.off)
         binding.btnWhistle.setOnClickListener {
@@ -158,7 +156,71 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        startLoudSoundMonitor()
+        checkAndStartAudioMonitor() // 🔄 변경된 부분
+    }
+
+    private fun checkAndStartAudioMonitor() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.RECORD_AUDIO),
+                REQUEST_RECORD_AUDIO)
+        } else {
+            startLoudSoundMonitor()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == REQUEST_CALL_PHONE && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
+            callEmergencyNumberDirectly()
+        }
+
+        if (requestCode == REQUEST_RECORD_AUDIO && grantResults.isNotEmpty() &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            startLoudSoundMonitor()
+        } else if (requestCode == REQUEST_RECORD_AUDIO) {
+            Toast.makeText(this, "마이크 권한이 필요합니다", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun startLoudSoundMonitor() {
+        try {
+            tempFile = File.createTempFile("temp_audio", ".3gp", cacheDir)
+            recorder = MediaRecorder().apply {
+                setAudioSource(MediaRecorder.AudioSource.MIC)
+                setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+                setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+                setOutputFile(tempFile.absolutePath)
+                prepare()
+                start()
+            }
+
+            soundHandler.post(object : Runnable {
+                override fun run() {
+                    val amp = recorder.maxAmplitude
+                    Log.d("AMP", "현재 amp: $amp")
+                    val now = System.currentTimeMillis()
+
+                    if (amp > 30000) {
+                        if (loudStartTime == null) loudStartTime = now
+                        if (now - loudStartTime!! >= 2000 && !isLoudSoundDetected) {
+                            isLoudSoundDetected = true
+                            Toast.makeText(this@MainActivity, "2초 이상 고함 감지! 신고 화면 이동", Toast.LENGTH_SHORT).show()
+                            makeEmergencyCall()
+                        }
+                    } else {
+                        loudStartTime = null
+                    }
+
+                    soundHandler.postDelayed(this, 500)
+                }
+            })
+        } catch (e: Exception) {
+            Toast.makeText(this, "마이크 사용 실패: ${e.message}", Toast.LENGTH_LONG).show()
+            e.printStackTrace()
+        }
     }
 
     private fun toggleWhistle() {
@@ -196,31 +258,14 @@ class MainActivity : AppCompatActivity() {
         startActivity(dialIntent)
     }
 
-    private fun makeDirectCallToSupport() {
-        val dialIntent = Intent(Intent.ACTION_DIAL).apply {
-            data = Uri.parse("tel:01089750220")
-        }
-        startActivity(dialIntent)
-    }
-
     private fun callEmergencyNumberDirectly() {
         val callIntent = Intent(Intent.ACTION_CALL)
         callIntent.data = Uri.parse("tel:01093808120")
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_CALL_PHONE)
             return
         }
         startActivity(callIntent)
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CALL_PHONE && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
-            callEmergencyNumberDirectly()
-        } else {
-            Toast.makeText(this, "전화 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun logout() {
@@ -232,43 +277,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(this)
         }
         finishAffinity()
-    }
-
-    private fun startLoudSoundMonitor() {
-        tempFile = File.createTempFile("temp_audio", ".3gp", cacheDir)
-        recorder = MediaRecorder().apply {
-            setAudioSource(MediaRecorder.AudioSource.MIC)
-            setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-            setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-            setOutputFile(tempFile.absolutePath)
-            prepare()
-            start()
-        }
-
-        soundHandler.post(object : Runnable {
-            override fun run() {
-                val amp = recorder.maxAmplitude
-                Log.d("AMP", "현재 amp: $amp")
-
-                val now = System.currentTimeMillis()
-
-                if (amp > 30000) {
-                    if (loudStartTime == null) {
-                        loudStartTime = now
-                    }
-
-                    if (now - loudStartTime!! >= 2000 && !isLoudSoundDetected) {
-                        isLoudSoundDetected = true
-                        Toast.makeText(this@MainActivity, "2초 이상 고함 감지! 신고 화면 이동", Toast.LENGTH_SHORT).show()
-                        makeEmergencyCall()
-                    }
-                } else {
-                    loudStartTime = null
-                }
-
-                soundHandler.postDelayed(this, 500)
-            }
-        })
     }
 
     private fun navigateToChat(): Boolean {

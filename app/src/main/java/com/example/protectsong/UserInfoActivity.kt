@@ -245,6 +245,7 @@ class UserInfoActivity : AppCompatActivity() {
                 Toast.makeText(this, "전화번호를 입력하세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            val formattedPhone = "+82${phoneNumber.drop(1)}"  // 01012345678 → +821012345678
 
             val options = PhoneAuthOptions.newBuilder(auth)
                 .setPhoneNumber("+82${phoneNumber.drop(1)}")
