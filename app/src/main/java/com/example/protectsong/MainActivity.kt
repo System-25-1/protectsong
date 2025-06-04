@@ -203,7 +203,7 @@ class MainActivity : AppCompatActivity() {
                     Log.d("AMP", "현재 amp: $amp")
                     val now = System.currentTimeMillis()
 
-                    if (amp > 30000) {
+                    if (amp > 25000) {
                         if (loudStartTime == null) loudStartTime = now
                         if (now - loudStartTime!! >= 2000 && !isLoudSoundDetected) {
                             isLoudSoundDetected = true

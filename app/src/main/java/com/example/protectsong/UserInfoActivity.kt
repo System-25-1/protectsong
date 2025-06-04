@@ -112,6 +112,29 @@ class UserInfoActivity : AppCompatActivity() {
             }
         })
 
+        binding.studentIdEdit.addTextChangedListener(object : TextWatcher {
+            private var previousText = ""
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                previousText = s?.toString() ?: ""
+            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val input = s.toString()
+                if (input.length > 7) {
+                    binding.studentIdEdit.removeTextChangedListener(this)
+                    binding.studentIdEdit.setText(previousText)
+                    binding.studentIdEdit.setSelection(previousText.length)
+                    binding.studentIdEdit.addTextChangedListener(this)
+                    Toast.makeText(this@UserInfoActivity, "학번은 최대 7자리까지 입력할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
+
+        binding.passwordEdit.addTextChangedListener(passwordWatcher)
+        binding.passwordConfirmEdit.addTextChangedListener(passwordWatcher)
+
+
         // 전화번호 입력 포맷팅 (예: 010-1234-5678)
         binding.phoneEdit.addTextChangedListener(object : TextWatcher {
             private var isFormatting = false
@@ -346,6 +369,28 @@ class UserInfoActivity : AppCompatActivity() {
                     Toast.makeText(this, "학번 중복 확인 중 오류가 발생했습니다: ${it.message}", Toast.LENGTH_SHORT).show()
                     Log.e("UserInfo", "학번 중복 체크 오류", it)
                 }
+        }
+    }
+
+
+    private val passwordWatcher = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        override fun afterTextChanged(s: Editable?) {
+            val password = binding.passwordEdit.text.toString()
+            val confirm = binding.passwordConfirmEdit.text.toString()
+            if (password.isNotEmpty() && confirm.isNotEmpty()) {
+                if (password != confirm) {
+                    binding.passwordMismatchText.visibility = View.VISIBLE
+                    binding.saveButton.isEnabled = false
+                } else {
+                    binding.passwordMismatchText.visibility = View.GONE
+                    binding.saveButton.isEnabled = true
+                }
+            } else {
+                binding.passwordMismatchText.visibility = View.GONE
+                binding.saveButton.isEnabled = false
+            }
         }
     }
 

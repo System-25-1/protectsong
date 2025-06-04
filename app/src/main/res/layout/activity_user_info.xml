@@ -264,6 +264,15 @@
                 android:visibility="gone"
                 android:fontFamily="@font/pyeojin_gothic_regular" />
 
+            <TextView
+                android:id="@+id/passwordMismatchText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="비밀번호가 일치하지 않습니다."
+                android:textColor="@android:color/holo_red_dark"
+                android:visibility="gone"/>
+
+
             <!-- 보호자 정보 -->
             <TextView
                 android:layout_width="wrap_content"
