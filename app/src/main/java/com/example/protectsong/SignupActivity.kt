@@ -48,7 +48,7 @@ class SignupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // 🔸 학번 숫자 8자리 검사
+            // 🔸 학번 숫자 7자리 검사
             val studentIdRegex = Regex("^[0-9]{7}$")
             if (!studentId.matches(studentIdRegex)) {
                 Toast.makeText(this, "학번은 숫자 7자리로 입력해주세요.", Toast.LENGTH_SHORT).show()
@@ -70,11 +70,12 @@ class SignupActivity : AppCompatActivity() {
                         .addOnSuccessListener { result ->
                             val uid = result.user?.uid ?: return@addOnSuccessListener
 
-                            // ✅ Firestore에 사용자 정보 저장
+                            // ✅ Firestore에 사용자 정보 저장 + 역할 포함
                             val userMap = hashMapOf(
                                 "name" to name,
                                 "email" to email,
-                                "studentId" to studentId
+                                "studentId" to studentId,
+                                "role" to "user" // 🔹 기본은 일반 사용자, 필요 시 관리자 계정만 "admin"으로 등록
                             )
 
                             firestore.collection("users").document(uid)

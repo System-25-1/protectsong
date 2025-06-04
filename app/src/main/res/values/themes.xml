@@ -2,6 +2,7 @@
 <resources>
     <style name="Theme.Protectsong" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- 기본 폰트 설정 -->
-        <item name="android:fontFamily">@font/font</item>
+        <item name="android:fontFamily">@font/pyeojin_gothic</item>
+
     </style>
 </resources>

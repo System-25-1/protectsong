@@ -6,10 +6,10 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Gravity
 import android.widget.AdapterView
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.LinearLayout
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -37,6 +37,9 @@ class AdminMainActivity : AppCompatActivity() {
         binding = ActivityAdminSmsMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // ✅ 관리자 페이지 접속 로그 기록
+        logAdminAction("관리자 홈 접속", "AdminMainActivity에 접속함")
+
         // ── 툴바 세팅
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -56,6 +59,11 @@ class AdminMainActivity : AppCompatActivity() {
         val tvStudentId = headerView.findViewById<TextView>(R.id.tvStudentId)
         val logoutButton = headerView.findViewById<TextView>(R.id.logout_button)
         val tvSettings = headerView.findViewById<TextView>(R.id.tvSettings)
+        val tvMyReport = headerView.findViewById<TextView>(R.id.tvMyReport) // 🔽 추가됨
+
+        // 🔽 관리자 전용 설정
+        tvSettings.text = "로그 확인"
+        tvMyReport.visibility = android.view.View.GONE
 
         val uid = FirebaseAuth.getInstance().currentUser?.uid
         Log.d("AdminMainDebug", "[1] currentUser.uid = $uid")
@@ -82,6 +90,7 @@ class AdminMainActivity : AppCompatActivity() {
         }
 
         logoutButton.setOnClickListener {
+            logAdminAction("로그아웃", "관리자 로그아웃")
             FirebaseAuth.getInstance().signOut()
             startActivity(Intent(this, SplashActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -89,10 +98,11 @@ class AdminMainActivity : AppCompatActivity() {
         }
 
         tvSettings.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+            startActivity(Intent(this, LogListActivity::class.java))
         }
 
         adapter = AdminPagedReportAdapter { report ->
+            logAdminAction("신고 상세 보기", "reportId: ${report.id}")
             val intent = Intent(this, AdminReportDetailActivity::class.java)
             intent.putExtra("report", report)
             startActivity(intent)
@@ -160,6 +170,8 @@ class AdminMainActivity : AppCompatActivity() {
         val keyword = binding.etSearch.text.toString().trim()
         val selectedStatus = binding.spinnerStatus.selectedItem.toString()
 
+        logAdminAction("검색/필터", "검색어: '$keyword', 상태: '$selectedStatus'")
+
         filteredReports = allReports.filter { report ->
             val matchesKeyword = keyword.isEmpty() || report.content.contains(keyword, ignoreCase = true)
             val matchesStatus = selectedStatus == "전체" || report.status == selectedStatus
@@ -184,14 +196,13 @@ class AdminMainActivity : AppCompatActivity() {
         container.removeAllViews()
         val totalPages = getTotalPages()
 
-        // < 이전
         if (currentPage > 1) {
             val prev = TextView(this).apply {
                 text = "< 이전"
                 textSize = 16f
                 setPadding(20, 0, 20, 0)
                 minWidth = 100
-                gravity = android.view.Gravity.CENTER
+                gravity = Gravity.CENTER
                 setTextColor(Color.parseColor("#002366"))
                 setOnClickListener {
                     currentPage--
@@ -202,14 +213,13 @@ class AdminMainActivity : AppCompatActivity() {
             container.addView(prev)
         }
 
-        // 페이지 번호
         for (i in 1..totalPages) {
             val tv = TextView(this).apply {
                 text = "$i"
                 textSize = 16f
                 setPadding(12, 0, 12, 0)
                 minWidth = 48
-                gravity = android.view.Gravity.CENTER
+                gravity = Gravity.CENTER
                 setTextColor(if (i == currentPage) Color.BLUE else Color.DKGRAY)
                 setOnClickListener {
                     currentPage = i
@@ -220,7 +230,6 @@ class AdminMainActivity : AppCompatActivity() {
             container.addView(tv)
         }
 
-        // 다음 >
         if (currentPage < totalPages) {
             val next = TextView(this).apply {
                 text = "다음 >"
@@ -228,7 +237,7 @@ class AdminMainActivity : AppCompatActivity() {
                 setPadding(20, 0, 0, 0)
                 setTextColor(Color.parseColor("#002366"))
                 minWidth = 100
-                gravity = android.view.Gravity.CENTER
+                gravity = Gravity.CENTER
                 setOnClickListener {
                     currentPage++
                     updatePagedData()
@@ -238,7 +247,6 @@ class AdminMainActivity : AppCompatActivity() {
             container.addView(next)
         }
     }
-
 
     private fun updatePageLabel() {
         val total = getTotalPages()
@@ -257,5 +265,19 @@ class AdminMainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         reportListener?.remove()
+    }
+
+    private fun logAdminAction(action: String, detail: String) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val log = hashMapOf(
+            "userId" to uid,
+            "action" to action,
+            "detail" to detail,
+            "timestamp" to FieldValue.serverTimestamp()
+        )
+        FirebaseFirestore.getInstance().collection("logs").add(log)
+            .addOnFailureListener { e ->
+                Log.e("LogSystem", "로그 저장 실패: ${e.message}")
+            }
     }
 }

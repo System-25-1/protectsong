@@ -17,6 +17,7 @@ import androidx.core.content.FileProvider
 import com.bumptech.glide.Glide
 import com.example.protectsong.databinding.ActivitySmsReportBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
@@ -45,6 +46,9 @@ class SmsReportActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySmsReportBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // ✅ SMS 신고 화면 진입 로그
+        logUserAction("SMS 신고 화면 진입", "사용자가 신고 작성 화면에 들어옴")
 
         uploadStatusLayout = findViewById(R.id.uploadStatusLayout)
         uploadStatusText = findViewById(R.id.uploadStatusText)
@@ -105,6 +109,8 @@ class SmsReportActivity : AppCompatActivity() {
             FirebaseFirestore.getInstance().collection("smsReports")
                 .add(reportData)
                 .addOnSuccessListener {
+                    // ✅ 신고 접수 로그
+                    logUserAction("신고 접수", "건물: ${reportData["building"]}, 유형: ${reportData["type"]}, 내용: ${reportData["content"]}")
                     Toast.makeText(this, "신고가 접수되었습니다!", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this, MainActivity::class.java).apply {
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -187,6 +193,10 @@ class SmsReportActivity : AppCompatActivity() {
                         addThumbnail(uri, downloadUrl.toString(), type)
                         uploadStatusLayout.visibility = View.GONE
                         updateUploadInfo()
+
+                        // ✅ 파일 업로드 로그
+                        logUserAction("파일 업로드", "$type 파일 업로드 완료: $downloadUrl")
+
                         Toast.makeText(this, "$type 업로드 완료!", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -270,6 +280,8 @@ class SmsReportActivity : AppCompatActivity() {
         FirebaseStorage.getInstance().getReferenceFromUrl(fileUrl)
             .delete()
             .addOnSuccessListener {
+                // ✅ 파일 삭제 로그
+                logUserAction("파일 삭제", "파일 삭제됨: $fileUrl")
                 Toast.makeText(this, "파일 삭제 완료", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener {
@@ -282,5 +294,17 @@ class SmsReportActivity : AppCompatActivity() {
         if (requestCode == REQUEST_PERMISSIONS && !hasPermissions()) {
             Toast.makeText(this, "권한이 거부되어 촬영 기능을 사용할 수 없습니다.", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    // ✅ 공통 로그 기록 함수
+    private fun logUserAction(action: String, detail: String) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val log = hashMapOf(
+            "userId" to uid,
+            "action" to action,
+            "detail" to detail,
+            "timestamp" to FieldValue.serverTimestamp()
+        )
+        FirebaseFirestore.getInstance().collection("logs").add(log)
     }
 }

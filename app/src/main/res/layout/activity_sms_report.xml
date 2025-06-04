@@ -45,11 +45,10 @@
 
                 <Spinner
                     android:id="@+id/spinner_type"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="120dp"
+                    android:layout_height="40dp"
                     android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/spinner_with_arrow" />
+                    android:background="@drawable/spinner_background"/>
             </LinearLayout>
 
             <LinearLayout
@@ -67,26 +66,25 @@
 
                 <Spinner
                     android:id="@+id/spinner_building"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="120dp"
+                    android:layout_height="40dp"
                     android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/spinner_with_arrow" />
+                    android:background="@drawable/spinner_background"/>
             </LinearLayout>
 
             <EditText
                 android:id="@+id/edit_content"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="268dp"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/edittext_border"
                 android:gravity="top"
                 android:hint="내용을 입력하세요"
                 android:inputType="textMultiLine"
-                android:scrollbars="vertical"
-                android:minLines="10"
                 android:maxLines="20"
-                android:overScrollMode="always" />
+                android:minLines="10"
+                android:overScrollMode="always"
+                android:scrollbars="vertical" />
 
             <TextView
                 android:layout_width="wrap_content"

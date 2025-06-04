@@ -35,6 +35,7 @@
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="@id/toolbar"
             app:layout_constraintBottom_toBottomOf="@id/toolbar"
+            android:fontFamily="@font/nanumsquareneo_cbd"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -44,7 +45,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="50dp"
             android:clipChildren="false"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
             app:layout_constraintStart_toStartOf="parent"
@@ -122,17 +123,17 @@
         <!-- 🌟 배경 이미지 -->
         <ImageView
             android:id="@+id/star_bg"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_margin="64dp"
-            android:adjustViewBounds="true"
-            android:alpha="0.15"
-            android:scaleType="fitCenter"
-            android:src="@drawable/sookmyung"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:alpha="0.1"
+            app:layout_constraintTop_toBottomOf="@id/whistle_section"
+            app:layout_constraintBottom_toTopOf="@id/notice_container"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            android:src="@drawable/sookmyung"
+            android:scaleType="fitCenter" />
 
         <!-- 🔈 호루라기 버튼 -->
         <LinearLayout
@@ -188,9 +189,9 @@
                 android:gravity="center"
                 android:padding="8dp"
                 android:text="공지"
-                android:fontFamily="@font/pyeojin_gothic_regular"
+                android:fontFamily="@font/nanumsquareneo_cbd"
                 android:textColor="#FFFFFF"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <!-- 공지 내용 영역 -->

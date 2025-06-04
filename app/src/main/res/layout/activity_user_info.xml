@@ -295,7 +295,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="0.5"
                     android:layout_height="48dp"
-                    android:background="@drawable/spinner_with_arrow" />
+                    android:background="@drawable/spinner_background" />
             </LinearLayout>
 
             <EditText
