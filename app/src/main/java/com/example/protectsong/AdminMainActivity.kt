@@ -1,3 +1,4 @@
+// === AdminMainActivity.kt ===
 package com.example.protectsong
 
 import android.content.Intent
@@ -13,11 +14,15 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.protectsong.databinding.ActivityAdminSmsMainBinding
 import com.example.protectsong.model.SmsReport
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AdminMainActivity : AppCompatActivity() {
 
@@ -37,14 +42,11 @@ class AdminMainActivity : AppCompatActivity() {
         binding = ActivityAdminSmsMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ✅ 관리자 페이지 접속 로그 기록
         logAdminAction("관리자 홈 접속", "AdminMainActivity에 접속함")
 
-        // ── 툴바 세팅
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        // ── 드로어 토글
         toggle = ActionBarDrawerToggle(
             this, binding.drawerLayout, binding.toolbar,
             R.string.navigation_drawer_open, R.string.navigation_drawer_close
@@ -53,17 +55,13 @@ class AdminMainActivity : AppCompatActivity() {
         toggle.syncState()
         toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, android.R.color.white)
 
-        // ── 드로어 헤더 뷰 참조
         val headerView = binding.navView.getHeaderView(0)
         val tvUserName = headerView.findViewById<TextView>(R.id.tvUserName)
         val tvStudentId = headerView.findViewById<TextView>(R.id.tvStudentId)
         val logoutButton = headerView.findViewById<TextView>(R.id.logout_button)
         val tvSettings = headerView.findViewById<TextView>(R.id.tvSettings)
-       // val tvMyReport = headerView.findViewById<TextView>(R.id.tvMyReport) // 🔽 추가됨
 
-        // 🔽 관리자 전용 설정
         tvSettings.text = "로그 확인"
-       // tvMyReport.visibility = android.view.View.GONE
 
         val uid = FirebaseAuth.getInstance().currentUser?.uid
         Log.d("AdminMainDebug", "[1] currentUser.uid = $uid")
@@ -144,6 +142,7 @@ class AdminMainActivity : AppCompatActivity() {
     private fun startListeningReports() {
         reportListener = db.collection("smsReports")
             .orderBy("timestamp", Query.Direction.DESCENDING)
+            .limit(200)
             .addSnapshotListener { snapshots, e ->
                 if (e != null || snapshots == null) {
                     Toast.makeText(this, "데이터를 불러오는 중 오류 발생", Toast.LENGTH_SHORT).show()
@@ -172,15 +171,20 @@ class AdminMainActivity : AppCompatActivity() {
 
         logAdminAction("검색/필터", "검색어: '$keyword', 상태: '$selectedStatus'")
 
-        filteredReports = allReports.filter { report ->
-            val matchesKeyword = keyword.isEmpty() || report.content.contains(keyword, ignoreCase = true)
-            val matchesStatus = selectedStatus == "전체" || report.status == selectedStatus
-            matchesKeyword && matchesStatus
-        }
+        lifecycleScope.launch(Dispatchers.Default) {
+            val filtered = allReports.filter { report ->
+                val matchesKeyword = keyword.isEmpty() || report.content.contains(keyword, ignoreCase = true)
+                val matchesStatus = selectedStatus == "전체" || report.status == selectedStatus
+                matchesKeyword && matchesStatus
+            }
 
-        currentPage = 1
-        updatePagedData()
-        updatePaginationButtons()
+            withContext(Dispatchers.Main) {
+                filteredReports = filtered
+                currentPage = 1
+                updatePagedData()
+                updatePaginationButtons()
+            }
+        }
     }
 
     private fun updatePagedData() {

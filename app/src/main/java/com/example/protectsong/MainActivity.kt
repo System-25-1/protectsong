@@ -58,7 +58,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 🔹 전화 권한 자동 요청
         checkCallPermission()
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -75,6 +74,9 @@ class MainActivity : AppCompatActivity() {
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, android.R.color.white)
+
+        // ✅ 햄버거 아이콘 흰색으로 설정
+        toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, R.color.white)
 
         val header = binding.navView.getHeaderView(0)
         val profileImageView = header.findViewById<ImageView>(R.id.navProfileImage)
