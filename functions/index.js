@@ -1,25 +1,22 @@
-import { onDocumentUpdated } from "firebase-functions/v2/firestore";
-import { initializeApp } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
-import { getMessaging } from "firebase-admin/messaging";
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
 
-initializeApp();
+admin.initializeApp();
 
-export const notifyOnStatusCompleteV2 = onDocumentUpdated(
-  {
-    document: "smsReports/{reportId}",
-    region: "asia-northeast3", // ✅ 여기에 region 설정!
-  },
-  async (event) => {
-    const before = event.data.before.data();
-    const after = event.data.after.data();
+exports.notifyOnStatusCompleteV2 = functions
+  .region("asia-northeast3")
+  .firestore
+  .document("smsReports/{reportId}")
+  .onUpdate(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
 
-    if (after.status === "처리완료") {
-      const userId = after.uid;
+    if (before.status !== "처리완료" && after.status === "처리완료") {
+      const userId = after.userId;
       const reportTitle = after.building || "신고";
 
       try {
-        const userDoc = await getFirestore().collection("users").doc(userId).get();
+        const userDoc = await admin.firestore().collection("users").doc(userId).get();
         const fcmToken = userDoc.data()?.fcmToken;
 
         if (!fcmToken) {
@@ -35,11 +32,10 @@ export const notifyOnStatusCompleteV2 = onDocumentUpdated(
           },
         };
 
-        await getMessaging().send(message);
+        await admin.messaging().send(message);
         console.log("✅ 푸시 전송 성공:", fcmToken);
       } catch (error) {
         console.error("❌ 푸시 전송 실패:", error);
       }
     }
-  }
-);
+  });

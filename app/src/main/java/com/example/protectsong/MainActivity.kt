@@ -74,6 +74,7 @@ class MainActivity : AppCompatActivity() {
             R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
+        toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, android.R.color.white)
 
         val header = binding.navView.getHeaderView(0)
         val profileImageView = header.findViewById<ImageView>(R.id.navProfileImage)
