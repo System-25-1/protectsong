@@ -127,6 +127,30 @@ class UserInfoActivity : AppCompatActivity() {
                 isFormatting = false
             }
         })
+        //보호자정보포맷팅
+        binding.guardianPhoneEdit.addTextChangedListener(object : TextWatcher {
+            private var isFormatting = false
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (isFormatting) return
+                isFormatting = true
+
+                val digits = s.toString().replace("-", "")
+                val formatted = when {
+                    digits.length >= 11 -> "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7, 11)}"
+                    digits.length >= 7 -> "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7)}"
+                    digits.length >= 4 -> "${digits.substring(0, 3)}-${digits.substring(3)}"
+                    else -> digits
+                }
+
+                binding.guardianPhoneEdit.setText(formatted)
+                binding.guardianPhoneEdit.setSelection(formatted.length)
+                isFormatting = false
+            }
+        })
+
+
 
         // 전화번호 인증 요청
         binding.verifyPhoneButton.setOnClickListener {
