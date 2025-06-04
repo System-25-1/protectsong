@@ -15,12 +15,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import java.util.concurrent.TimeUnit
-import com.example.protectsong.BuildConfig
-
 
 class UserInfoActivity : AppCompatActivity() {
 
@@ -42,7 +39,6 @@ class UserInfoActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
         val isAdmin = currentUser?.uid == adminUid
 
-        // 관리자 자동 등록 로직
         if (isAdmin) {
             val adminInfo = mapOf(
                 "name" to "관리자",
@@ -57,11 +53,6 @@ class UserInfoActivity : AppCompatActivity() {
                 )
             )
 
-
-
-
-
-
             firestore.collection("users").document(adminUid)
                 .set(adminInfo)
                 .addOnSuccessListener {
@@ -75,7 +66,6 @@ class UserInfoActivity : AppCompatActivity() {
             return
         }
 
-        // 보호자 관계 스피너 설정
         val adapter = ArrayAdapter.createFromResource(
             this,
             R.array.relationship_options,
@@ -84,161 +74,16 @@ class UserInfoActivity : AppCompatActivity() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.relationshipSpinner.adapter = adapter
 
-        // 기본적으로 저장 버튼 비활성화 (전화번호 인증 후 활성화)
         binding.saveButton.isEnabled = false
 
         binding.backText.setOnClickListener {
             finish()
         }
 
-        // 생년월일 입력 포맷팅
-        binding.birthEdit.addTextChangedListener(object : TextWatcher {
-            private var isEditing = false
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                if (isEditing) return
-                isEditing = true
-                val digits = s.toString().replace(".", "").take(8)
-                val formatted = when {
-                    digits.length >= 7 -> "${digits.substring(0, 4)}.${digits.substring(4, 6)}.${digits.substring(6)}"
-                    digits.length >= 5 -> "${digits.substring(0, 4)}.${digits.substring(4)}"
-                    digits.length >= 1 -> digits
-                    else -> ""
-                }
-                binding.birthEdit.setText(formatted)
-                binding.birthEdit.setSelection(formatted.length)
-                isEditing = false
-            }
-        })
+        binding.birthEdit.addTextChangedListener(birthTextWatcher(binding.birthEdit))
+        binding.phoneEdit.addTextChangedListener(phoneTextWatcher(binding.phoneEdit))
+        binding.guardianPhoneEdit.addTextChangedListener(phoneTextWatcher(binding.guardianPhoneEdit))
 
-        // 전화번호 입력 포맷팅 (예: 010-1234-5678)
-        binding.phoneEdit.addTextChangedListener(object : TextWatcher {
-            private var isFormatting = false
-            private var deletingHyphen = false
-            private var hyphenStart = 0
-            private var deletingBackward = false
-            private var previousText = ""
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                previousText = s?.toString() ?: ""
-                if (count > 0 && after == 0) {
-                    val deletedChar = s?.get(start)
-                    deletingHyphen = deletedChar == '-'
-                    hyphenStart = start
-                    deletingBackward = true
-                } else {
-                    deletingHyphen = false
-                    deletingBackward = false
-                }
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(s: Editable?) {
-                if (isFormatting) return
-                isFormatting = true
-
-                val digits = s.toString().replace("-", "")
-
-                // 🔹 11자 초과 시 입력 차단 및 이전 상태로 복원
-                if (digits.length > 11) {
-                    Toast.makeText(binding.root.context, "전화번호는 최대 11자리까지 입력할 수 있습니다.", Toast.LENGTH_SHORT).show()
-                    binding.phoneEdit.removeTextChangedListener(this)
-                    binding.phoneEdit.setText(previousText)
-                    binding.phoneEdit.setSelection(previousText.length)
-                    binding.phoneEdit.addTextChangedListener(this)
-                    isFormatting = false
-                    return
-                }
-
-                val formatted = when {
-                    digits.length >= 11 -> "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7, 11)}"
-                    digits.length >= 7 -> "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7)}"
-                    digits.length >= 4 -> "${digits.substring(0, 3)}-${digits.substring(3)}"
-                    else -> digits
-                }
-
-                binding.phoneEdit.removeTextChangedListener(this)
-                binding.phoneEdit.setText(formatted)
-
-                val newCursorPos = when {
-                    deletingHyphen && hyphenStart > 0 -> hyphenStart - 1
-                    else -> formatted.length
-                }
-
-                binding.phoneEdit.setSelection(newCursorPos.coerceAtMost(formatted.length))
-                binding.phoneEdit.addTextChangedListener(this)
-
-                isFormatting = false
-            }
-        })
-
-        //보호자정보포맷팅
-        binding.guardianPhoneEdit.addTextChangedListener(object : TextWatcher {
-            private var isFormatting = false
-            private var deletingHyphen = false
-            private var hyphenStart = 0
-            private var deletingBackward = false
-            private var previousText = ""
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                previousText = s?.toString() ?: ""
-                if (count > 0 && after == 0) {
-                    val deletedChar = s?.get(start)
-                    deletingHyphen = deletedChar == '-'
-                    hyphenStart = start
-                    deletingBackward = true
-                } else {
-                    deletingHyphen = false
-                    deletingBackward = false
-                }
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(s: Editable?) {
-                if (isFormatting) return
-                isFormatting = true
-
-                val digits = s.toString().replace("-", "")
-
-                // 🔹 11자 초과 시 입력 차단 및 이전 상태로 복원
-                if (digits.length > 11) {
-                    Toast.makeText(binding.root.context, "전화번호는 최대 11자리까지 입력할 수 있습니다.", Toast.LENGTH_SHORT).show()
-                    binding.guardianPhoneEdit.removeTextChangedListener(this)
-                    binding.guardianPhoneEdit.setText(previousText)
-                    binding.guardianPhoneEdit.setSelection(previousText.length)
-                    binding.guardianPhoneEdit.addTextChangedListener(this)
-                    isFormatting = false
-                    return
-                }
-
-                val formatted = when {
-                    digits.length >= 11 -> "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7, 11)}"
-                    digits.length >= 7 -> "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7)}"
-                    digits.length >= 4 -> "${digits.substring(0, 3)}-${digits.substring(3)}"
-                    else -> digits
-                }
-
-                binding.guardianPhoneEdit.removeTextChangedListener(this)
-                binding.guardianPhoneEdit.setText(formatted)
-
-                val newCursorPos = when {
-                    deletingHyphen && hyphenStart > 0 -> hyphenStart - 1
-                    else -> formatted.length
-                }
-
-                binding.guardianPhoneEdit.setSelection(newCursorPos.coerceAtMost(formatted.length))
-                binding.guardianPhoneEdit.addTextChangedListener(this)
-
-                isFormatting = false
-            }
-        })
-
-
-
-        // 전화번호 인증 요청
         binding.verifyPhoneButton.setOnClickListener {
             val phoneNumber = binding.phoneEdit.text.toString().replace("-", "")
             if (phoneNumber.isEmpty()) {
@@ -269,7 +114,6 @@ class UserInfoActivity : AppCompatActivity() {
             PhoneAuthProvider.verifyPhoneNumber(options)
         }
 
-        // 인증코드 확인
         binding.checkCodeButton.setOnClickListener {
             val code = binding.verificationCodeEdit.text.toString()
             if (verificationId == null || code.isEmpty()) {
@@ -281,7 +125,6 @@ class UserInfoActivity : AppCompatActivity() {
             signInWithPhoneAuthCredential(credential)
         }
 
-        // 저장 버튼 클릭 시 (회원가입 및 정보 저장)
         binding.saveButton.setOnClickListener {
             val phone = binding.phoneEdit.text.toString()
             val name = binding.nameEdit.text.toString()
@@ -293,19 +136,16 @@ class UserInfoActivity : AppCompatActivity() {
             val guardianPhone = binding.guardianPhoneEdit.text.toString()
             val guardianRelation = binding.relationshipSpinner.selectedItem.toString()
 
-            // 필수 항목 입력 확인
             if (phone.isEmpty() || name.isEmpty() || birth.isEmpty() || studentId.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "필수 항목을 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // 학번 7자리 제한 검사
             if (studentId.length != 7) {
                 Toast.makeText(this, "학번은 7자리로 입력해주세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // 비밀번호 유효성 검사
             if (!isPasswordValid(password)) {
                 binding.passwordWarning.visibility = View.VISIBLE
                 return@setOnClickListener
@@ -313,32 +153,22 @@ class UserInfoActivity : AppCompatActivity() {
                 binding.passwordWarning.visibility = View.GONE
             }
 
-            // 비밀번호 확인 일치 여부
             if (password != passwordConfirm) {
                 Toast.makeText(this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Firestore에서 동일 학번 존재 여부 확인
             firestore.collection("users")
                 .whereEqualTo("studentId", studentId)
                 .get()
                 .addOnSuccessListener { querySnapshot: QuerySnapshot ->
                     if (!querySnapshot.isEmpty) {
-                        // 이미 같은 학번이 존재할 경우
                         Toast.makeText(this, "이미 사용 중인 학번입니다.", Toast.LENGTH_SHORT).show()
                         return@addOnSuccessListener
                     } else {
-                        // 중복이 없으면 회원가입 진행
                         createFirebaseUserAndSaveInfo(
-                            phone,
-                            name,
-                            birth,
-                            studentId,
-                            password,
-                            guardianName,
-                            guardianPhone,
-                            guardianRelation
+                            phone, name, birth, studentId, password,
+                            guardianName, guardianPhone, guardianRelation
                         )
                     }
                 }
@@ -349,16 +179,9 @@ class UserInfoActivity : AppCompatActivity() {
         }
     }
 
-    // Firebase Authentication을 통해 사용자 생성 후 Firestore에 정보 저장
     private fun createFirebaseUserAndSaveInfo(
-        phone: String,
-        name: String,
-        birth: String,
-        studentId: String,
-        password: String,
-        guardianName: String,
-        guardianPhone: String,
-        guardianRelation: String
+        phone: String, name: String, birth: String, studentId: String, password: String,
+        guardianName: String, guardianPhone: String, guardianRelation: String
     ) {
         val fakeEmail = "$studentId@protectsong.app"
         auth.createUserWithEmailAndPassword(fakeEmail, password)
@@ -410,5 +233,84 @@ class UserInfoActivity : AppCompatActivity() {
     private fun isPasswordValid(password: String): Boolean {
         val regex = Regex("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)[A-Za-z\\d]{8,16}$")
         return regex.matches(password)
+    }
+
+    private fun birthTextWatcher(view: View): TextWatcher = object : TextWatcher {
+        private var isEditing = false
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        override fun afterTextChanged(s: Editable?) {
+            if (isEditing) return
+            isEditing = true
+            val digits = s.toString().replace(".", "").take(8)
+            val formatted = when {
+                digits.length >= 7 -> "${digits.substring(0, 4)}.${digits.substring(4, 6)}.${digits.substring(6)}"
+                digits.length >= 5 -> "${digits.substring(0, 4)}.${digits.substring(4)}"
+                digits.length >= 1 -> digits
+                else -> ""
+            }
+            (view as? View)?.let {
+                binding.birthEdit.setText(formatted)
+                binding.birthEdit.setSelection(formatted.length)
+            }
+            isEditing = false
+        }
+    }
+
+    private fun phoneTextWatcher(view: View): TextWatcher = object : TextWatcher {
+        private var isFormatting = false
+        private var deletingHyphen = false
+        private var hyphenStart = 0
+        private var previousText = ""
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            previousText = s?.toString() ?: ""
+            if (count > 0 && after == 0) {
+                val deletedChar = s?.get(start)
+                deletingHyphen = deletedChar == '-'
+                hyphenStart = start
+            } else {
+                deletingHyphen = false
+            }
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+        override fun afterTextChanged(s: Editable?) {
+            if (isFormatting) return
+            isFormatting = true
+
+            val digits = s.toString().replace("-", "")
+
+            if (digits.length > 11) {
+                Toast.makeText(view.context, "전화번호는 최대 11자리까지 입력할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                (view as? View)?.let {
+                    val editText = it as android.widget.EditText
+                    editText.removeTextChangedListener(this)
+                    editText.setText(previousText)
+                    editText.setSelection(previousText.length)
+                    editText.addTextChangedListener(this)
+                }
+                isFormatting = false
+                return
+            }
+
+            val formatted = when {
+                digits.length >= 11 -> "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7, 11)}"
+                digits.length >= 7 -> "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7)}"
+                digits.length >= 4 -> "${digits.substring(0, 3)}-${digits.substring(3)}"
+                else -> digits
+            }
+
+            (view as? View)?.let {
+                val editText = it as android.widget.EditText
+                editText.removeTextChangedListener(this)
+                editText.setText(formatted)
+                val newCursorPos = if (deletingHyphen && hyphenStart > 0) hyphenStart - 1 else formatted.length
+                editText.setSelection(newCursorPos.coerceAtMost(formatted.length))
+                editText.addTextChangedListener(this)
+            }
+            isFormatting = false
+        }
     }
 }
