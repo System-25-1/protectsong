@@ -47,13 +47,14 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     // 갤러리 이미지 선택 런처
-    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        uri?.let {
-            selectedImageUri = it
-            binding.profileImage.setImageURI(it)
-            uploadProfileImageToFirebase(it)
+    private val pickImageLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            uri?.let {
+                selectedImageUri = it
+                binding.profileImage.setImageURI(it)
+                uploadProfileImageToFirebase(it)
+            }
         }
-    }
 
     private fun setupProfileImagePicker() {
         binding.btnCameraOverlay.setOnClickListener {
@@ -79,7 +80,8 @@ class EditProfileActivity : AppCompatActivity() {
                     editGuardianName.setText(guardian?.get("name")?.toString() ?: "")
                     editGuardianPhone.setText(guardian?.get("phone")?.toString() ?: "")
                     val relation = guardian?.get("relation")?.toString() ?: ""
-                    val pos = (spinnerRelation.adapter as ArrayAdapter<String>).getPosition(relation)
+                    val pos =
+                        (spinnerRelation.adapter as ArrayAdapter<String>).getPosition(relation)
                     spinnerRelation.setSelection(pos)
                 }
 
@@ -148,11 +150,18 @@ class EditProfileActivity : AppCompatActivity() {
                         .update("profileImageUrl", imageUrl)
                         .addOnSuccessListener {
                             Toast.makeText(this, "사진 업로드 및 저장 완료", Toast.LENGTH_SHORT).show()
+
+                            if (!isDestroyed && !isFinishing) {
+                                Glide.with(this)
+                                    .load(imageUrl)
+                                    .circleCrop()
+                                    .into(binding.profileImage)
+                            }
                         }
                 }
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "사진 업로드 실패", Toast.LENGTH_SHORT).show()
+                    .addOnFailureListener {
+                        Toast.makeText(this, "사진 업로드 실패", Toast.LENGTH_SHORT).show()
+                    }
             }
     }
 }
