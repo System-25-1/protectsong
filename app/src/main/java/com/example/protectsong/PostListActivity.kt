@@ -71,6 +71,10 @@ class PostListActivity : AppCompatActivity() {
             writePostLauncher.launch(intent)
         }
     }
+    override fun onResume() {
+        super.onResume()
+        loadPostsFromFirestore() // 🔁 실시간 반영용으로 추가
+    }
 
     private fun initRecyclerView() {
         postAdapter = PostAdapter(postList) { post ->

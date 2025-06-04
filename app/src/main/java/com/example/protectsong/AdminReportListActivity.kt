@@ -25,7 +25,6 @@ class AdminReportListActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        // 관리자 권한 확인
         firestore.collection("users").document(auth.currentUser?.uid ?: "").get()
             .addOnSuccessListener { document ->
                 val isAdmin = document.getBoolean("isAdmin") ?: false
@@ -40,6 +39,11 @@ class AdminReportListActivity : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(this, "권한 확인 실패: ${it.message}", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadReports() // ✅ 상태 변경 반영
     }
 
     private fun setupRecyclerView() {
@@ -65,3 +69,4 @@ class AdminReportListActivity : AppCompatActivity() {
             }
     }
 }
+
