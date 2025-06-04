@@ -327,6 +327,29 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         loadNotices()
+        loadUserInfoToNavHeader()
+    }
+    private fun loadUserInfoToNavHeader() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val db = FirebaseFirestore.getInstance()
+        val header = binding.navView.getHeaderView(0)
+        val profileImageView = header.findViewById<ImageView>(R.id.navProfileImage)
+        val userNameView = header.findViewById<TextView>(R.id.tvUserName)
+        val studentIdView = header.findViewById<TextView>(R.id.tvStudentId)
+
+        db.collection("users").document(uid).get().addOnSuccessListener { doc ->
+            userNameView.text = doc.getString("name") ?: "이름없음"
+            studentIdView.text = doc.getString("studentId") ?: "학번없음"
+            val imageUrl = doc.getString("profileImageUrl")
+            if (!imageUrl.isNullOrEmpty()) {
+                Glide.with(this)
+                    .load(imageUrl)
+                    .circleCrop()
+                    .into(profileImageView)
+            } else {
+                profileImageView.setImageResource(R.drawable.default_profile) // 기본 이미지
+            }
+        }
     }
 
     private fun loadNotices() {
