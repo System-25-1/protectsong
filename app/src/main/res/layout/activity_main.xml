@@ -35,6 +35,7 @@
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="@id/toolbar"
             app:layout_constraintBottom_toBottomOf="@id/toolbar"
+            android:fontFamily="@font/nanumsquareneo_cbd"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -117,8 +118,6 @@
         </LinearLayout>
 
 
-
-
         <!-- 🌟 배경 이미지 -->
         <ImageView
             android:id="@+id/star_bg"
@@ -188,7 +187,7 @@
                 android:gravity="center"
                 android:padding="8dp"
                 android:text="공지"
-                android:fontFamily="@font/pyeojin_gothic_regular"
+                android:fontFamily="@font/nanumsquareneo_cbd"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 android:textStyle="bold" />
