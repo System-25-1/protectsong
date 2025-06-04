@@ -118,6 +118,8 @@
         </LinearLayout>
 
 
+
+
         <!-- 🌟 배경 이미지 -->
         <ImageView
             android:id="@+id/star_bg"
