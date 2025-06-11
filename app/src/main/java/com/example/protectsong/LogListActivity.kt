@@ -48,8 +48,9 @@ class LogListActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        binding.includeToolbar.backText.setOnClickListener { finish() }
-        binding.includeToolbar.titleText.text = "로그 목록"
+        binding.backText.setOnClickListener { finish() }
+        binding.titleText.text = "로그 목록"
+
     }
 
     private fun fetchLogs() {
