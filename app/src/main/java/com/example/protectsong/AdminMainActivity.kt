@@ -156,21 +156,28 @@ class AdminMainActivity : AppCompatActivity() {
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .limit(200)
             .addSnapshotListener { snapshots, e ->
-
-
-                allReports = snapshots.map { doc ->
-                    SmsReport(
-                        id = doc.id,
-                        userId = doc.getString("userId") ?: "",
-                        type = doc.getString("type") ?: "",
-                        building = doc.getString("building") ?: "",
-                        content = doc.getString("content") ?: "",
-                        status = doc.getString("status") ?: "접수됨",
-                        files = doc.get("files") as? List<String> ?: emptyList(),
-                        timestamp = doc.getTimestamp("timestamp")?.toDate()?.time ?: 0L
-                    )
+                if (e != null) {
+                    Log.e("FirestoreListener", "SnapshotListener error", e)
+                    return@addSnapshotListener
                 }
-                applyFilters()
+
+                if (snapshots != null) {
+                    allReports = snapshots.map { doc ->
+                        SmsReport(
+                            id = doc.id,
+                            userId = doc.getString("userId") ?: "",
+                            type = doc.getString("type") ?: "",
+                            building = doc.getString("building") ?: "",
+                            content = doc.getString("content") ?: "",
+                            status = doc.getString("status") ?: "접수됨",
+                            files = doc.get("files") as? List<String> ?: emptyList(),
+                            timestamp = doc.getTimestamp("timestamp")?.toDate()?.time ?: 0L
+                        )
+                    }
+                    applyFilters()
+                } else {
+                    Log.e("FirestoreListener", "snapshots is null")
+                }
             }
     }
 
