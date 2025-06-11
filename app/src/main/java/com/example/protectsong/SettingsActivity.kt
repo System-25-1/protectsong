@@ -28,15 +28,15 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // ✅ 실제 GPS 상태 반영
-        updateGpsStatus()
-
-        // ✅ 앱 버전 표시
+        // 앱 버전 표시는 한 번만 하면 됨
         val versionName = packageManager.getPackageInfo(packageName, 0).versionName
         val versionText = getString(R.string.version_text, versionName)
         findViewById<TextView>(R.id.tv_app_version).text = versionText
+    }
 
-        // ✅ 음성인식 상태 반영
+    override fun onResume() {
+        super.onResume()
+        updateGpsStatus()
         updateVoiceRecognitionStatus()
     }
 
@@ -58,3 +58,4 @@ class SettingsActivity : AppCompatActivity() {
         return prefs.getBoolean("voice_recognition_enabled", false)
     }
 }
+
