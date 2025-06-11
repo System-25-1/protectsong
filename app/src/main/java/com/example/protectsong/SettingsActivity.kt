@@ -1,5 +1,6 @@
 package com.example.protectsong
 
+import android.content.ComponentName
 import android.os.Bundle
 import android.content.Intent
 import android.content.SharedPreferences
@@ -10,6 +11,7 @@ import android.provider.Settings
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.protectsong.accessibility.UnifiedAccessibilityService
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,8 +51,18 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun updateVoiceRecognitionStatus() {
         val voiceStatusView = findViewById<TextView>(R.id.tv_voice_recognition_status)
-        val isVoiceEnabled = checkVoiceRecognitionSetting()
-        voiceStatusView.text = if (isVoiceEnabled) "켜짐" else "꺼짐"
+        val isEnabled = isAccessibilityServiceEnabled()
+        voiceStatusView.text = if (isEnabled) "켜짐" else "꺼짐"
+    }
+    private fun isAccessibilityServiceEnabled(): Boolean {
+        val enabledServices = Settings.Secure.getString(
+            contentResolver,
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+        ) ?: return false
+
+        val myService = ComponentName(this, UnifiedAccessibilityService::class.java)
+        val expected = myService.flattenToString()
+        return enabledServices.split(":").any { it == expected }
     }
 
     private fun checkVoiceRecognitionSetting(): Boolean {
