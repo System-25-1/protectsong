@@ -68,6 +68,12 @@ class ChatActivity : AppCompatActivity() {
         binding = ActivityChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        if (currentUserId == adminUid && intent.getStringExtra("chatWithUserId").isNullOrEmpty()) {
+            Toast.makeText(this, "❗ 채팅 대상이 없어 채팅화면을 열 수 없습니다.", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
         if (!hasPermissions()) {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_PERMISSIONS)
         }

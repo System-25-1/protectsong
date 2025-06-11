@@ -156,24 +156,28 @@ class AdminMainActivity : AppCompatActivity() {
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .limit(200)
             .addSnapshotListener { snapshots, e ->
-                if (e != null || snapshots == null) {
-                    Toast.makeText(this, "데이터를 불러오는 중 오류 발생", Toast.LENGTH_SHORT).show()
+                if (e != null) {
+                    Log.e("FirestoreListener", "SnapshotListener error", e)
                     return@addSnapshotListener
                 }
 
-                allReports = snapshots.map { doc ->
-                    SmsReport(
-                        id = doc.id,
-                        userId = doc.getString("userId") ?: "",
-                        type = doc.getString("type") ?: "",
-                        building = doc.getString("building") ?: "",
-                        content = doc.getString("content") ?: "",
-                        status = doc.getString("status") ?: "접수됨",
-                        files = doc.get("files") as? List<String> ?: emptyList(),
-                        timestamp = doc.getTimestamp("timestamp")?.toDate()?.time ?: 0L
-                    )
+                if (snapshots != null) {
+                    allReports = snapshots.map { doc ->
+                        SmsReport(
+                            id = doc.id,
+                            userId = doc.getString("userId") ?: "",
+                            type = doc.getString("type") ?: "",
+                            building = doc.getString("building") ?: "",
+                            content = doc.getString("content") ?: "",
+                            status = doc.getString("status") ?: "접수됨",
+                            files = doc.get("files") as? List<String> ?: emptyList(),
+                            timestamp = doc.getTimestamp("timestamp")?.toDate()?.time ?: 0L
+                        )
+                    }
+                    applyFilters()
+                } else {
+                    Log.e("FirestoreListener", "snapshots is null")
                 }
-                applyFilters()
             }
     }
 
