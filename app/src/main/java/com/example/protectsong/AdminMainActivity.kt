@@ -1,4 +1,3 @@
-// === AdminMainActivity.kt ===
 package com.example.protectsong
 
 import android.content.Intent
@@ -8,6 +7,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.Gravity
+import android.view.View
 import android.widget.AdapterView
 import android.widget.TextView
 import android.widget.Toast
@@ -60,8 +60,9 @@ class AdminMainActivity : AppCompatActivity() {
         val tvStudentId = headerView.findViewById<TextView>(R.id.tvStudentId)
         val logoutButton = headerView.findViewById<TextView>(R.id.logout_button)
         val tvSettings = headerView.findViewById<TextView>(R.id.tvSettings)
-
-        tvSettings.text = "로그 확인"
+        val tvMyProfile = headerView.findViewById<TextView>(R.id.tvMyProfile)
+        val tvMyReport = headerView.findViewById<TextView>(R.id.tvMyReport)
+        val tvLogCheck = headerView.findViewById<TextView>(R.id.tvLogCheck)
 
         val uid = FirebaseAuth.getInstance().currentUser?.uid
         Log.d("AdminMainDebug", "[1] currentUser.uid = $uid")
@@ -74,17 +75,27 @@ class AdminMainActivity : AppCompatActivity() {
                     Log.d("AdminMainDebug", "[3] doc.data = ${doc.data}")
                     val nameVal = doc.getString("name")
                     val idVal = doc.getString("studentId")
+                    val isAdmin = doc.getBoolean("isAdmin") ?: false
+
                     tvUserName.text = nameVal ?: "이름 없음"
                     tvStudentId.text = idVal ?: "학번 없음"
+
+                    if (isAdmin) {
+                        tvSettings.visibility = View.GONE
+                        tvMyProfile.visibility = View.GONE
+                        tvMyReport.visibility = View.GONE
+                        tvLogCheck.visibility = View.VISIBLE
+                    } else {
+                        tvSettings.visibility = View.VISIBLE
+                        tvMyProfile.visibility = View.VISIBLE
+                        tvMyReport.visibility = View.VISIBLE
+                        tvLogCheck.visibility = View.GONE
+                    }
                 }
                 .addOnFailureListener { e ->
                     Log.e("AdminMainDebug", "[5] Firestore read failed", e)
                     Toast.makeText(this, "헤더 정보 불러오기 실패: ${e.message}", Toast.LENGTH_LONG).show()
                 }
-        } else {
-            Log.w("AdminMainDebug", "[6] currentUser.uid 가 null 입니다.")
-            tvUserName.text = "이름 없음"
-            tvStudentId.text = "학번 없음"
         }
 
         logoutButton.setOnClickListener {
@@ -95,7 +106,7 @@ class AdminMainActivity : AppCompatActivity() {
             })
         }
 
-        tvSettings.setOnClickListener {
+        tvLogCheck.setOnClickListener {
             startActivity(Intent(this, LogListActivity::class.java))
         }
 
@@ -116,9 +127,10 @@ class AdminMainActivity : AppCompatActivity() {
         })
 
         binding.spinnerStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 applyFilters()
             }
+
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
