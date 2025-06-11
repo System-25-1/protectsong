@@ -83,6 +83,25 @@ class UserInfoActivity : AppCompatActivity() {
         binding.birthEdit.addTextChangedListener(birthTextWatcher(binding.birthEdit))
         binding.phoneEdit.addTextChangedListener(phoneTextWatcher(binding.phoneEdit))
         binding.guardianPhoneEdit.addTextChangedListener(phoneTextWatcher(binding.guardianPhoneEdit))
+        binding.nameEdit.addTextChangedListener(object : TextWatcher {
+            private var previousText = ""
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                previousText = s?.toString() ?: ""
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                val input = s.toString()
+                if (input.length > 6) {
+                    binding.nameEdit.removeTextChangedListener(this)
+                    binding.nameEdit.setText(previousText)
+                    binding.nameEdit.setSelection(previousText.length)
+                    binding.nameEdit.addTextChangedListener(this)
+                    Toast.makeText(this@UserInfoActivity, "이름은 최대 6글자까지 입력할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
 
         binding.studentIdEdit.addTextChangedListener(object : TextWatcher {
             private var previousText = ""
@@ -90,6 +109,7 @@ class UserInfoActivity : AppCompatActivity() {
                 previousText = s?.toString() ?: ""
             }
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
             override fun afterTextChanged(s: Editable?) {
                 val input = s.toString()
                 if (input.length > 7) {

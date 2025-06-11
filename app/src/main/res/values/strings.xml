@@ -65,6 +65,7 @@
         <item>진리관</item>
         <item>새힘관</item>
         <item>다목적관</item>
+        <item>기타</item>
     </string-array>
     <string-array name="status_array">
         <item>전체</item>
