@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Protectsong.iml" filepath="$PROJECT_DIR$/.idea/modules/Protectsong.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Protectsong.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Protectsong.app.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Protectsong.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Protectsong.app.androidTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Protectsong.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Protectsong.app.main.iml" />

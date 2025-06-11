@@ -143,6 +143,8 @@ class MainActivity : AppCompatActivity() {
             val dialIntent = Intent(Intent.ACTION_DIAL).apply {
                 data = Uri.parse("tel:01089750220")
             }
+            Log.d("CALL_INTENT", "CALL_PHONE 권한 있음, 전화 시도: tel:01093808120")
+
             startActivity(dialIntent)
         }
 
