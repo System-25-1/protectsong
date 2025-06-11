@@ -70,6 +70,18 @@ class AdminReportDetailActivity : AppCompatActivity() {
                     dialog.show(supportFragmentManager, "ImageDialog")
                 }
             }
+            // ✅ 이미지 또는 영상 클릭 시 전체 보기 처리
+            binding.mediaContainer.setOnClickListener {
+                if (isVideo) {
+                    val intent = Intent(this, VideoPlayerActivity::class.java)
+                    intent.putExtra("videoUrl", url)
+                    startActivity(intent)
+                } else {
+                    val dialog = FullImageDialog.newInstance(url)
+                    dialog.show(supportFragmentManager, "FullImageDialog")
+                }
+            }
+
         } else {
             binding.imageSection.visibility = View.GONE
         }
