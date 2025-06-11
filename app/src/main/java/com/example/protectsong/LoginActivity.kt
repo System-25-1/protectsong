@@ -15,6 +15,12 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
 
+    private fun showError(message: String) {
+        binding.loginSubmitButton.isEnabled = true
+        binding.progressBar.visibility = View.GONE
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -43,8 +49,12 @@ class LoginActivity : AppCompatActivity() {
             binding.progressBar.visibility = View.VISIBLE
 
             auth.signInWithEmailAndPassword(fakeEmail, password)
-                .addOnSuccessListener {
-                    val uid = auth.currentUser?.uid ?: return@addOnSuccessListener
+                .addOnSuccessListener { result ->
+                    val uid = result.user?.uid
+                    if (uid == null) {
+                        showError("인증된 사용자 정보를 불러올 수 없습니다.")
+                        return@addOnSuccessListener
+                    }
 
                     firestore.collection("users").document(uid)
                         .get()
@@ -53,33 +63,31 @@ class LoginActivity : AppCompatActivity() {
                             binding.progressBar.visibility = View.GONE
 
                             if (!doc.exists()) {
-                                Toast.makeText(this, "사용자 정보가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
+                                showError("사용자 정보가 존재하지 않습니다.")
                                 return@addOnSuccessListener
                             }
 
                             val role = doc.getString("role")
                             if (role == null) {
-                                Toast.makeText(this, "사용자 권한이 설정되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+                                showError("사용자 권한이 설정되어 있지 않습니다.")
                                 return@addOnSuccessListener
                             }
 
-                            if (role == "admin") {
-                                startActivity(Intent(this, AdminMainActivity::class.java))
+                            val intent = if (role == "admin") {
+                                Intent(this, AdminMainActivity::class.java)
                             } else {
-                                startActivity(Intent(this, MainActivity::class.java))
+                                Intent(this, MainActivity::class.java)
                             }
+
+                            startActivity(intent)
                             finish()
                         }
                         .addOnFailureListener {
-                            binding.loginSubmitButton.isEnabled = true
-                            binding.progressBar.visibility = View.GONE
-                            Toast.makeText(this, "권한 확인 실패: ${it.message}", Toast.LENGTH_SHORT).show()
+                            showError("사용자 정보 조회 실패: ${it.message}")
                         }
                 }
                 .addOnFailureListener {
-                    binding.loginSubmitButton.isEnabled = true
-                    binding.progressBar.visibility = View.GONE
-                    Toast.makeText(this, "로그인 실패: ${it.message}", Toast.LENGTH_SHORT).show()
+                    showError("로그인 실패: ${it.message}")
                 }
         }
     }
