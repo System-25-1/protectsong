@@ -217,9 +217,27 @@ class PostListActivity : AppCompatActivity() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_chat -> {
-                    startActivity(Intent(this, ChatActivity::class.java))
+                    val uid = FirebaseAuth.getInstance().currentUser?.uid
+                    if (uid != null) {
+                        db.collection("users").document(uid)
+                            .get()
+                            .addOnSuccessListener { document ->
+                                val role = document.getString("role")
+                                val intent = if (role == "admin") {
+                                    Intent(this, ChatListActivity::class.java) // ✅ 관리자 → 채팅목록
+                                } else {
+                                    Intent(this, ChatActivity::class.java)     // ✅ 학생 → 1:1 채팅
+                                }
+                                startActivity(intent)
+                                finish() // 기존 액티비티 종료 (메모리 누적 방지)
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(this, "권한 확인 실패", Toast.LENGTH_SHORT).show()
+                            }
+                    }
                     true
                 }
+
                 R.id.nav_home -> {
                     val uid = FirebaseAuth.getInstance().currentUser?.uid
                     if (uid != null) {
@@ -231,10 +249,15 @@ class PostListActivity : AppCompatActivity() {
                                 } else {
                                     startActivity(Intent(this, MainActivity::class.java))
                                 }
+                                finish()
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(this, "권한 확인 실패", Toast.LENGTH_SHORT).show()
                             }
                     }
                     true
                 }
+
                 R.id.nav_post -> true
                 else -> false
             }
