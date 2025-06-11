@@ -106,33 +106,34 @@ class LogListActivity : AppCompatActivity() {
         val csvFile = File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName)
 
         try {
-            val writer = FileWriter(csvFile)
-            writer.append("studentId,action,detail,timestamp\n")
+            // ✅ UTF-8 BOM 추가를 위한 OutputStreamWriter 사용
+            val outputStream = csvFile.outputStream()
+            val writer = outputStream.bufferedWriter(Charsets.UTF_8)
+
+            // ✅ BOM (Byte Order Mark) 추가 - 엑셀에서 한글 안 깨지도록
+            writer.write('\uFEFF'.toString())
+
+            writer.write("studentId,action,detail,timestamp\n")
             val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
             for (log in filteredLogList) {
-                writer.append("\"${log.studentId}\",\"${log.action}\",\"${log.detail}\",\"${sdf.format(Date(log.timestamp))}\"\n")
+                writer.write("\"${log.studentId}\",\"${log.action}\",\"${log.detail}\",\"${sdf.format(Date(log.timestamp))}\"\n")
             }
 
             writer.flush()
             writer.close()
 
             val uri: Uri = FileProvider.getUriForFile(this, "$packageName.provider", csvFile)
-
-            // ✅ 사용자에게 저장 위치 안내
             Toast.makeText(this, "CSV 파일이 저장되었습니다:\n${csvFile.absolutePath}", Toast.LENGTH_LONG).show()
 
-            // ✅ 바로 열기 Intent
             val openIntent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndType(uri, "text/csv")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
-            // 먼저 열기 시도 → 실패하면 공유 fallback
             try {
                 startActivity(Intent.createChooser(openIntent, "CSV 파일 열기"))
             } catch (e: Exception) {
-                // 열 수 있는 앱이 없는 경우 → 공유로 fallback
                 val shareIntent = Intent(Intent.ACTION_SEND).apply {
                     type = "text/csv"
                     putExtra(Intent.EXTRA_STREAM, uri)
@@ -145,6 +146,7 @@ class LogListActivity : AppCompatActivity() {
             Toast.makeText(this, "CSV 저장 실패: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
+
 
 
 }
