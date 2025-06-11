@@ -107,16 +107,14 @@ class LogListActivity : AppCompatActivity() {
         val csvFile = File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName)
 
         try {
-            // ✅ UTF-8 BOM 추가를 위한 OutputStreamWriter 사용
+            // ✅ OutputStream + OutputStreamWriter로 UTF-8 + BOM 처리
             val outputStream = csvFile.outputStream()
+            outputStream.write("\uFEFF".toByteArray(Charsets.UTF_8)) // BOM 추가
+
             val writer = outputStream.bufferedWriter(Charsets.UTF_8)
-
-            // ✅ BOM (Byte Order Mark) 추가 - 엑셀에서 한글 안 깨지도록
-            writer.write('\uFEFF'.toString())
-
-            writer.write("studentId,action,detail,timestamp\n")
             val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
+            writer.write("studentId,action,detail,timestamp\n")
             for (log in filteredLogList) {
                 writer.write("\"${log.studentId}\",\"${log.action}\",\"${log.detail}\",\"${sdf.format(Date(log.timestamp))}\"\n")
             }
