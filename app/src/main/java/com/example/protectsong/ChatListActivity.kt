@@ -36,12 +36,33 @@ class ChatListActivity : AppCompatActivity() {
         binding.recyclerViewChatList.adapter = adapter
         binding.recyclerViewChatList.layoutManager = LinearLayoutManager(this)
 
+        // 뒤로가기 텍스트 클릭 시 역할 따라 이동
         findViewById<TextView>(R.id.backText).setOnClickListener {
-            startActivity(Intent(this, AdminMainActivity::class.java))
-            finish()
+            val uid = FirebaseAuth.getInstance().currentUser?.uid
+            if (uid != null) {
+                FirebaseFirestore.getInstance().collection("users").document(uid)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        val role = document.getString("role")
+                        val intent = if (role == "admin") {
+                            Intent(this, AdminMainActivity::class.java)
+                        } else {
+                            Intent(this, MainActivity::class.java)
+                        }
+                        startActivity(intent)
+                        finish()
+                    }
+                    .addOnFailureListener {
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                    }
+            } else {
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+            }
         }
 
-        // 🔐 관리자 확인 후 로드
+        // 관리자 계정이면 채팅 리스트 로드
         auth.currentUser?.getIdToken(true)
             ?.addOnSuccessListener { result ->
                 val isAdmin = result.claims["admin"] == true
@@ -53,15 +74,18 @@ class ChatListActivity : AppCompatActivity() {
                 }
             }
 
+        // 하단 네비게이션 초기화
         binding.bottomNavigation.selectedItemId = R.id.nav_chat
         binding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.nav_home -> {
                     startActivity(Intent(this, AdminMainActivity::class.java))
+                    finish()
                     true
                 }
                 R.id.nav_post -> {
                     startActivity(Intent(this, PostListActivity::class.java))
+                    finish()
                     true
                 }
                 else -> true

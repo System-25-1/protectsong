@@ -54,10 +54,32 @@ class PostListActivity : AppCompatActivity() {
         loadPostsFromFirestore()
         setupSearch()
 
+        // 뒤로가기 텍스트 클릭시 역할 따라 이동
         findViewById<TextView>(R.id.backText).setOnClickListener {
-            startActivity(Intent(this, AdminMainActivity::class.java))
-            finish()
+            val uid = FirebaseAuth.getInstance().currentUser?.uid
+            if (uid != null) {
+                FirebaseFirestore.getInstance().collection("users").document(uid)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        val role = document.getString("role")
+                        val intent = if (role == "admin") {
+                            Intent(this, AdminMainActivity::class.java)
+                        } else {
+                            Intent(this, MainActivity::class.java)
+                        }
+                        startActivity(intent)
+                        finish()
+                    }
+                    .addOnFailureListener {
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                    }
+            } else {
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+            }
         }
+
         binding.btnWritePost.visibility = View.GONE
         val uid = FirebaseAuth.getInstance().currentUser?.uid
         if (uid != null) {
@@ -228,12 +250,12 @@ class PostListActivity : AppCompatActivity() {
                             .addOnSuccessListener { document ->
                                 val role = document.getString("role")
                                 val intent = if (role == "admin") {
-                                    Intent(this, ChatListActivity::class.java) // ✅ 관리자 → 채팅목록
+                                    Intent(this, ChatListActivity::class.java) // 관리자 → 채팅목록
                                 } else {
-                                    Intent(this, ChatActivity::class.java)     // ✅ 학생 → 1:1 채팅
+                                    Intent(this, ChatActivity::class.java)     // 학생 → 1:1 채팅
                                 }
                                 startActivity(intent)
-                                finish() // 기존 액티비티 종료 (메모리 누적 방지)
+                                finish()
                             }
                             .addOnFailureListener {
                                 Toast.makeText(this, "권한 확인 실패", Toast.LENGTH_SHORT).show()
@@ -267,4 +289,6 @@ class PostListActivity : AppCompatActivity() {
             }
         }
     }
+
+    // 시스템 뒤로가기 버튼도 역할별 분기 이동
 }
