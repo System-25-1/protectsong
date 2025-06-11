@@ -1,4 +1,3 @@
-// CallActivity.kt
 package com.example.protectsong
 
 import android.Manifest
@@ -16,8 +15,14 @@ class CallActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val phone = intent.getStringExtra("phone") ?: return
-        val callIntent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$"))
+        val phone = intent.getStringExtra("phone")
+        if (phone.isNullOrBlank()) {
+            Toast.makeText(this, "전화번호가 없습니다.", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        val callIntent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$phone"))
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
             == PackageManager.PERMISSION_GRANTED) {
