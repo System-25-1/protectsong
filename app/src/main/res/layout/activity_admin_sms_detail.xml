@@ -66,14 +66,15 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp" />
 
-            <EditText
+            <TextView
                 android:id="@+id/tvContent"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:background="@drawable/bg_outline_button"
                 android:gravity="top"
-                android:hint="내용을 입력하세요"
-                android:inputType="textMultiLine" />
+                android:text="신고 내용이 여기에 표시됩니다"
+                android:textColor="@color/black"
+                android:padding="8dp" />
 
             <!-- 첨부 미디어 영역 (영상 or 이미지) -->
             <LinearLayout
