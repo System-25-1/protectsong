@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
                 binding.ivCall.setBackgroundResource(R.drawable.bg_right_curve_button)
             }, 200)
             val dialIntent = Intent(Intent.ACTION_DIAL).apply {
-                data = Uri.parse("tel:01089750220")
+                data = Uri.parse("tel:027109051")
             }
             Log.d("CALL_INTENT", "CALL_PHONE 권한 있음, 전화 시도: tel:01093808120")
 
