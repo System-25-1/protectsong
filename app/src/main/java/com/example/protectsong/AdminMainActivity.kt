@@ -156,10 +156,7 @@ class AdminMainActivity : AppCompatActivity() {
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .limit(200)
             .addSnapshotListener { snapshots, e ->
-                if (e != null || snapshots == null) {
-                    Toast.makeText(this, "데이터를 불러오는 중 오류 발생", Toast.LENGTH_SHORT).show()
-                    return@addSnapshotListener
-                }
+
 
                 allReports = snapshots.map { doc ->
                     SmsReport(

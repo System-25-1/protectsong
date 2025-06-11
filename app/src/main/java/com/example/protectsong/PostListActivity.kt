@@ -54,6 +54,10 @@ class PostListActivity : AppCompatActivity() {
         loadPostsFromFirestore()
         setupSearch()
 
+        findViewById<TextView>(R.id.backText).setOnClickListener {
+            startActivity(Intent(this, AdminMainActivity::class.java))
+            finish()
+        }
         binding.btnWritePost.visibility = View.GONE
         val uid = FirebaseAuth.getInstance().currentUser?.uid
         if (uid != null) {

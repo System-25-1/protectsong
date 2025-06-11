@@ -37,7 +37,7 @@ class ChatListActivity : AppCompatActivity() {
         binding.recyclerViewChatList.layoutManager = LinearLayoutManager(this)
 
         findViewById<TextView>(R.id.backText).setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, AdminMainActivity::class.java))
             finish()
         }
 
