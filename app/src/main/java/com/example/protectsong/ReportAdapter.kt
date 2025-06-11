@@ -19,13 +19,13 @@ class ReportAdapter : RecyclerView.Adapter<ReportAdapter.ReportViewHolder>() {
         notifyDataSetChanged()
     }
 
-    fun getCurrentList(): List<Report> = reports  // ✅ 추가된 함수
+    fun getCurrentList(): List<Report> = reports
 
     inner class ReportViewHolder(private val binding: ItemSmsReportBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(report: Report) {
-            binding.tvContent.text = report.content ?: "내용 없음"
+            binding.tvContent.text = truncateText(report.content ?: "내용 없음", 30)
             binding.tvBuilding.text = report.building ?: "건물 정보 없음"
             binding.tvStatus.text = report.status ?: "상태 없음"
             binding.tvCategory.text = report.type ?: "카테고리 없음"
@@ -56,4 +56,8 @@ class ReportAdapter : RecyclerView.Adapter<ReportAdapter.ReportViewHolder>() {
     }
 
     override fun getItemCount(): Int = reports.size
+
+    private fun truncateText(text: String, maxLength: Int): String {
+        return if (text.length > maxLength) "${text.substring(0, maxLength)}..." else text
+    }
 }

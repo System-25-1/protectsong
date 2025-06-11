@@ -79,6 +79,7 @@ class MyReportActivity : AppCompatActivity() {
 
         firestore.collection("smsReports")
             .whereEqualTo("userId", FirebaseAuth.getInstance().currentUser?.uid)
+            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { snapshot ->
                 allDocuments = snapshot.documents.filter { doc ->
